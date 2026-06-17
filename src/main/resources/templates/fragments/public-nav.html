@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<nav th:fragment="nav" class="bg-surface-bright sticky top-0 z-50 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-b border-outline-variant/30 transition-all duration-300" id="public-navbar">
+    <div class="max-w-container-max mx-auto px-gutter flex justify-between items-center h-16">
+        <div class="flex items-center gap-xl">
+            <a th:href="@{/}" class="font-headline-md text-headline-md font-bold text-primary tracking-tight">NaijaMart</a>
+            <div class="hidden md:flex items-center gap-lg">
+                <a th:href="@{/}" class="text-body-md text-on-surface-variant hover:text-primary transition-colors">Home</a>
+                <a th:href="@{/products}" class="text-body-md text-on-surface-variant hover:text-primary transition-colors">Shop</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-sm">
+            <!-- Authenticated user -->
+            <th:block sec:authorize="isAuthenticated()">
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}"
+                   class="hidden md:inline-flex items-center gap-1 px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">
+                    <span class="material-symbols-outlined text-sm">dashboard</span> Dashboard
+                </a>
+                <a sec:authorize="hasRole('VENDOR')" th:href="@{/vendor/dashboard}"
+                   class="hidden md:inline-flex items-center gap-1 px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">
+                    <span class="material-symbols-outlined text-sm">dashboard</span> Dashboard
+                </a>
+                <a sec:authorize="hasRole('CUSTOMER')" th:href="@{/customer/dashboard}"
+                   class="hidden md:inline-flex items-center gap-1 px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">
+                    <span class="material-symbols-outlined text-sm">dashboard</span> Dashboard
+                </a>
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit" class="px-md py-2 text-label-md bg-primary text-on-primary rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95">Logout</button>
+                </form>
+            </th:block>
+            <!-- Anonymous user -->
+            <th:block sec:authorize="isAnonymous()">
+                <a th:href="@{/register/vendor}" class="hidden md:block text-body-md text-on-surface-variant hover:text-primary transition-colors">Become a Seller</a>
+                <a th:href="@{/oauth2/authorization/keycloak}" class="hidden md:block px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">Login</a>
+                <a th:href="@{/register/customer}" class="px-md py-2 text-label-md bg-primary text-on-primary rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95">Sign Up</a>
+            </th:block>
+        </div>
+    </div>
+</nav>
+</html>

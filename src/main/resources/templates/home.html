@@ -1,94 +1,28 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>NaijaMart</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #f9f9ff 0%, #eaddff 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #111c2d;
-        }
-        @keyframes fadeInUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 48px 40px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(99,14,212,.12);
-            animation: fadeInUp .7s cubic-bezier(.22,1,.36,1) both;
-        }
-        .logo {
-            width: 64px; height: 64px;
-            background: linear-gradient(135deg, #630ed4, #7c3aed);
-            border-radius: 16px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 24px rgba(99,14,212,.3);
-            animation: pulse 3s ease-in-out infinite;
-        }
-        .logo svg { width: 32px; height: 32px; fill: white; }
-        h1 { font-size: 22px; font-weight: 800; color: #630ed4; margin-bottom: 8px; }
-        p { font-size: 15px; color: #4a4455; margin-bottom: 28px; line-height: 1.5; }
-        .name { font-weight: 700; color: #111c2d; }
-        .btn {
-            display: inline-block;
-            padding: 12px 32px;
-            background: #630ed4;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-            font-family: inherit;
-            cursor: pointer;
-            text-decoration: none;
-            transition: transform .2s, opacity .2s;
-            box-shadow: 0 4px 16px rgba(99,14,212,.3);
-        }
-        .btn:hover { opacity: .9; transform: scale(1.04); }
-        .btn:active { transform: scale(.97); }
-        .btn-outline {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 10px 24px;
-            background: transparent;
-            color: #ba1a1a;
-            border: 1.5px solid #ba1a1a;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 700;
-            font-family: inherit;
-            cursor: pointer;
-            transition: background .2s, color .2s;
-            width: 100%;
-        }
-        .btn-outline:hover { background: #ffdad6; }
-    </style>
+    <title>Welcome | NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}" />
 </head>
-<body>
-    <div class="card">
-        <div class="logo">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+<body class="bg-surface-bright min-h-screen flex items-center justify-center">
+    <div class="bg-surface-container-lowest rounded-2xl p-12 text-center max-w-md w-[90%] shadow-[0px_20px_60px_rgba(99,14,212,0.12)] border border-outline-variant/30">
+        <div class="w-16 h-16 bg-primary rounded-2xl inline-flex items-center justify-center mb-5 shadow-lg shadow-primary/30">
+            <span class="material-symbols-outlined text-3xl text-on-primary">storefront</span>
         </div>
-        <h1>NaijaMart</h1>
-        <p>Welcome, <span class="name" th:text="${name}">User</span>!<br/>
-            You're signed in as <span th:text="${email}">user@email.com</span>.</p>
-        <a href="/customer/dashboard" class="btn">Go to Dashboard</a>
-        <form th:action="@{/logout}" method="post" style="margin-top:12px;">
-            <button type="submit" class="btn-outline">Sign Out</button>
+        <h1 class="text-xl font-bold text-primary mb-2">NaijaMart</h1>
+        <p class="text-sm text-on-surface-variant mb-7 leading-relaxed">
+            Welcome, <span class="font-bold text-on-surface" th:text="${name}">User</span>!<br/>
+            You're signed in as <span th:text="${email}">user@email.com</span>.
+        </p>
+        <a href="/customer/dashboard" class="inline-block px-8 py-3 bg-primary text-on-primary font-bold text-sm rounded-lg shadow-md shadow-primary/20 hover:opacity-90 transition-all active:scale-95">
+            Go to Dashboard
+        </a>
+        <form th:action="@{/logout}" method="post" class="mt-3">
+            <button type="submit" class="w-full py-2.5 text-error border border-error/30 rounded-lg text-sm font-bold hover:bg-error/5 transition-colors">
+                Sign Out
+            </button>
         </form>
     </div>
 </body>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<footer th:fragment="footer" class="bg-surface-container-low pt-xl pb-lg border-t border-outline-variant">
+    <div class="max-w-container-max mx-auto px-gutter">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-lg mb-xl">
+            <div>
+                <span class="font-headline-md text-headline-md font-bold text-primary block mb-md">NaijaMart</span>
+                <p class="text-on-surface-variant mb-md">The heart of Nigerian commerce. Connecting quality sellers with smart shoppers since 2024.</p>
+            </div>
+            <div>
+                <h5 class="font-bold mb-md text-on-surface">Company</h5>
+                <ul class="space-y-sm">
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">About Us</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Vendor Terms</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Careers</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold mb-md text-on-surface">Support</h5>
+                <ul class="space-y-sm">
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Track Order</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Support</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Return Policy</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">FAQs</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold mb-md text-on-surface">Newsletter</h5>
+                <p class="text-label-md text-on-surface-variant mb-md">Get weekly updates on hot deals and new arrivals.</p>
+                <div class="flex gap-xs">
+                    <input class="flex-1 bg-white border border-outline-variant px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Email address" type="email"/>
+                    <button class="bg-primary text-on-primary p-2 rounded-lg hover:opacity-90 transition-opacity active:scale-95"><span class="material-symbols-outlined">send</span></button>
+                </div>
+            </div>
+        </div>
+        <div class="pt-lg border-t border-outline-variant flex flex-col md:flex-row items-center justify-between gap-md">
+            <p class="text-on-surface-variant text-label-md">&copy; 2026 NaijaMart. Built for Nigerians, by Nigerians.</p>
+            <div class="flex items-center gap-md grayscale opacity-50">
+                <span class="font-bold text-label-sm text-outline tracking-widest uppercase">Secured by</span>
+                <div class="flex gap-md h-6">
+                    <span class="font-black text-on-surface-variant/70 italic text-xl leading-none">Paystack</span>
+                    <span class="font-black text-on-surface-variant/70 italic text-xl leading-none">flutterwave</span>
+                    <span class="font-black text-on-surface-variant/70 italic text-xl leading-none">monnify</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<aside th:fragment="sidebar(activePage, userName)"
+       class="fixed left-0 top-0 h-full w-[280px] bg-surface-container-lowest border-r border-outline-variant flex flex-col z-50 shadow-xl shadow-primary/5">
+    <div class="px-md py-lg">
+        <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">NaijaMart</h1>
+    </div>
+    <div class="px-md mb-lg">
+        <div class="flex items-center gap-sm p-sm rounded-xl bg-surface-container-low border border-outline-variant/30">
+            <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">person</span>
+            </div>
+            <div>
+                <p class="font-label-md text-label-md font-bold text-on-surface" th:text="${userName}">Customer</p>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-fixed uppercase tracking-wider">Member</span>
+            </div>
+        </div>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-xs space-y-0.5">
+        <a th:href="@{/customer/dashboard}"
+           th:classappend="${activePage == 'dashboard'} ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-high'"
+           class="flex items-center gap-sm px-md py-3 rounded-lg transition-all">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="font-label-md text-label-md">Dashboard</span>
+        </a>
+        <a th:href="@{/products}"
+           th:classappend="${activePage == 'shop'} ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-high'"
+           class="flex items-center gap-sm px-md py-3 rounded-lg transition-all">
+            <span class="material-symbols-outlined">storefront</span>
+            <span class="font-label-md text-label-md">Browse Products</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined">package</span>
+            <span class="font-label-md text-label-md">My Orders</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined">favorite</span>
+            <span class="font-label-md text-label-md">Wishlist</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined">local_shipping</span>
+            <span class="font-label-md text-label-md">Track Order</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined">account_balance_wallet</span>
+            <span class="font-label-md text-label-md">Wallet &amp; Points</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined">location_on</span>
+            <span class="font-label-md text-label-md">Addresses</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined">rate_review</span>
+            <span class="font-label-md text-label-md">Reviews</span>
+        </a>
+        <hr class="my-xs border-outline-variant/50"/>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined">help</span>
+            <span class="font-label-md text-label-md">Support</span>
+        </a>
+        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-label-md text-label-md">Settings</span>
+        </a>
+    </nav>
+    <div class="p-md border-t border-outline-variant/30">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="flex items-center gap-sm px-md py-3 text-error/80 hover:bg-error/5 rounded-lg transition-all w-full">
+                <span class="material-symbols-outlined">logout</span>
+                <span class="font-label-md text-label-md">Logout</span>
+            </button>
+        </form>
+    </div>
+</aside>
+</html>

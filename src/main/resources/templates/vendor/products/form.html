@@ -4,105 +4,66 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="${editMode} ? 'Edit Product — NaijaMart Vendor' : 'New Product — NaijaMart Vendor'">Product Form — NaijaMart Vendor</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <th:block th:replace="~{fragments/head :: resources}" />
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
         .form-input {
             width: 100%;
             padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #ccc3d8;
             border-radius: 0.5rem;
             background-color: #fff;
-            color: #111827;
+            color: #111c2d;
             transition: border-color 0.15s, box-shadow 0.15s;
         }
         .form-input:focus {
             outline: none;
-            border-color: #f97316;
-            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+            border-color: #630ed4;
+            box-shadow: 0 0 0 3px rgba(99,14,212,0.15);
         }
         .form-label {
             display: block;
             font-size: 0.8125rem;
             font-weight: 600;
-            color: #374151;
+            color: #4a4455;
             margin-bottom: 0.375rem;
         }
         .field-error { font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem; }
         .input-error { border-color: #dc2626; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex">
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gray-900 min-h-screen flex flex-col flex-shrink-0 fixed left-0 top-0 bottom-0 z-30">
-        <div class="px-6 py-5 border-b border-white/10">
-            <a th:href="@{/}" class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-orange-500 text-2xl">storefront</span>
-                <span class="text-lg font-bold text-white">Naija<span class="text-orange-500">Mart</span></span>
-            </a>
-            <p class="text-xs text-gray-500 mt-1">Vendor Dashboard</p>
-        </div>
-        <nav class="flex-1 px-3 py-5 space-y-1">
-            <a th:href="@{/vendor/dashboard}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/10 transition-all">
-                <span class="material-symbols-outlined text-xl">dashboard</span>
-                Dashboard
-            </a>
+    <aside th:replace="~{fragments/vendor-sidebar :: sidebar('new-product', 'Vendor')}"></aside>
+
+    <div class="ml-[280px] flex-1 flex flex-col min-h-screen">
+
+        <header class="bg-surface-container-lowest border-b border-outline-variant px-8 py-4 flex items-center gap-3 sticky top-0 z-20">
             <a th:href="@{/vendor/products}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-orange-500/20 text-orange-400">
-                <span class="material-symbols-outlined text-xl">inventory_2</span>
-                Products
-            </a>
-        </nav>
-        <div class="px-3 py-4 border-t border-white/10">
-            <form th:action="@{/logout}" method="post">
-                <button type="submit"
-                        class="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all">
-                    <span class="material-symbols-outlined text-xl">logout</span>
-                    Logout
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <div class="ml-64 flex-1 flex flex-col min-h-screen">
-
-        <!-- Top Header -->
-        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center gap-3 sticky top-0 z-20">
-            <a th:href="@{/vendor/products}"
-               class="p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+               class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
                 <span class="material-symbols-outlined text-xl">arrow_back</span>
             </a>
             <div>
-                <h1 class="text-xl font-bold text-gray-900"
+                <h1 class="text-xl font-bold text-on-surface"
                     th:text="${editMode} ? 'Edit Product' : 'New Product'">Product Form</h1>
-                <p class="text-sm text-gray-500 mt-0.5"
+                <p class="text-sm text-on-surface-variant mt-0.5"
                    th:text="${editMode} ? 'Update product details and save as draft.' : 'Fill in the details below to create a new product.'">
                     Fill in the details below.
                 </p>
             </div>
         </header>
 
-        <!-- Page Body -->
         <main class="flex-1 px-8 py-6">
 
-            <!-- Error Alert -->
             <div th:if="${error}"
                  class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 text-sm font-medium px-4 py-3 rounded-xl mb-6">
                 <span class="material-symbols-outlined text-red-500 text-xl">error</span>
                 <span th:text="${error}">An error occurred.</span>
             </div>
 
-            <!-- THE FORM: single form, th:object directly here, body inlined (no th:replace) -->
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(30,41,59,0.05)]">
                 <form th:action="${formAction}"
                       th:object="${productForm}"
                       method="post"
@@ -112,61 +73,42 @@
 
                         <!-- Section: Basic Info -->
                         <div>
-                            <h2 class="text-base font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-100">Basic Information</h2>
+                            <h2 class="text-base font-semibold text-on-surface mb-5 pb-3 border-b border-outline-variant/30">Basic Information</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                                <!-- Product Name -->
                                 <div class="md:col-span-2">
                                     <label for="name" class="form-label">
                                         Product Name <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text"
-                                           id="name"
-                                           th:field="*{name}"
+                                    <input type="text" id="name" th:field="*{name}"
                                            placeholder="e.g. Premium Cotton T-Shirt"
                                            class="form-input"
                                            th:classappend="${#fields.hasErrors('name')} ? 'input-error'" />
                                     <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="field-error"></p>
                                 </div>
-
-                                <!-- Category -->
                                 <div>
                                     <label for="categoryId" class="form-label">
                                         Category <span class="text-red-500">*</span>
                                     </label>
-                                    <select id="categoryId"
-                                            th:field="*{categoryId}"
-                                            class="form-input"
+                                    <select id="categoryId" th:field="*{categoryId}" class="form-input"
                                             th:classappend="${#fields.hasErrors('categoryId')} ? 'input-error'">
                                         <option value="">Select a category…</option>
-                                        <option th:each="cat : ${categories}"
-                                                th:value="${cat.id}"
-                                                th:text="${cat.name}">Category</option>
+                                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">Category</option>
                                     </select>
                                     <p th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="field-error"></p>
                                 </div>
-
-                                <!-- SKU -->
                                 <div>
-                                    <label for="sku" class="form-label">SKU <span class="text-gray-400 font-normal">(optional)</span></label>
-                                    <input type="text"
-                                           id="sku"
-                                           th:field="*{sku}"
-                                           placeholder="e.g. PROD-001"
-                                           class="form-input" />
+                                    <label for="sku" class="form-label">SKU <span class="text-on-surface-variant font-normal">(optional)</span></label>
+                                    <input type="text" id="sku" th:field="*{sku}" placeholder="e.g. PROD-001" class="form-input" />
                                 </div>
-
                             </div>
                         </div>
 
                         <!-- Section: Description -->
                         <div>
-                            <h2 class="text-base font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-100">Description</h2>
+                            <h2 class="text-base font-semibold text-on-surface mb-5 pb-3 border-b border-outline-variant/30">Description</h2>
                             <div>
                                 <label for="description" class="form-label">Product Description <span class="text-red-500">*</span></label>
-                                <textarea id="description"
-                                          th:field="*{description}"
-                                          rows="6"
+                                <textarea id="description" th:field="*{description}" rows="6"
                                           placeholder="Describe your product in detail — features, materials, dimensions…"
                                           class="form-input resize-y"
                                           th:classappend="${#fields.hasErrors('description')} ? 'input-error'"></textarea>
@@ -176,144 +118,108 @@
 
                         <!-- Section: Pricing -->
                         <div>
-                            <h2 class="text-base font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-100">Pricing</h2>
+                            <h2 class="text-base font-semibold text-on-surface mb-5 pb-3 border-b border-outline-variant/30">Pricing</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                                <!-- Price -->
                                 <div>
-                                    <label for="price" class="form-label">Price (₦) <span class="text-red-500">*</span></label>
+                                    <label for="price" class="form-label">Price (&#8358;) <span class="text-red-500">*</span></label>
                                     <div class="relative">
-                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">₦</span>
-                                        <input type="number"
-                                               id="price"
-                                               th:field="*{price}"
-                                               placeholder="0.00"
-                                               min="0"
-                                               step="0.01"
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm font-medium">&#8358;</span>
+                                        <input type="number" id="price" th:field="*{price}" placeholder="0.00" min="0" step="0.01"
                                                class="form-input pl-7"
                                                th:classappend="${#fields.hasErrors('price')} ? 'input-error'" />
                                     </div>
                                     <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="field-error"></p>
                                 </div>
-
-                                <!-- Compare At Price -->
                                 <div>
                                     <label for="compareAtPrice" class="form-label">
-                                        Compare-At Price (₦) <span class="text-gray-400 font-normal">(optional)</span>
+                                        Compare-At Price (&#8358;) <span class="text-on-surface-variant font-normal">(optional)</span>
                                     </label>
                                     <div class="relative">
-                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">₦</span>
-                                        <input type="number"
-                                               id="compareAtPrice"
-                                               th:field="*{compareAtPrice}"
-                                               placeholder="0.00"
-                                               min="0"
-                                               step="0.01"
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm font-medium">&#8358;</span>
+                                        <input type="number" id="compareAtPrice" th:field="*{compareAtPrice}" placeholder="0.00" min="0" step="0.01"
                                                class="form-input pl-7" />
                                     </div>
-                                    <p class="text-xs text-gray-400 mt-1">Set higher than the sale price to show a strikethrough "was" price.</p>
+                                    <p class="text-xs text-on-surface-variant mt-1">Set higher than the sale price to show a strikethrough "was" price.</p>
                                 </div>
-
                             </div>
                         </div>
 
                         <!-- Section: Inventory & Shipping -->
                         <div>
-                            <h2 class="text-base font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-100">Inventory &amp; Shipping</h2>
+                            <h2 class="text-base font-semibold text-on-surface mb-5 pb-3 border-b border-outline-variant/30">Inventory &amp; Shipping</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                                <!-- Stock Quantity -->
                                 <div>
                                     <label for="stockQuantity" class="form-label">Stock Quantity <span class="text-red-500">*</span></label>
-                                    <input type="number"
-                                           id="stockQuantity"
-                                           th:field="*{stockQuantity}"
-                                           placeholder="0"
-                                           min="0"
+                                    <input type="number" id="stockQuantity" th:field="*{stockQuantity}" placeholder="0" min="0"
                                            class="form-input"
                                            th:classappend="${#fields.hasErrors('stockQuantity')} ? 'input-error'" />
                                     <p th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}" class="field-error"></p>
                                 </div>
-
-                                <!-- Weight -->
                                 <div>
-                                    <label for="weightGrams" class="form-label">Weight <span class="text-gray-400 font-normal">(grams, optional)</span></label>
+                                    <label for="weightGrams" class="form-label">Weight <span class="text-on-surface-variant font-normal">(grams, optional)</span></label>
                                     <div class="relative">
-                                        <input type="number"
-                                               id="weightGrams"
-                                               th:field="*{weightGrams}"
-                                               placeholder="0"
-                                               min="0"
+                                        <input type="number" id="weightGrams" th:field="*{weightGrams}" placeholder="0" min="0"
                                                class="form-input pr-12" />
-                                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">g</span>
+                                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">g</span>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
 
-                        <!-- Section: Images -->
+                        <!-- Section: Images (upload only) -->
                         <div>
-                            <h2 class="text-base font-semibold text-gray-900 mb-1 pb-3 border-b border-gray-100">Product Images</h2>
-                            <p class="text-xs text-gray-400 mb-5">Enter one image URL per line. The first URL will be used as the primary image.</p>
+                            <h2 class="text-base font-semibold text-on-surface mb-1 pb-3 border-b border-outline-variant/30">Product Images</h2>
+                            <p class="text-xs text-on-surface-variant mb-4">Upload up to 7 images. The first image will be the primary product image.</p>
 
-                            <div id="image-url-list" class="space-y-3">
-                                <!-- Existing image URLs (edit mode) -->
-                                <div th:if="${productForm.imageUrls != null and !productForm.imageUrls.isEmpty()}"
-                                     th:each="imgUrl, stat : ${productForm.imageUrls}"
-                                     class="image-url-row flex items-center gap-2">
-                                    <div class="flex-1 relative">
-                                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">image</span>
-                                        <input type="url"
-                                               name="imageUrls"
-                                               th:value="${imgUrl}"
-                                               placeholder="https://example.com/image.jpg"
-                                               class="form-input pl-9" />
-                                    </div>
-                                    <button type="button"
-                                            onclick="removeImageRow(this)"
-                                            class="flex-shrink-0 p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-                                        <span class="material-symbols-outlined text-xl">remove_circle</span>
-                                    </button>
-                                </div>
-
-                                <!-- Default empty row (create mode) -->
-                                <div th:if="${productForm.imageUrls == null or productForm.imageUrls.isEmpty()}"
-                                     class="image-url-row flex items-center gap-2">
-                                    <div class="flex-1 relative">
-                                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">image</span>
-                                        <input type="url"
-                                               name="imageUrls"
-                                               placeholder="https://example.com/image.jpg"
-                                               class="form-input pl-9" />
-                                    </div>
-                                    <button type="button"
-                                            onclick="removeImageRow(this)"
-                                            class="flex-shrink-0 p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-                                        <span class="material-symbols-outlined text-xl">remove_circle</span>
+                            <!-- Image preview grid -->
+                            <div id="image-preview-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
+                                <!-- Existing images (populated in edit mode) -->
+                                <div th:each="imgUrl : ${productForm.imageUrls}"
+                                     th:if="${imgUrl != null and !imgUrl.isBlank()}"
+                                     class="image-tile relative group rounded-xl overflow-hidden border-2 border-outline-variant/30 aspect-square bg-surface-container">
+                                    <input type="hidden" name="imageUrls" th:value="${imgUrl}" />
+                                    <img th:src="${imgUrl}" class="w-full h-full object-cover" alt="Product image" />
+                                    <button type="button" onclick="removeImageTile(this)"
+                                            class="absolute top-1.5 right-1.5 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                                        <span class="material-symbols-outlined text-base">close</span>
                                     </button>
                                 </div>
                             </div>
 
-                            <button type="button"
-                                    onclick="addImageRow()"
-                                    class="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">
-                                <span class="material-symbols-outlined text-lg">add_circle</span>
-                                Add another image URL
-                            </button>
+                            <!-- Upload area -->
+                            <div id="upload-area"
+                                 class="border-2 border-dashed border-outline-variant rounded-xl p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                                 onclick="document.getElementById('image-file-input').click()">
+                                <input type="file" id="image-file-input" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="hidden" />
+                                <span class="material-symbols-outlined text-3xl text-on-surface-variant">cloud_upload</span>
+                                <p class="text-sm font-medium text-on-surface mt-2">Click to upload images</p>
+                                <p class="text-xs text-on-surface-variant mt-1">JPEG, PNG, WebP, GIF — max 10MB each</p>
+                                <p id="image-count" class="text-xs font-semibold text-primary mt-2">0 / 7 images</p>
+                            </div>
+
+                            <!-- Upload progress -->
+                            <div id="upload-progress" class="hidden mt-3">
+                                <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-1">
+                                    <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
+                                    <span id="upload-status">Uploading...</span>
+                                </div>
+                                <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+                                    <div id="upload-bar" class="h-full bg-primary rounded-full transition-all" style="width:0%"></div>
+                                </div>
+                            </div>
                         </div>
 
-                    </div><!-- /p-8 -->
+                    </div>
 
                     <!-- Form Footer -->
-                    <div class="px-8 py-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex items-center justify-between">
+                    <div class="px-8 py-5 border-t border-outline-variant/30 bg-surface-container-low rounded-b-2xl flex items-center justify-between">
                         <a th:href="@{/vendor/products}"
-                           class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">
+                           class="inline-flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors">
                             <span class="material-symbols-outlined text-lg">close</span>
                             Cancel
                         </a>
                         <button type="submit"
-                                class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors shadow-sm">
+                                class="inline-flex items-center gap-2 bg-primary hover:opacity-90 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors shadow-[0px_4px_20px_rgba(30,41,59,0.05)]">
                             <span class="material-symbols-outlined text-lg">save</span>
                             Save as Draft
                         </button>
@@ -326,36 +232,139 @@
     </div>
 
     <script>
-        function addImageRow() {
-            const list = document.getElementById('image-url-list');
-            const row = document.createElement('div');
-            row.className = 'image-url-row flex items-center gap-2';
-            row.innerHTML = `
-                <div class="flex-1 relative">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">image</span>
-                    <input type="url" name="imageUrls" placeholder="https://example.com/image.jpg"
-                           style="width:100%;padding:0.5rem 0.75rem 0.5rem 2.25rem;font-size:0.875rem;border:1px solid #e5e7eb;border-radius:0.5rem;background:#fff;color:#111827;" />
-                </div>
-                <button type="button" onclick="removeImageRow(this)"
-                        class="flex-shrink-0 p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-                    <span class="material-symbols-outlined text-xl">remove_circle</span>
-                </button>`;
-            list.appendChild(row);
-            row.querySelector('input').focus();
+        var MAX_IMAGES = 7;
+
+        function getImageCount() {
+            return document.querySelectorAll('#image-preview-grid .image-tile').length;
         }
 
-        function removeImageRow(btn) {
-            const rows = document.querySelectorAll('.image-url-row');
-            if (rows.length <= 1) {
-                btn.closest('.image-url-row').querySelector('input').value = '';
-                return;
+        function updateUI() {
+            var count = getImageCount();
+            document.getElementById('image-count').textContent = count + ' / ' + MAX_IMAGES + ' images';
+            var area = document.getElementById('upload-area');
+            if (count >= MAX_IMAGES) {
+                area.style.display = 'none';
+            } else {
+                area.style.display = '';
             }
-            btn.closest('.image-url-row').remove();
+            updatePrimaryBadge();
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const nameInput = document.getElementById('name');
-            if (nameInput) nameInput.focus();
+        function updatePrimaryBadge() {
+            var tiles = document.querySelectorAll('#image-preview-grid .image-tile');
+            tiles.forEach(function(tile) {
+                var badge = tile.querySelector('.primary-badge');
+                if (badge) badge.remove();
+            });
+            if (tiles.length > 0) {
+                var span = document.createElement('span');
+                span.className = 'primary-badge absolute bottom-0 left-0 right-0 bg-primary/90 text-white text-[10px] font-bold text-center py-0.5 uppercase tracking-wider';
+                span.textContent = 'Primary';
+                tiles[0].appendChild(span);
+            }
+        }
+
+        function createImageTile(url) {
+            var div = document.createElement('div');
+            div.className = 'image-tile relative group rounded-xl overflow-hidden border-2 border-outline-variant/30 aspect-square bg-surface-container';
+            var hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'imageUrls';
+            hidden.value = url;
+            div.appendChild(hidden);
+
+            var img = document.createElement('img');
+            img.src = url;
+            img.className = 'w-full h-full object-cover';
+            img.alt = 'Product image';
+            div.appendChild(img);
+
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'absolute top-1.5 right-1.5 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg';
+            btn.onclick = function() { removeImageTile(btn); };
+            btn.innerHTML = '<span class="material-symbols-outlined text-base">close</span>';
+            div.appendChild(btn);
+
+            return div;
+        }
+
+        function removeImageTile(btn) {
+            btn.closest('.image-tile').remove();
+            updateUI();
+        }
+
+        document.getElementById('image-file-input').addEventListener('change', function(e) {
+            var files = Array.from(e.target.files);
+            var remaining = MAX_IMAGES - getImageCount();
+            if (files.length > remaining) {
+                files = files.slice(0, remaining);
+                alert('You can only upload ' + remaining + ' more image(s). Max ' + MAX_IMAGES + ' total.');
+            }
+
+            var csrfToken = document.querySelector('meta[name="_csrf"]');
+            var csrfHeader = document.querySelector('meta[name="_csrf_header"]');
+            var headers = {};
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader.content] = csrfToken.content;
+            }
+
+            var progress = document.getElementById('upload-progress');
+            var statusEl = document.getElementById('upload-status');
+            var barEl = document.getElementById('upload-bar');
+            var total = files.length;
+            var done = 0;
+
+            if (total > 0) {
+                progress.classList.remove('hidden');
+                barEl.style.width = '0%';
+            }
+
+            files.forEach(function(file) {
+                var formData = new FormData();
+                formData.append('file', file);
+
+                statusEl.textContent = 'Uploading ' + (done + 1) + ' of ' + total + '...';
+
+                fetch('/vendor/images/upload', {
+                    method: 'POST',
+                    body: formData,
+                    headers: headers
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    done++;
+                    barEl.style.width = Math.round((done / total) * 100) + '%';
+                    statusEl.textContent = 'Uploaded ' + done + ' of ' + total;
+
+                    if (data.url) {
+                        var grid = document.getElementById('image-preview-grid');
+                        grid.appendChild(createImageTile(data.url));
+                        updateUI();
+                    } else {
+                        alert(data.error || 'Upload failed for ' + file.name);
+                    }
+
+                    if (done === total) {
+                        setTimeout(function() { progress.classList.add('hidden'); }, 800);
+                    }
+                })
+                .catch(function() {
+                    done++;
+                    alert('Upload failed for ' + file.name);
+                    if (done === total) {
+                        progress.classList.add('hidden');
+                    }
+                });
+            });
+
+            e.target.value = '';
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUI();
+            var nameInput = document.getElementById('name');
+            if (nameInput && !nameInput.value) nameInput.focus();
         });
     </script>
 

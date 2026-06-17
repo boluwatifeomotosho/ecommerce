@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Vendors — Admin | NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}" />
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('vendors', ${name}, ${email})}"></aside>
+
+<div class="ml-[280px] flex-1 p-8">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface">Vendors</h1>
+            <p class="text-sm text-on-surface-variant mt-1">
+                <span th:text="${vendors.totalElements}">0</span> registered vendors
+            </p>
+        </div>
+    </div>
+
+    <div class="bg-surface-container-lowest rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden border border-outline-variant/30">
+        <table class="w-full text-sm" th:if="${!vendors.isEmpty()}">
+            <thead class="bg-surface-container-low border-b border-outline-variant">
+            <tr>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Name</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Email</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Phone</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Status</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Joined</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/30">
+            <tr th:each="vendor : ${vendors.content}" class="hover:bg-surface-container-low transition-colors">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-secondary text-lg">storefront</span>
+                        </div>
+                        <span class="font-medium text-on-surface" th:text="${vendor.fullName ?: '—'}">Vendor</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-on-surface-variant" th:text="${vendor.email ?: '—'}"></td>
+                <td class="px-6 py-4 text-on-surface-variant" th:text="${vendor.phone ?: '—'}"></td>
+                <td class="px-6 py-4">
+                    <span th:if="${vendor.status == 'ACTIVE'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Active</span>
+                    <span th:if="${vendor.status != 'ACTIVE'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container text-on-surface-variant" th:text="${vendor.status}">Status</span>
+                </td>
+                <td class="px-6 py-4 text-on-surface-variant" th:text="${#temporals.format(vendor.createdAt, 'dd MMM yyyy')}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${vendors.isEmpty()}" class="flex flex-col items-center justify-center py-16 text-on-surface-variant">
+            <span class="material-symbols-outlined text-5xl mb-3">storefront</span>
+            <p class="font-medium">No vendors yet</p>
+            <p class="text-sm mt-1">Vendor accounts will appear here once they register.</p>
+        </div>
+    </div>
+
+    <div th:if="${vendors.totalPages > 1}" class="flex items-center justify-between mt-4">
+        <p class="text-sm text-on-surface-variant">
+            Page <span th:text="${vendors.number + 1}"></span> of <span th:text="${vendors.totalPages}"></span>
+        </p>
+        <div class="flex gap-2">
+            <a th:if="${!vendors.first}"
+               th:href="@{/admin/vendors(page=${vendors.number - 1})}"
+               class="px-3 py-1.5 text-sm border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors">&larr; Previous</a>
+            <a th:if="${!vendors.last}"
+               th:href="@{/admin/vendors(page=${vendors.number + 1})}"
+               class="px-3 py-1.5 text-sm border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors">Next &rarr;</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

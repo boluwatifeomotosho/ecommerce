@@ -1,17 +1,11 @@
 <!DOCTYPE html>
-<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Vendor Dashboard | NaijaMart</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <th:block th:replace="~{fragments/head :: resources}" />
     <style>
-        .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align:middle; }
-        ::-webkit-scrollbar { width:5px; }
-        ::-webkit-scrollbar-track { background:transparent; }
-        ::-webkit-scrollbar-thumb { background:#ccc3d8; border-radius:10px; }
-
         @keyframes slideInLeft { from { opacity:0; transform:translateX(-40px); } to { opacity:1; transform:translateX(0); } }
         @keyframes fadeInDown  { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeInUp    { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
@@ -28,128 +22,21 @@
         .kpi-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(99,14,212,.1); }
 
         .orders-section { animation: fadeInUp .5s .65s both; opacity:0; }
-
         .table-row { opacity:0; transform:translateY(8px); transition: opacity .4s, transform .4s, background .2s; }
         .table-row.visible { opacity:1; transform:translateY(0); }
         .table-row:nth-child(1){ transition-delay:.1s; }
         .table-row:nth-child(2){ transition-delay:.2s; }
-
         .notif-dot { animation: notif-pulse 2s infinite; }
-        .nav-link { transition: all .2s; }
     </style>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode:"class",
-            theme:{ extend:{
-                colors:{
-                    "surface-bright":"#f9f9ff","tertiary-fixed":"#6ffbbe","on-secondary-fixed":"#2a1700",
-                    "surface-variant":"#d8e3fb","on-tertiary-fixed":"#002113","secondary":"#855300",
-                    "on-secondary-fixed-variant":"#653e00","on-secondary-container":"#684000","primary":"#630ed4",
-                    "error":"#ba1a1a","on-secondary":"#ffffff","primary-fixed-dim":"#d2bbff",
-                    "tertiary-container":"#007650","on-surface":"#111c2d","background":"#f9f9ff",
-                    "inverse-surface":"#263143","surface-dim":"#cfdaf2","inverse-primary":"#d2bbff",
-                    "secondary-fixed-dim":"#ffb95f","on-error":"#ffffff","on-tertiary-fixed-variant":"#005236",
-                    "on-primary-fixed":"#25005a","surface":"#f9f9ff","on-tertiary":"#ffffff","on-primary":"#ffffff",
-                    "secondary-fixed":"#ffddb8","outline":"#7b7487","on-background":"#111c2d",
-                    "surface-container-low":"#f0f3ff","tertiary-fixed-dim":"#4edea3","outline-variant":"#ccc3d8",
-                    "surface-container":"#e7eeff","error-container":"#ffdad6","on-surface-variant":"#4a4455",
-                    "surface-container-high":"#dee8ff","tertiary":"#005b3d","on-primary-fixed-variant":"#5a00c6",
-                    "secondary-container":"#fea619","surface-tint":"#732ee4","surface-container-lowest":"#ffffff",
-                    "primary-container":"#7c3aed","on-error-container":"#93000a","on-primary-container":"#ede0ff",
-                    "surface-container-highest":"#d8e3fb","on-tertiary-container":"#76ffc2",
-                    "inverse-on-surface":"#ecf1ff","primary-fixed":"#eaddff"
-                },
-                borderRadius:{ DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px" },
-                spacing:{ base:"4px",xs:"0.5rem",md:"1.5rem",xl:"3rem",sm:"1rem",gutter:"24px","container-max":"1280px",lg:"2rem" },
-                fontFamily:{ "display-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"] },
-                fontSize:{
-                    "display-lg":["48px",{lineHeight:"60px",letterSpacing:"-0.02em",fontWeight:"700"}],
-                    "body-lg":["18px",{lineHeight:"28px",fontWeight:"400"}],
-                    "label-md":["14px",{lineHeight:"20px",fontWeight:"500"}],
-                    "label-sm":["12px",{lineHeight:"16px",fontWeight:"600"}],
-                    "headline-lg":["30px",{lineHeight:"38px",fontWeight:"700"}],
-                    "headline-md":["24px",{lineHeight:"32px",fontWeight:"600"}],
-                    "body-md":["16px",{lineHeight:"24px",fontWeight:"400"}]
-                }
-            }}
-        }
-    </script>
 </head>
-<body class="bg-surface-bright text-on-surface font-body-md overflow-x-hidden">
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
 
-<!-- Sidebar -->
-<aside class="fixed left-0 top-0 h-full w-[280px] bg-surface-container-highest border-r border-outline-variant flex flex-col z-50 shadow-xl shadow-primary/5">
-    <div class="px-md py-lg flex items-center gap-xs">
-        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
-            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">storefront</span>
-        </div>
-        <div>
-            <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">NaijaMart</h1>
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Vendor Portal</p>
-        </div>
-    </div>
-    <div class="mx-md mb-md p-sm bg-white/60 rounded-xl flex items-center gap-sm border border-white shadow-sm">
-        <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-md shadow-primary/20">
-            <span class="material-symbols-outlined">storefront</span>
-        </div>
-        <div class="overflow-hidden">
-            <p class="font-label-md text-label-md font-bold truncate" th:text="${name}">Vendor</p>
-            <div class="flex items-center gap-1">
-                <span class="material-symbols-outlined text-[12px] text-tertiary" style="font-variation-settings:'FILL' 1;">verified</span>
-                <span class="text-[10px] uppercase tracking-wider font-bold text-tertiary">Verified</span>
-            </div>
-        </div>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-xs flex flex-col gap-0.5">
-        <a th:href="@{/vendor/dashboard}" class="nav-link bg-primary text-on-primary rounded-lg mx-2 px-4 py-2.5 flex items-center gap-3 shadow-md shadow-primary/20">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-label-md">Dashboard</span>
-        </a>
-        <a th:href="@{/vendor/products}" class="nav-link text-on-surface-variant px-4 py-2.5 flex items-center gap-3 hover:bg-primary/10 hover:text-primary rounded-lg mx-2">
-            <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-label-md">My Products</span>
-        </a>
-        <a th:href="@{/vendor/products/new}" class="nav-link text-on-surface-variant px-4 py-2.5 flex items-center gap-3 hover:bg-primary/10 hover:text-primary rounded-lg mx-2">
-            <span class="material-symbols-outlined">add_circle</span>
-            <span class="font-label-md">Add Product</span>
-        </a>
-        <a class="nav-link text-on-surface-variant px-4 py-2.5 flex items-center gap-3 hover:bg-primary/10 hover:text-primary rounded-lg mx-2" href="#">
-            <span class="material-symbols-outlined">package</span>
-            <span class="font-label-md">Orders</span>
-        </a>
-        <a class="nav-link text-on-surface-variant px-4 py-2.5 flex items-center gap-3 hover:bg-primary/10 hover:text-primary rounded-lg mx-2" href="#">
-            <span class="material-symbols-outlined">analytics</span>
-            <span class="font-label-md">Analytics</span>
-        </a>
-        <a class="nav-link text-on-surface-variant px-4 py-2.5 flex items-center gap-3 hover:bg-primary/10 hover:text-primary rounded-lg mx-2" href="#">
-            <span class="material-symbols-outlined">payments</span>
-            <span class="font-label-md">Payouts</span>
-        </a>
-        <div class="my-xs border-t border-outline-variant mx-4"></div>
-        <a class="nav-link text-on-surface-variant px-4 py-2.5 flex items-center gap-3 hover:bg-primary/10 hover:text-primary rounded-lg mx-2" href="#">
-            <span class="material-symbols-outlined">manage_accounts</span>
-            <span class="font-label-md">Store Settings</span>
-        </a>
-        <a class="nav-link text-on-surface-variant px-4 py-2.5 flex items-center gap-3 hover:bg-primary/10 hover:text-primary rounded-lg mx-2" href="#">
-            <span class="material-symbols-outlined">help</span>
-            <span class="font-label-md">Support</span>
-        </a>
-    </nav>
-    <div class="p-md border-t border-outline-variant/30">
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="w-full py-2.5 flex items-center gap-3 text-error font-label-md hover:bg-error/5 rounded-lg transition-all px-4">
-                <span class="material-symbols-outlined">logout</span>
-                <span>Logout</span>
-            </button>
-        </form>
-    </div>
-</aside>
+<aside th:replace="~{fragments/vendor-sidebar :: sidebar('dashboard', ${name})}"></aside>
 
-<!-- Main -->
 <main class="ml-[280px] min-h-screen p-gutter flex flex-col gap-lg">
-    <header class="flex justify-between items-center bg-white p-md rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)]">
+    <header class="flex justify-between items-center bg-surface-container-lowest p-md rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)]">
         <div>
-            <h2 class="font-headline-md text-headline-md font-bold text-on-surface">Good morning, <span th:text="${name}">Vendor</span> ☀️</h2>
+            <h2 class="font-headline-md text-headline-md font-bold text-on-surface">Good morning, <span th:text="${name}">Vendor</span></h2>
             <p class="font-body-md text-on-surface-variant">Here's what's happening with your store today.</p>
         </div>
         <div class="flex items-center gap-md">
@@ -157,27 +44,25 @@
                 <span class="material-symbols-outlined text-on-surface-variant p-2 bg-surface-container rounded-full hover:bg-surface-container-high transition-all">notifications</span>
                 <span class="notif-dot absolute top-0 right-0 w-3 h-3 bg-error border-2 border-white rounded-full"></span>
             </div>
-            <a th:href="@{/vendor/products/new}" class="bg-primary hover:opacity-90 text-white px-md py-sm rounded-lg font-label-md flex items-center gap-2 transition-all active:scale-95 shadow-md shadow-primary/20">
-                <span class="material-symbols-outlined text-sm">add</span>
-                Add Product
+            <a th:href="@{/vendor/products/new}" class="bg-primary hover:opacity-90 text-on-primary px-md py-sm rounded-lg font-label-md flex items-center gap-2 transition-all active:scale-95 shadow-md shadow-primary/20">
+                <span class="material-symbols-outlined text-sm">add</span> Add Product
             </a>
         </div>
     </header>
 
-    <!-- KPI Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
-        <div class="kpi-card bg-white p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-primary">
+        <div class="kpi-card bg-surface-container-lowest p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-primary">
             <div class="flex justify-between items-start mb-base">
                 <p class="font-label-md text-on-surface-variant">Today's Revenue</p>
                 <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">payments</span>
             </div>
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">₦<span data-count="245000">0</span></h3>
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">&#8358;<span data-count="245000">0</span></h3>
             <div class="mt-sm flex items-center gap-1">
                 <span class="text-tertiary font-label-sm flex items-center"><span class="material-symbols-outlined text-sm">trending_up</span> 12%</span>
                 <span class="text-[10px] text-on-surface-variant">vs yesterday</span>
             </div>
         </div>
-        <div class="kpi-card bg-white p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-secondary">
+        <div class="kpi-card bg-surface-container-lowest p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-secondary">
             <div class="flex justify-between items-start mb-base">
                 <p class="font-label-md text-on-surface-variant">Total Orders</p>
                 <span class="material-symbols-outlined text-secondary bg-secondary/10 p-2 rounded-lg">shopping_bag</span>
@@ -188,30 +73,25 @@
                 <span class="text-[10px] text-on-surface-variant">lifetime</span>
             </div>
         </div>
-        <div class="kpi-card bg-white p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-primary-container">
+        <div class="kpi-card bg-surface-container-lowest p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-primary-container">
             <div class="flex justify-between items-start mb-base">
                 <p class="font-label-md text-on-surface-variant">Pending Orders</p>
                 <span class="material-symbols-outlined text-primary-container bg-primary-container/10 p-2 rounded-lg">pending_actions</span>
             </div>
             <h3 class="font-headline-md text-headline-md font-bold text-on-surface"><span data-count="12">0</span></h3>
-            <div class="mt-sm">
-                <span class="px-2 py-1 bg-secondary-container/10 text-secondary text-[10px] font-bold rounded-full uppercase">Action Required</span>
-            </div>
+            <div class="mt-sm"><span class="px-2 py-1 bg-secondary-container/10 text-secondary text-[10px] font-bold rounded-full uppercase">Action Required</span></div>
         </div>
-        <div class="kpi-card bg-white p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-error">
+        <div class="kpi-card bg-surface-container-lowest p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-error">
             <div class="flex justify-between items-start mb-base">
                 <p class="font-label-md text-on-surface-variant">Low Stock Items</p>
                 <span class="material-symbols-outlined text-error bg-error/10 p-2 rounded-lg">warning</span>
             </div>
             <h3 class="font-headline-md text-headline-md font-bold text-on-surface"><span data-count="4">0</span></h3>
-            <div class="mt-sm">
-                <span class="px-2 py-1 bg-error-container/20 text-error text-[10px] font-bold rounded-full uppercase">Critical Alert</span>
-            </div>
+            <div class="mt-sm"><span class="px-2 py-1 bg-error-container/20 text-error text-[10px] font-bold rounded-full uppercase">Critical Alert</span></div>
         </div>
     </div>
 
-    <!-- Recent Orders -->
-    <section class="orders-section bg-white rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden border border-outline-variant/30">
+    <section class="orders-section bg-surface-container-lowest rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden border border-outline-variant/30">
         <div class="px-lg py-md border-b border-outline-variant flex justify-between items-center">
             <h4 class="font-headline-md text-on-surface">Recent Orders</h4>
             <button class="text-primary font-label-md hover:underline">Download CSV</button>
@@ -219,27 +99,17 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead class="bg-surface text-on-surface-variant font-label-sm uppercase tracking-wider">
-                    <tr>
-                        <th class="px-lg py-sm">Order #</th>
-                        <th class="px-lg py-sm">Customer</th>
-                        <th class="px-lg py-sm">Product</th>
-                        <th class="px-lg py-sm">Qty</th>
-                        <th class="px-lg py-sm">Status</th>
-                    </tr>
+                    <tr><th class="px-lg py-sm">Order #</th><th class="px-lg py-sm">Customer</th><th class="px-lg py-sm">Product</th><th class="px-lg py-sm">Qty</th><th class="px-lg py-sm">Status</th></tr>
                 </thead>
                 <tbody class="divide-y divide-outline-variant font-body-md">
                     <tr class="table-row hover:bg-surface-container-low">
                         <td class="px-lg py-md font-bold text-primary">#NM-84920</td>
-                        <td class="px-lg py-md">Chidi Okoro</td>
-                        <td class="px-lg py-md">MacBook Pro M3 14"</td>
-                        <td class="px-lg py-md">1</td>
+                        <td class="px-lg py-md">Chidi Okoro</td><td class="px-lg py-md">MacBook Pro M3 14"</td><td class="px-lg py-md">1</td>
                         <td class="px-lg py-md"><span class="px-3 py-1 bg-secondary-container/10 text-secondary rounded-full text-[12px] font-bold">Processing</span></td>
                     </tr>
                     <tr class="table-row hover:bg-surface-container-low">
                         <td class="px-lg py-md font-bold text-primary">#NM-84918</td>
-                        <td class="px-lg py-md">Amina Saliu</td>
-                        <td class="px-lg py-md">Sony WH-1000XM5</td>
-                        <td class="px-lg py-md">2</td>
+                        <td class="px-lg py-md">Amina Saliu</td><td class="px-lg py-md">Sony WH-1000XM5</td><td class="px-lg py-md">2</td>
                         <td class="px-lg py-md"><span class="px-3 py-1 bg-tertiary-container/10 text-tertiary rounded-full text-[12px] font-bold">Shipped</span></td>
                     </tr>
                 </tbody>
@@ -248,33 +118,11 @@
     </section>
 </main>
 
-<footer class="ml-[280px] bg-surface-container-low border-t border-outline-variant">
-    <div class="max-w-container-max mx-auto px-gutter py-md flex justify-between items-center">
-        <p class="font-body-md text-on-surface-variant text-sm">© 2026 NaijaMart. <span class="text-primary font-bold">Vendor Dashboard</span></p>
-        <div class="flex gap-md">
-            <a class="text-on-surface-variant font-label-sm hover:text-primary transition-colors" href="#">Vendor Terms</a>
-            <a class="text-on-surface-variant font-label-sm hover:text-primary transition-colors" href="#">Privacy Policy</a>
-            <a class="text-on-surface-variant font-label-sm hover:text-primary transition-colors" href="#">Contact Support</a>
-        </div>
-    </div>
-</footer>
-
 <script>
 (function () {
-    function countUp(el) {
-        var target = parseInt(el.dataset.count, 10);
-        var duration = 900;
-        var start = performance.now();
-        function step(now) {
-            var p = Math.min((now - start) / duration, 1);
-            var ease = 1 - Math.pow(1 - p, 3);
-            el.textContent = Math.floor(ease * target).toLocaleString();
-            if (p < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-    }
-    setTimeout(function () { document.querySelectorAll('[data-count]').forEach(countUp); }, 350);
-    setTimeout(function () { document.querySelectorAll('.table-row').forEach(function (r) { r.classList.add('visible'); }); }, 750);
+    function countUp(el) { var target=parseInt(el.dataset.count,10),duration=900,start=performance.now(); function step(now){var p=Math.min((now-start)/duration,1),ease=1-Math.pow(1-p,3); el.textContent=Math.floor(ease*target).toLocaleString(); if(p<1)requestAnimationFrame(step);} requestAnimationFrame(step); }
+    setTimeout(function(){ document.querySelectorAll('[data-count]').forEach(countUp); },350);
+    setTimeout(function(){ document.querySelectorAll('.table-row').forEach(function(r){ r.classList.add('visible'); }); },750);
 })();
 </script>
 </body>

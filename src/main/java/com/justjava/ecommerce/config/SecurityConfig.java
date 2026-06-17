@@ -1,8 +1,11 @@
 package com.justjava.ecommerce.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.justjava.ecommerce.service.KeycloakAdminService;
-import com.justjava.ecommerce.service.UserSyncService;
+import com.justjava.ecommerce.auth.RegistrationController;
+import com.justjava.ecommerce.auth.KeycloakAdminService;
+import com.justjava.ecommerce.user.UserSyncService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -11,24 +14,26 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AnonymousConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.*;
 
@@ -45,7 +50,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
         requestHandler.setCsrfRequestAttributeName("_csrf");
@@ -56,11 +61,14 @@ public class SecurityConfig {
                         .csrfTokenRepository(tokenRepository)
                         .csrfTokenRequestHandler(requestHandler)
                 )
-                .anonymous(AnonymousConfigurer::disable)
+                .anonymous(Customizer.withDefaults())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(auth -> auth
+                                .authorizationRequestResolver(registrationAwareResolver())
+                        )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(oidcUserService())
                         )
@@ -68,23 +76,16 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                new MvcRequestMatcher(introspector, "/"),
-                                new MvcRequestMatcher(introspector, "/products"),
-                                new MvcRequestMatcher(introspector, "/products/**"),
-                                new MvcRequestMatcher(introspector, "/register/phone"),
-                                new MvcRequestMatcher(introspector, "/register/phone/verify"),
-                                new MvcRequestMatcher(introspector, "/register/phone/resend"),
-                                new MvcRequestMatcher(introspector, "/static/**"),
-                                new MvcRequestMatcher(introspector, "/css/**"),
-                                new MvcRequestMatcher(introspector, "/js/**"),
-                                new MvcRequestMatcher(introspector, "/webjars/**")
+                                "/",
+                                "/products", "/products/**",
+                                "/register/phone", "/register/phone/verify", "/register/phone/resend",
+                                "/register/vendor", "/register/customer",
+                                "/uploads/**",
+                                "/static/**", "/css/**", "/js/**", "/webjars/**"
                         ).permitAll()
-                        .requestMatchers(new MvcRequestMatcher(introspector, "/admin/**"))
-                                .hasRole("ADMIN")
-                        .requestMatchers(new MvcRequestMatcher(introspector, "/vendor/**"))
-                                .hasRole("VENDOR")
-                        .requestMatchers(new MvcRequestMatcher(introspector, "/customer/**"))
-                                .authenticated()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/vendor/**").hasRole("VENDOR")
+                        .requestMatchers("/customer/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
@@ -95,11 +96,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Custom OIDC user service that reads realm roles from the access token JWT.
-     * Keycloak puts realm_access in the access token by default, not the ID token,
-     * so the standard authorities mapper never finds them.
-     */
     @Bean
     public OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
         OidcUserService delegate = new OidcUserService();
@@ -107,11 +103,9 @@ public class SecurityConfig {
             OidcUser oidcUser = delegate.loadUser(userRequest);
             Set<GrantedAuthority> authorities = new HashSet<>(oidcUser.getAuthorities());
 
-            // Extract realm roles from access token (primary source in Keycloak)
             extractRealmRoles(userRequest.getAccessToken().getTokenValue())
                     .forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
 
-            // Fallback: try ID token claims (works if Keycloak mapper is configured for ID token)
             Map<String, Object> realmAccess = oidcUser.getClaimAsMap("realm_access");
             if (realmAccess != null) {
                 List<?> roles = (List<?>) realmAccess.get("roles");
@@ -134,24 +128,81 @@ public class SecurityConfig {
             String role        = "CUSTOMER";
             String redirectUrl = "/customer/dashboard";
 
+            HttpSession session = request.getSession(false);
+            String registrationMode = session != null
+                    ? (String) session.getAttribute(RegistrationController.REGISTRATION_MODE_KEY)
+                    : null;
+            if (session != null) {
+                session.removeAttribute(RegistrationController.REGISTRATION_MODE_KEY);
+            }
+
             if (hasRole(authorities, "ROLE_ADMIN")) {
                 role        = "ADMIN";
                 redirectUrl = "/admin/dashboard";
             } else if (hasRole(authorities, "ROLE_VENDOR")) {
                 role        = "VENDOR";
                 redirectUrl = "/vendor/dashboard";
+            } else if ("VENDOR".equals(registrationMode)) {
+                keycloakAdminService.assignVendorRole(oidcUser.getSubject());
+                role        = "VENDOR";
+                redirectUrl = "/vendor/dashboard";
+
+                Set<GrantedAuthority> updated = new HashSet<>(authorities);
+                updated.add(new SimpleGrantedAuthority("ROLE_VENDOR"));
+                OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+                SecurityContextHolder.getContext().setAuthentication(
+                        new OAuth2AuthenticationToken(
+                                oauthToken.getPrincipal(), updated,
+                                oauthToken.getAuthorizedClientRegistrationId()));
             } else if (hasRole(authorities, "ROLE_DELIVERY_AGENT")) {
                 role = "DELIVERY_AGENT";
             } else if (hasRole(authorities, "ROLE_WAREHOUSE_OFFICER")) {
                 role = "WAREHOUSE_OFFICER";
             } else if (!hasRole(authorities, "ROLE_CUSTOMER")) {
-                // First-ever login: no app role in token yet — assign CUSTOMER in Keycloak
                 keycloakAdminService.assignCustomerRole(oidcUser.getSubject());
             }
 
             userSyncService.syncUser(oidcUser, role);
             response.sendRedirect(redirectUrl);
         };
+    }
+
+    // ── OAuth2 Authorization Request Resolver ────────────────────────────────
+
+    private OAuth2AuthorizationRequestResolver registrationAwareResolver() {
+        DefaultOAuth2AuthorizationRequestResolver defaultResolver =
+                new DefaultOAuth2AuthorizationRequestResolver(
+                        clientRegistrationRepository, "/oauth2/authorization");
+
+        return new OAuth2AuthorizationRequestResolver() {
+            @Override
+            public OAuth2AuthorizationRequest resolve(HttpServletRequest request) {
+                return addRegistrationHint(defaultResolver.resolve(request), request);
+            }
+
+            @Override
+            public OAuth2AuthorizationRequest resolve(HttpServletRequest request, String clientRegistrationId) {
+                return addRegistrationHint(defaultResolver.resolve(request, clientRegistrationId), request);
+            }
+        };
+    }
+
+    private OAuth2AuthorizationRequest addRegistrationHint(
+            OAuth2AuthorizationRequest authRequest, HttpServletRequest httpRequest) {
+        if (authRequest == null) return null;
+
+        HttpSession session = httpRequest.getSession(false);
+        if (session == null || session.getAttribute(RegistrationController.REGISTRATION_MODE_KEY) == null) {
+            return authRequest;
+        }
+
+        String authUri = authRequest.getAuthorizationUri()
+                .replace("/protocol/openid-connect/auth",
+                         "/protocol/openid-connect/registrations");
+
+        return OAuth2AuthorizationRequest.from(authRequest)
+                .authorizationUri(authUri)
+                .build();
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -162,7 +213,6 @@ public class SecurityConfig {
             String[] parts = jwtTokenValue.split("\\.");
             if (parts.length < 2) return roles;
 
-            // Base64url decode (add padding if needed)
             String encoded = parts[1];
             int pad = 4 - encoded.length() % 4;
             if (pad < 4) encoded = encoded + "=".repeat(pad);
