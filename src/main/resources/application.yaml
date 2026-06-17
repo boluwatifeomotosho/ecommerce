@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ecommerce}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${ISSUER_URI:https://ngcloak-production.up.railway.app/realms/ecommerce}
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: ${KEYCLOAK_CLIENT_ID:ecommerce-app}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET:}
+            authorization-grant-type: authorization_code
+            scope: openid,profile,email
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8081
+
+springdoc:
+  pathsToMatch: /api/**
+
+keycloak:
+  admin:
+    server-url: ${KEYCLOAK_SERVER_URL:https://ngcloak-production.up.railway.app}
+    realm: ${KEYCLOAK_REALM:ecommerce}
+    admin-username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+    admin-password: ${KEYCLOAK_ADMIN_PASSWORD:}
+
+sms:
+  termii:
+    api-key: ${TERMII_API_KEY:}
+    sender-id: ${TERMII_SENDER_ID:NaijaMart}

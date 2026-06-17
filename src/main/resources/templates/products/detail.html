@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${product.name} + ' — NaijaMart'">Product — NaijaMart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { inter: ['Inter', 'sans-serif'] },
+                    colors: { brand: '#f97316' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+        .thumbnail-btn.active { border-color: #f97316; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+            <a th:href="@{/}" class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-orange-500 text-3xl">storefront</span>
+                <span class="text-xl font-bold text-gray-900">Naija<span class="text-orange-500">Mart</span></span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a th:href="@{/login}" class="inline-flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                    <span class="material-symbols-outlined text-xl">person</span>
+                    Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+            <a th:href="@{/products}" class="hover:text-orange-500 transition-colors">Products</a>
+            <span class="material-symbols-outlined text-base text-gray-300">chevron_right</span>
+            <span th:if="${product.category != null}"
+                  class="hover:text-orange-500 transition-colors"
+                  th:text="${product.category.name}">Category</span>
+            <span th:if="${product.category != null}" class="material-symbols-outlined text-base text-gray-300">chevron_right</span>
+            <span class="text-gray-800 font-medium truncate max-w-xs" th:text="${product.name}">Product Name</span>
+        </nav>
+
+        <!-- Product Layout -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+
+                <!-- Image Gallery -->
+                <div class="p-6 border-b lg:border-b-0 lg:border-r border-gray-100">
+                    <!-- Main Image -->
+                    <div class="aspect-square rounded-xl overflow-hidden bg-gray-50 mb-4">
+                        <img
+                            id="main-image"
+                            th:src="${product.primaryImageUrl() != null ? product.primaryImageUrl() : ''}"
+                            th:alt="${product.name}"
+                            th:classappend="${product.primaryImageUrl() == null ? 'hidden' : ''}"
+                            class="w-full h-full object-cover"
+                        />
+                        <div id="image-placeholder"
+                             th:classappend="${product.primaryImageUrl() != null ? 'hidden' : ''}"
+                             class="w-full h-full flex items-center justify-center">
+                            <span class="material-symbols-outlined text-8xl text-gray-200">image</span>
+                        </div>
+                    </div>
+
+                    <!-- Thumbnail Row -->
+                    <div th:if="${product.images != null and !product.images.isEmpty()}"
+                         class="flex gap-2 overflow-x-auto pb-1">
+                        <button
+                            th:each="img, stat : ${product.images}"
+                            th:onclick="'setMainImage(' + '\'' + img.url + '\'' + ', this)'"
+                            class="thumbnail-btn flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-transparent hover:border-orange-300 transition-colors focus:outline-none"
+                            th:classappend="${img.primary ? 'active' : ''}"
+                            type="button"
+                        >
+                            <img
+                                th:src="${img.url}"
+                                th:alt="${img.altText}"
+                                class="w-full h-full object-cover"
+                            />
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="p-8 flex flex-col">
+
+                    <!-- Category tag -->
+                    <div class="flex items-center gap-2 mb-3">
+                        <span th:if="${product.category != null}"
+                              class="inline-block bg-orange-50 text-orange-600 text-xs font-semibold px-3 py-1 rounded-full"
+                              th:text="${product.category.name}">Category</span>
+                    </div>
+
+                    <!-- Name -->
+                    <h1 class="text-3xl font-bold text-gray-900 leading-tight mb-2" th:text="${product.name}">Product Name</h1>
+
+                    <!-- Vendor -->
+                    <p class="text-sm text-gray-500 mb-5">
+                        Sold by
+                        <span class="font-medium text-gray-700" th:text="${product.vendorName}">Vendor</span>
+                    </p>
+
+                    <!-- Price -->
+                    <div class="flex items-baseline gap-3 mb-4">
+                        <span class="text-3xl font-bold text-gray-900">
+                            ₦<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </span>
+                        <div th:if="${product.isOnSale()}" class="flex items-baseline gap-2">
+                            <span class="text-lg text-gray-400 line-through">
+                                ₦<span th:text="${#numbers.formatDecimal(product.compareAtPrice, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                            </span>
+                            <span class="bg-orange-100 text-orange-600 text-xs font-bold px-2 py-0.5 rounded-full">SALE</span>
+                        </div>
+                    </div>
+
+                    <!-- Stock Badge -->
+                    <div class="mb-6">
+                        <span th:if="${product.isInStock()}"
+                              class="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-sm font-semibold px-3 py-1.5 rounded-full">
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                            In Stock
+                            <span class="text-green-500 font-normal" th:if="${product.stockQuantity != null}">
+                                (<span th:text="${product.stockQuantity}">0</span> available)
+                            </span>
+                        </span>
+                        <span th:if="${!product.isInStock()}"
+                              class="inline-flex items-center gap-1.5 bg-red-50 text-red-700 text-sm font-semibold px-3 py-1.5 rounded-full">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            Out of Stock
+                        </span>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="border-t border-gray-100 mb-6"></div>
+
+                    <!-- Description -->
+                    <div th:if="${product.description != null and !product.description.isBlank()}" class="mb-6">
+                        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Description</h2>
+                        <div class="text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none"
+                             th:utext="${#strings.replace(#strings.escapeXml(product.description), '&#10;', '&lt;br/&gt;')}">
+                            Product description here.
+                        </div>
+                    </div>
+
+                    <!-- Product Details Table -->
+                    <div class="mb-6">
+                        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Product Details</h2>
+                        <div class="bg-gray-50 rounded-xl overflow-hidden">
+                            <table class="w-full text-sm">
+                                <tbody>
+                                    <tr th:if="${product.sku != null and !product.sku.isBlank()}"
+                                        class="border-b border-gray-100 last:border-0">
+                                        <td class="px-4 py-3 font-medium text-gray-500 w-1/3">SKU</td>
+                                        <td class="px-4 py-3 text-gray-800 font-mono text-xs" th:text="${product.sku}">SKU123</td>
+                                    </tr>
+                                    <tr th:if="${product.weightGrams != null}"
+                                        class="border-b border-gray-100 last:border-0">
+                                        <td class="px-4 py-3 font-medium text-gray-500">Weight</td>
+                                        <td class="px-4 py-3 text-gray-800">
+                                            <span th:text="${product.weightGrams}">0</span>g
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${product.category != null}"
+                                        class="border-b border-gray-100 last:border-0">
+                                        <td class="px-4 py-3 font-medium text-gray-500">Category</td>
+                                        <td class="px-4 py-3 text-gray-800" th:text="${product.category.name}">Category</td>
+                                    </tr>
+                                    <tr th:if="${product.publishedAt != null}"
+                                        class="border-b border-gray-100 last:border-0">
+                                        <td class="px-4 py-3 font-medium text-gray-500">Published</td>
+                                        <td class="px-4 py-3 text-gray-800"
+                                            th:text="${#temporals.format(product.publishedAt, 'dd MMM yyyy')}">01 Jan 2025</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Back Link -->
+                    <div class="mt-auto pt-4">
+                        <a th:href="@{/products}"
+                           class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-orange-500 transition-colors">
+                            <span class="material-symbols-outlined text-lg">arrow_back</span>
+                            Back to Products
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function setMainImage(url, btn) {
+            const mainImg = document.getElementById('main-image');
+            const placeholder = document.getElementById('image-placeholder');
+            if (url) {
+                mainImg.src = url;
+                mainImg.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            }
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+    </script>
+
+</body>
+</html>

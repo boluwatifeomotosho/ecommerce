@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html class="light" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>NaijaMart | Shop Everything. Sell Anything.</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .hero-gradient { background: linear-gradient(135deg, #f9f9ff 0%, #eaddff 100%); }
+
+        /* ── Keyframes ── */
+        @keyframes fadeInUp   { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeInLeft { from { opacity:0; transform:translateX(-32px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes fadeInRight{ from { opacity:0; transform:translateX(32px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes scaleIn    { from { opacity:0; transform:scale(0.88); } to { opacity:1; transform:scale(1); } }
+        @keyframes float      { 0%,100%{ transform:translateY(0) rotate(3deg); } 50%{ transform:translateY(-14px) rotate(3deg); } }
+        @keyframes pulse-dot  { 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.5); opacity:.6; } }
+        @keyframes slideDown  { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes countFlip  { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+
+        /* ── Hero entrance ── */
+        .hero-title     { animation: fadeInLeft .8s cubic-bezier(.22,1,.36,1) both; }
+        .hero-sub       { animation: fadeInLeft .8s .15s cubic-bezier(.22,1,.36,1) both; }
+        .hero-cta       { animation: fadeInLeft .8s .28s cubic-bezier(.22,1,.36,1) both; }
+        .hero-stats     { animation: fadeInLeft .8s .42s cubic-bezier(.22,1,.36,1) both; }
+        .hero-images    { animation: fadeInRight .9s .1s cubic-bezier(.22,1,.36,1) both; }
+        .hero-float     { animation: float 6s ease-in-out infinite; }
+
+        /* ── Navbar ── */
+        .nav-animate    { animation: slideDown .5s ease both; }
+
+        /* ── Scroll-reveal ── */
+        .reveal { opacity:0; transform:translateY(28px); transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1); }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+        .reveal-left  { opacity:0; transform:translateX(-28px); transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1); }
+        .reveal-left.visible { opacity:1; transform:translateX(0); }
+        .reveal-scale { opacity:0; transform:scale(.92); transition: opacity .55s cubic-bezier(.22,1,.36,1), transform .55s cubic-bezier(.22,1,.36,1); }
+        .reveal-scale.visible { opacity:1; transform:scale(1); }
+        .delay-1 { transition-delay:.08s; }
+        .delay-2 { transition-delay:.16s; }
+        .delay-3 { transition-delay:.24s; }
+        .delay-4 { transition-delay:.32s; }
+        .delay-5 { transition-delay:.40s; }
+        .delay-6 { transition-delay:.48s; }
+        .delay-7 { transition-delay:.56s; }
+        .delay-8 { transition-delay:.64s; }
+
+        /* ── Flash sale countdown ── */
+        .countdown-digit { animation: countFlip .3s ease; }
+        .flash-badge { animation: pulse-dot 1.8s infinite; }
+
+        /* ── Category hover ── */
+        .cat-icon { transition: transform .3s cubic-bezier(.34,1.56,.64,1), background .25s, color .25s; }
+        .cat-wrap:hover .cat-icon { transform: scale(1.15) translateY(-4px); }
+
+        /* ── Product card ── */
+        .prod-card { transition: box-shadow .3s, transform .3s cubic-bezier(.34,1.56,.64,1); }
+        .prod-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(99,14,212,.12); }
+
+        /* ── Step connector pulse ── */
+        .step-icon { transition: transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s; }
+        .step-icon:hover { transform: scale(1.12); box-shadow: 0 12px 32px rgba(99,14,212,.2); }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-bright":"#f9f9ff","tertiary-fixed":"#6ffbbe","on-secondary-fixed":"#2a1700",
+                        "surface-variant":"#d8e3fb","on-tertiary-fixed":"#002113","secondary":"#855300",
+                        "on-secondary-fixed-variant":"#653e00","on-secondary-container":"#684000","primary":"#630ed4",
+                        "error":"#ba1a1a","on-secondary":"#ffffff","primary-fixed-dim":"#d2bbff",
+                        "tertiary-container":"#007650","on-surface":"#111c2d","background":"#f9f9ff",
+                        "inverse-surface":"#263143","surface-dim":"#cfdaf2","inverse-primary":"#d2bbff",
+                        "secondary-fixed-dim":"#ffb95f","on-error":"#ffffff","on-tertiary-fixed-variant":"#005236",
+                        "on-primary-fixed":"#25005a","surface":"#f9f9ff","on-tertiary":"#ffffff","on-primary":"#ffffff",
+                        "secondary-fixed":"#ffddb8","outline":"#7b7487","on-background":"#111c2d",
+                        "surface-container-low":"#f0f3ff","tertiary-fixed-dim":"#4edea3","outline-variant":"#ccc3d8",
+                        "surface-container":"#e7eeff","error-container":"#ffdad6","on-surface-variant":"#4a4455",
+                        "surface-container-high":"#dee8ff","tertiary":"#005b3d","on-primary-fixed-variant":"#5a00c6",
+                        "secondary-container":"#fea619","surface-tint":"#732ee4","surface-container-lowest":"#ffffff",
+                        "primary-container":"#7c3aed","on-error-container":"#93000a","on-primary-container":"#ede0ff",
+                        "surface-container-highest":"#d8e3fb","on-tertiary-container":"#76ffc2",
+                        "inverse-on-surface":"#ecf1ff","primary-fixed":"#eaddff"
+                    },
+                    borderRadius: { DEFAULT:"0.25rem", lg:"0.5rem", xl:"0.75rem", full:"9999px" },
+                    spacing: { base:"4px", xs:"0.5rem", md:"1.5rem", xl:"3rem", sm:"1rem", gutter:"24px", "container-max":"1280px", lg:"2rem" },
+                    fontFamily: { "display-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"] },
+                    fontSize: {
+                        "display-lg":["48px",{lineHeight:"60px",letterSpacing:"-0.02em",fontWeight:"700"}],
+                        "body-lg":["18px",{lineHeight:"28px",fontWeight:"400"}],
+                        "label-md":["14px",{lineHeight:"20px",fontWeight:"500"}],
+                        "label-sm":["12px",{lineHeight:"16px",fontWeight:"600"}],
+                        "headline-lg":["30px",{lineHeight:"38px",fontWeight:"700"}],
+                        "headline-md":["24px",{lineHeight:"32px",fontWeight:"600"}],
+                        "body-md":["16px",{lineHeight:"24px",fontWeight:"400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface selection:bg-primary-fixed overflow-x-hidden">
+
+<!-- TopNavBar -->
+<nav class="nav-animate bg-surface-bright sticky top-0 z-50 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-b border-outline-variant/30 transition-all duration-300" id="navbar">
+    <div class="max-w-container-max mx-auto px-gutter flex justify-between items-center h-20 transition-all duration-300">
+        <div class="flex items-center gap-xl">
+            <span class="font-headline-md text-headline-md font-bold text-primary tracking-tight">NaijaMart</span>
+            <div class="hidden md:flex items-center gap-lg">
+                <a th:href="@{/}" class="font-body-md text-body-md text-primary font-bold border-b-2 border-primary pb-1">Home</a>
+                <a th:href="@{/products}" class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors">Shop</a>
+                <a href="/oauth2/authorization/keycloak" class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors">Become a Seller</a>
+                <a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">About</a>
+            </div>
+        </div>
+        <div class="flex-1 max-w-md mx-md hidden lg:block">
+            <div class="relative group">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline transition-colors group-focus-within:text-primary">search</span>
+                <input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Search products, brands, and categories..." type="text"/>
+            </div>
+        </div>
+        <div class="flex items-center gap-sm">
+            <div class="flex items-center gap-xs md:mr-md">
+                <button class="material-symbols-outlined text-on-surface-variant hover:text-primary p-2 transition-all active:scale-90 hover:bg-primary/5 rounded-full">shopping_cart</button>
+                <button class="material-symbols-outlined text-on-surface-variant hover:text-primary p-2 transition-all active:scale-90 hover:bg-primary/5 rounded-full">account_circle</button>
+            </div>
+            <a href="/oauth2/authorization/keycloak" class="hidden md:block px-md py-2 font-label-md text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all hover:scale-105">Login</a>
+            <a href="/oauth2/authorization/keycloak" class="px-md py-2 font-label-md text-label-md bg-primary text-on-primary rounded-lg shadow-lg shadow-primary/20 hover:bg-on-primary-fixed-variant transition-all hover:scale-105 active:scale-95">Sign Up</a>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <!-- Hero Section -->
+    <section class="hero-gradient overflow-hidden relative pt-xl pb-20 md:py-32">
+        <!-- Background orbs -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary-container/20 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="max-w-container-max mx-auto px-gutter grid grid-cols-1 lg:grid-cols-2 gap-xl items-center">
+            <div class="z-10 text-center lg:text-left">
+                <div class="hero-title inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full font-label-sm mb-md">
+                    <span class="w-2 h-2 bg-primary rounded-full flash-badge inline-block"></span>
+                    Nigeria's #1 Marketplace
+                </div>
+                <h1 class="hero-title font-display-lg text-display-lg text-on-surface mb-md">
+                    Shop Everything.<br/>Sell Anything.<br/>
+                    <span class="text-primary relative">Delivered Fast.
+                        <svg class="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" preserveAspectRatio="none"><path d="M0,6 Q100,-2 200,6" stroke="#630ed4" stroke-width="3" fill="none" opacity="0.4"/></svg>
+                    </span>
+                </h1>
+                <p class="hero-sub font-body-lg text-body-lg text-on-surface-variant max-w-xl mb-xl mx-auto lg:mx-0">
+                    Nigeria's most trusted marketplace for verified vendors and fast nationwide delivery. Experience seamless shopping from Lagos to Kano.
+                </p>
+                <div class="hero-cta flex flex-col sm:flex-row gap-sm justify-center lg:justify-start mb-xl">
+                    <a th:href="@{/products}" class="px-xl py-4 bg-primary text-on-primary font-bold rounded-lg shadow-xl shadow-primary/30 hover:scale-105 transition-transform text-center">Start Shopping</a>
+                    <a href="/oauth2/authorization/keycloak" class="px-xl py-4 bg-white text-primary border border-outline-variant font-bold rounded-lg hover:bg-surface-container hover:scale-105 transition-all text-center">Become a Seller</a>
+                </div>
+                <div class="hero-stats flex items-center justify-center lg:justify-start gap-lg border-t border-outline-variant/30 pt-lg">
+                    <div class="flex flex-col"><span class="font-bold text-headline-md text-on-surface">10k+</span><span class="text-label-sm text-outline">Products</span></div>
+                    <div class="w-px h-8 bg-outline-variant"></div>
+                    <div class="flex flex-col"><span class="font-bold text-headline-md text-on-surface">Verified</span><span class="text-label-sm text-outline">Vendors</span></div>
+                    <div class="w-px h-8 bg-outline-variant"></div>
+                    <div class="flex flex-col"><span class="font-bold text-headline-md text-on-surface">Fast</span><span class="text-label-sm text-outline">Delivery</span></div>
+                </div>
+            </div>
+            <div class="hero-images relative">
+                <div class="hero-float grid grid-cols-2 gap-md scale-110 lg:scale-100">
+                    <div class="space-y-md">
+                        <div class="rounded-xl overflow-hidden shadow-2xl hover:scale-105 transition-transform duration-500">
+                            <img class="w-full h-64 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAo69frgGJxvr_KPxSza8Tl0KYBI_t124xB9MAXwSAf3ZAXoDCky1QOgONvMbv6BdPVN4PyMJTUho9coTHKhiQsiJsxlLucvOIp1_qV-_ur9DWD1trC6hpPbyjKVGCnq_oW1KBbzPVgq8mVRk8nMnYUClOQpIl6oYcgmB_aEXr5q2Rom18vMO5nz7coFcs27eJHlt-wSyo18wJp3UgCYwTUB4w-GMLsLA2zuNRkbCGDnEv-U9ymE24Hls2pr8ZT2N655hJuWJosePQ" alt="Watch"/>
+                        </div>
+                        <div class="rounded-xl overflow-hidden shadow-2xl hover:scale-105 transition-transform duration-500">
+                            <img class="w-full h-48 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-GQwdY-1Ozr8Ki-Ti1uerCT8SrflFzITnGdxay0vKQ3rdRRA9YuOGlZXHbqOOQyuDV_RutwJFNpxvvPfTDDyAH7s5fHYMdq2H_LZgHk-qDk7MQPsQ-PxyrMasNShdpYhdXyPNswSTUIVoFnuv_L-6eqzTSXPG6SPyG9yK05A57XLnpi-J75_pTfXeKOtbVSM_-2kQayVAbKr_pMawyPCRJ77f7DANidEyBHcAznNDBoSsKvc-TcHYVJI5T3lDjfCaBMh-6diLDNQ" alt="Sneakers"/>
+                        </div>
+                    </div>
+                    <div class="space-y-md pt-xl">
+                        <div class="rounded-xl overflow-hidden shadow-2xl hover:scale-105 transition-transform duration-500">
+                            <img class="w-full h-48 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIVJzNAfCHyLB05A6_xYnHIMAz-QlqViP17UflrbOO3X_wiAQEN9aub4voALCKZYu6AaMGPYkfNrMvj1QnCvQjdi-58hrpuEUioy9vi2aElvr5bFZ2mzEDWJ7uz4BRASTftG0cMmojAN9Djz8ddhCk-qKliQgEHjpzYgnO8xzbM6CP8dDR76E8ScwhYpEfW0XSHV02QZDJbSm5a9CzLMUPOXdlvX4aX26sTES3A4fLbn3Gt3mWINMPpME0p21EzZXbxwltmkSHwww" alt="Phone"/>
+                        </div>
+                        <div class="rounded-xl overflow-hidden shadow-2xl hover:scale-105 transition-transform duration-500">
+                            <img class="w-full h-64 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW0aOdxqHWdoGIWvyi8qbobFG5BsdzkPcu8skpbgWIFImcpPYGA2CBP0ywiPOSblfcxaLKoP0WBkE8Rx85vYGLySoov279T2-nekf4tcLdPdunw49g1s5eX4ZaX2yHu90zJ9Kv9Qjdnsx_wmNB8I62z_K3CT7ZFkdscmthloxzu-dZAijut8m32qcwga_wZnLa1ZtMbDiVP-xHbdHGca1Q2bBREq23OFzPaBwtMwMi47TRnGuoe1GLJ8Hw-66CTEP1QRtQJZfgzTY" alt="Laptop"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Section -->
+    <section class="py-xl bg-surface-bright">
+        <div class="max-w-container-max mx-auto px-gutter">
+            <div class="reveal flex justify-between items-end mb-xl">
+                <h2 class="font-headline-lg text-headline-lg text-on-surface">Shop by Category</h2>
+                <a class="text-primary font-bold flex items-center gap-xs hover:underline hover:gap-sm transition-all" href="#">
+                    View All <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
+            </div>
+            <div class="grid grid-cols-4 md:grid-cols-8 gap-md">
+                <div class="cat-wrap reveal delay-1 flex flex-col items-center gap-sm cursor-pointer">
+                    <div class="cat-icon w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary"><span class="material-symbols-outlined text-4xl">devices</span></div>
+                    <span class="font-label-md text-label-md text-on-surface-variant">Electronics</span>
+                </div>
+                <div class="cat-wrap reveal delay-2 flex flex-col items-center gap-sm cursor-pointer">
+                    <div class="cat-icon w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary"><span class="material-symbols-outlined text-4xl">checkroom</span></div>
+                    <span class="font-label-md text-label-md text-on-surface-variant">Fashion</span>
+                </div>
+                <div class="cat-wrap reveal delay-3 flex flex-col items-center gap-sm cursor-pointer">
+                    <div class="cat-icon w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary"><span class="material-symbols-outlined text-4xl">chair</span></div>
+                    <span class="font-label-md text-label-md text-on-surface-variant">Home</span>
+                </div>
+                <div class="cat-wrap reveal delay-4 flex flex-col items-center gap-sm cursor-pointer">
+                    <div class="cat-icon w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary"><span class="material-symbols-outlined text-4xl">face_5</span></div>
+                    <span class="font-label-md text-label-md text-on-surface-variant">Beauty</span>
+                </div>
+                <div class="cat-wrap reveal delay-5 flex flex-col items-center gap-sm cursor-pointer">
+                    <div class="cat-icon w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary"><span class="material-symbols-outlined text-4xl">fitness_center</span></div>
+                    <span class="font-label-md text-label-md text-on-surface-variant">Sports</span>
+                </div>
+                <div class="cat-wrap reveal delay-6 flex flex-col items-center gap-sm cursor-pointer">
+                    <div class="cat-icon w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary"><span class="material-symbols-outlined text-4xl">restaurant</span></div>
+                    <span class="font-label-md text-label-md text-on-surface-variant">Food</span>
+                </div>
+                <div class="cat-wrap reveal delay-7 flex flex-col items-center gap-sm cursor-pointer">
+                    <div class="cat-icon w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary"><span class="material-symbols-outlined text-4xl">menu_book</span></div>
+                    <span class="font-label-md text-label-md text-on-surface-variant">Books</span>
+                </div>
+                <div class="cat-wrap reveal delay-8 flex flex-col items-center gap-sm cursor-pointer">
+                    <div class="cat-icon w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary"><span class="material-symbols-outlined text-4xl">smartphone</span></div>
+                    <span class="font-label-md text-label-md text-on-surface-variant">Phones</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flash Sale -->
+    <section class="py-xl">
+        <div class="max-w-container-max mx-auto px-gutter">
+            <div class="reveal bg-secondary-container rounded-2xl p-lg flex flex-col md:flex-row items-center justify-between mb-xl">
+                <div class="flex items-center gap-md text-on-secondary-container">
+                    <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1;">bolt</span>
+                    <div>
+                        <h3 class="font-headline-md text-headline-md font-bold">Flash Sale</h3>
+                        <p class="font-label-md">Limited time offers on top brands</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-sm mt-md md:mt-0">
+                    <span class="font-label-md font-bold uppercase tracking-wider text-on-secondary-container">Ends in:</span>
+                    <div class="flex gap-xs items-center">
+                        <div class="flex flex-col items-center">
+                            <div class="bg-on-secondary-container text-white px-3 py-2 rounded-lg font-bold text-headline-md min-w-[48px] text-center" id="cd-h">00</div>
+                            <span class="text-[9px] uppercase tracking-widest text-on-secondary-container/60 mt-0.5">hrs</span>
+                        </div>
+                        <span class="text-on-secondary-container font-bold text-xl mb-3">:</span>
+                        <div class="flex flex-col items-center">
+                            <div class="bg-on-secondary-container text-white px-3 py-2 rounded-lg font-bold text-headline-md min-w-[48px] text-center" id="cd-m">00</div>
+                            <span class="text-[9px] uppercase tracking-widest text-on-secondary-container/60 mt-0.5">min</span>
+                        </div>
+                        <span class="text-on-secondary-container font-bold text-xl mb-3">:</span>
+                        <div class="flex flex-col items-center">
+                            <div class="bg-on-secondary-container text-white px-3 py-2 rounded-lg font-bold text-headline-md min-w-[48px] text-center" id="cd-s">00</div>
+                            <span class="text-[9px] uppercase tracking-widest text-on-secondary-container/60 mt-0.5">sec</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
+                <div class="prod-card reveal delay-1 bg-white rounded-xl p-sm shadow-[0px_4px_20px_rgba(30,41,59,0.05)] group">
+                    <div class="relative overflow-hidden rounded-lg mb-sm">
+                        <span class="absolute top-2 left-2 bg-error text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">-15%</span>
+                        <img class="w-full h-64 object-cover group-hover:scale-108 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTYpjMEraSmXtTiRa0umnxJALoGtnpHk1qT4scfO4-rqeZDCLQq_1OE8lym0-TtOpG2bOb6d2aA3KHGR9K3GZbPAN9Hzzrrvvc8qiE5t3FfE7MC7w7Av-KPNz3EzK9HbNngpxyl0zZ0xMcreIHAJoLFp-Wh4BiXZXY1tqEUqOWnI-tJmK6DdSsR4LoHW1lDhudo5V1rFkQIb4RHVVxmqG35NobZM3qo5BQzzgN8z-2xuPoT4KoCRhKW0H42X5o-WU2aHttRyRejfU" alt="iPhone"/>
+                    </div>
+                    <h4 class="font-body-md font-bold text-on-surface mb-xs">iPhone 15 Pro Max 256GB</h4>
+                    <div class="flex items-center gap-sm mb-md">
+                        <span class="text-primary font-bold text-lg">₦1,450,000</span>
+                        <span class="text-outline text-sm line-through">₦1,700,000</span>
+                    </div>
+                    <button class="w-full py-3 border border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-on-primary transition-all active:scale-95">Add to Cart</button>
+                </div>
+                <div class="prod-card reveal delay-2 bg-white rounded-xl p-sm shadow-[0px_4px_20px_rgba(30,41,59,0.05)] group">
+                    <div class="relative overflow-hidden rounded-lg mb-sm">
+                        <span class="absolute top-2 left-2 bg-error text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">-20%</span>
+                        <img class="w-full h-64 object-cover group-hover:scale-108 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnVCYKevR6IXKRXI_i4h7VJ-91w7GYk53mkIHk4-jfjkYx4TyUdS8vrDMdDe7w6-8Ij26u8Wk6R6vlv8yQzqKJCbUtyJcDdxM29JPXU3b7y7tOm4oiuIRa3PNpB4VNOCsxhtomj8lT2DbRIhXojP56nn-TIPe5AGo6iwsDQt19e4jpF2cxm_xCBQ3b_mR9SnpnVcGyQcWMLc2zSNOtLI7DK5FS0iGcw2htj5iNBZ6Y1KpeHmdlzSWarBOZat1HcbXLvpruEbElG6k" alt="Watch"/>
+                    </div>
+                    <h4 class="font-body-md font-bold text-on-surface mb-xs">Designer Chronograph Watch</h4>
+                    <div class="flex items-center gap-sm mb-md">
+                        <span class="text-primary font-bold text-lg">₦85,000</span>
+                        <span class="text-outline text-sm line-through">₦110,000</span>
+                    </div>
+                    <button class="w-full py-3 border border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-on-primary transition-all active:scale-95">Add to Cart</button>
+                </div>
+                <div class="prod-card reveal delay-3 bg-white rounded-xl p-sm shadow-[0px_4px_20px_rgba(30,41,59,0.05)] group">
+                    <div class="relative overflow-hidden rounded-lg mb-sm">
+                        <span class="absolute top-2 left-2 bg-error text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">-30%</span>
+                        <img class="w-full h-64 object-cover group-hover:scale-108 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-ExYuW73ruF9iIHc_CARz86bItZBqS1kMvAlgcdIQCTL3MG6w7FYn6AH4F_VY4PeahrZrAWW9S-jgNGGvMVDLvIkbDrVZ-fVU1N0nJpkH0gVpsix3QmW37s4HncrF5N1odHanD95Q3BvqLP5MVvSmm9YFb5buRxFl5zIv5o5tMRY_DRaAztsGbgpFCXMHHb8nF8PJ06VWk2i6IP8oBZj-jm9RJ5rs-vz9socyudkdL88AYODdFOMKhLz4nhQlkgftNlYtkjXH7go" alt="Airfryer"/>
+                    </div>
+                    <h4 class="font-body-md font-bold text-on-surface mb-xs">Digital XL Airfryer 5.5L</h4>
+                    <div class="flex items-center gap-sm mb-md">
+                        <span class="text-primary font-bold text-lg">₦42,000</span>
+                        <span class="text-outline text-sm line-through">₦60,000</span>
+                    </div>
+                    <button class="w-full py-3 border border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-on-primary transition-all active:scale-95">Add to Cart</button>
+                </div>
+                <div class="prod-card reveal delay-4 bg-white rounded-xl p-sm shadow-[0px_4px_20px_rgba(30,41,59,0.05)] group">
+                    <div class="relative overflow-hidden rounded-lg mb-sm">
+                        <span class="absolute top-2 left-2 bg-error text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">-10%</span>
+                        <img class="w-full h-64 object-cover group-hover:scale-108 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRX9lJv_aWZ8MB3nShx_DWVuiMbowjpPcdE3b-Xl_9-DNbEX6dR7uohxuJVYQNIKj4nX0X1JqKDnLyFvW4sSdlKeQ5X07rbgFMd2z5is3oINI-OPaZT4nuEX42qPNevXSWIP7Cu8Gy-OElV9wxu0HsqBQaTiOh_y8mGDEpB-IPkhj0Xxb3F1LIh-zu9RDRmoM8pi7Ee33vEqLFVHdz6fziHm3pvnp5ndiclrGhHIBcBczAJwk_wToBdI8ruHANTS0PGUAgFNBtU5A" alt="Sneakers"/>
+                    </div>
+                    <h4 class="font-body-md font-bold text-on-surface mb-xs">Urban Street Tech Sneaker</h4>
+                    <div class="flex items-center gap-sm mb-md">
+                        <span class="text-primary font-bold text-lg">₦28,000</span>
+                        <span class="text-outline text-sm line-through">₦31,000</span>
+                    </div>
+                    <button class="w-full py-3 border border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-on-primary transition-all active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-xl bg-white">
+        <div class="max-w-container-max mx-auto px-gutter">
+            <div class="reveal text-center mb-xl">
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">How NaijaMart Works</h2>
+                <p class="text-on-surface-variant max-w-2xl mx-auto">Seamless shopping and selling experience designed for the Nigerian market.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-xl relative">
+                <div class="hidden md:block absolute top-[40px] left-[16%] right-[16%] h-[2px] bg-gradient-to-r from-primary/20 via-primary/60 to-primary/20 z-0"></div>
+                <div class="reveal delay-1 flex flex-col items-center text-center relative z-10">
+                    <div class="step-icon w-20 h-20 bg-white border-2 border-primary rounded-full flex items-center justify-center mb-md shadow-xl shadow-primary/10 cursor-pointer">
+                        <span class="material-symbols-outlined text-4xl text-primary">search</span>
+                    </div>
+                    <h4 class="font-headline-md text-headline-md mb-xs">Browse</h4>
+                    <p class="text-on-surface-variant">Explore thousands of products from verified vendors nationwide.</p>
+                </div>
+                <div class="reveal delay-3 flex flex-col items-center text-center relative z-10">
+                    <div class="step-icon w-20 h-20 bg-white border-2 border-primary rounded-full flex items-center justify-center mb-md shadow-xl shadow-primary/10 cursor-pointer">
+                        <span class="material-symbols-outlined text-4xl text-primary">payments</span>
+                    </div>
+                    <h4 class="font-headline-md text-headline-md mb-xs">Buy</h4>
+                    <p class="text-on-surface-variant">Pay securely via your preferred method with buyer protection.</p>
+                </div>
+                <div class="reveal delay-5 flex flex-col items-center text-center relative z-10">
+                    <div class="step-icon w-20 h-20 bg-white border-2 border-primary rounded-full flex items-center justify-center mb-md shadow-xl shadow-primary/10 cursor-pointer">
+                        <span class="material-symbols-outlined text-4xl text-primary">local_shipping</span>
+                    </div>
+                    <h4 class="font-headline-md text-headline-md mb-xs">Get Delivered</h4>
+                    <p class="text-on-surface-variant">Receive your items fast with our integrated logistics network.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vendor CTA -->
+    <section class="py-xl">
+        <div class="max-w-container-max mx-auto px-gutter">
+            <div class="reveal-scale bg-inverse-surface rounded-3xl p-xl md:p-24 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none">
+                    <div class="w-full h-full bg-primary-container blur-[120px] rounded-full -mr-32"></div>
+                </div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-2xl">
+                    <h2 class="font-display-lg text-display-lg text-white mb-md">Ready to Grow Your Business?</h2>
+                    <p class="text-body-lg text-surface-variant mb-xl">Join thousands of successful merchants selling on NaijaMart. Get access to millions of customers and professional delivery support.</p>
+                    <div class="flex flex-wrap gap-md">
+                        <a href="/oauth2/authorization/keycloak" class="px-xl py-4 bg-primary text-on-primary font-bold rounded-lg hover:scale-105 transition-transform active:scale-95">Get Started Today</a>
+                        <button class="px-xl py-4 bg-transparent border border-outline text-white font-bold rounded-lg hover:bg-white/5 transition-colors">Learn More</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-surface-container-low pt-xl pb-lg border-t border-outline-variant">
+    <div class="max-w-container-max mx-auto px-gutter">
+        <div class="reveal grid grid-cols-1 md:grid-cols-4 gap-lg mb-xl">
+            <div>
+                <span class="font-headline-md text-headline-md font-bold text-primary block mb-md">NaijaMart</span>
+                <p class="text-on-surface-variant mb-md">The heart of Nigerian commerce. Connecting quality sellers with smart shoppers since 2024.</p>
+            </div>
+            <div>
+                <h5 class="font-bold mb-md text-on-surface">Company</h5>
+                <ul class="space-y-sm">
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">About Us</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Vendor Terms</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Careers</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold mb-md text-on-surface">Support</h5>
+                <ul class="space-y-sm">
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Track Order</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Support</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Return Policy</a></li>
+                    <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">FAQs</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold mb-md text-on-surface">Newsletter</h5>
+                <p class="text-label-md text-on-surface-variant mb-md">Get weekly updates on hot deals and new arrivals.</p>
+                <div class="flex gap-xs">
+                    <input class="flex-1 bg-white border border-outline-variant px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Email address" type="email"/>
+                    <button class="bg-primary text-on-primary p-2 rounded-lg hover:opacity-90 transition-opacity active:scale-95"><span class="material-symbols-outlined">send</span></button>
+                </div>
+            </div>
+        </div>
+        <div class="pt-lg border-t border-outline-variant flex flex-col md:flex-row items-center justify-between gap-md">
+            <p class="text-on-surface-variant font-label-md">© 2026 NaijaMart. Built for Nigerians, by Nigerians.</p>
+            <div class="flex items-center gap-md grayscale opacity-50">
+                <span class="font-bold text-label-sm text-outline tracking-widest uppercase">Secured by</span>
+                <div class="flex gap-md h-6">
+                    <span class="font-black text-on-surface-variant/70 italic text-xl leading-none">Paystack</span>
+                    <span class="font-black text-on-surface-variant/70 italic text-xl leading-none">flutterwave</span>
+                    <span class="font-black text-on-surface-variant/70 italic text-xl leading-none">monnify</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+(function () {
+    /* ── Navbar shrink on scroll ── */
+    var nav = document.getElementById('navbar');
+    window.addEventListener('scroll', function () {
+        if (window.scrollY > 20) { nav.classList.add('h-14'); nav.classList.remove('h-20'); }
+        else { nav.classList.remove('h-14'); nav.classList.add('h-20'); }
+    }, { passive: true });
+
+    /* ── Scroll reveal ── */
+    var revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-scale');
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+    }, { threshold: 0.12 });
+    revealEls.forEach(function (el) { io.observe(el); });
+
+    /* ── Flash sale countdown (target: next midnight) ── */
+    var target = new Date(); target.setHours(24, 0, 0, 0);
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+        var diff = Math.max(0, target - Date.now());
+        var h = Math.floor(diff / 3600000);
+        var m = Math.floor((diff % 3600000) / 60000);
+        var s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('cd-h').textContent = pad(h);
+        document.getElementById('cd-m').textContent = pad(m);
+        document.getElementById('cd-s').textContent = pad(s);
+    }
+    tick();
+    setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>

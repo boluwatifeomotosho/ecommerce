@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${editMode} ? 'Edit Product — NaijaMart Vendor' : 'New Product — NaijaMart Vendor'">Product Form — NaijaMart Vendor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+        .form-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: #fff;
+            color: #111827;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+        }
+        .form-label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.375rem;
+        }
+        .field-error { font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem; }
+        .input-error { border-color: #dc2626; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 min-h-screen flex flex-col flex-shrink-0 fixed left-0 top-0 bottom-0 z-30">
+        <div class="px-6 py-5 border-b border-white/10">
+            <a th:href="@{/}" class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-orange-500 text-2xl">storefront</span>
+                <span class="text-lg font-bold text-white">Naija<span class="text-orange-500">Mart</span></span>
+            </a>
+            <p class="text-xs text-gray-500 mt-1">Vendor Dashboard</p>
+        </div>
+        <nav class="flex-1 px-3 py-5 space-y-1">
+            <a th:href="@{/vendor/dashboard}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                <span class="material-symbols-outlined text-xl">dashboard</span>
+                Dashboard
+            </a>
+            <a th:href="@{/vendor/products}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-orange-500/20 text-orange-400">
+                <span class="material-symbols-outlined text-xl">inventory_2</span>
+                Products
+            </a>
+        </nav>
+        <div class="px-3 py-4 border-t border-white/10">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit"
+                        class="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                    <span class="material-symbols-outlined text-xl">logout</span>
+                    Logout
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="ml-64 flex-1 flex flex-col min-h-screen">
+
+        <!-- Top Header -->
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center gap-3 sticky top-0 z-20">
+            <a th:href="@{/vendor/products}"
+               class="p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+                <span class="material-symbols-outlined text-xl">arrow_back</span>
+            </a>
+            <div>
+                <h1 class="text-xl font-bold text-gray-900"
+                    th:text="${editMode} ? 'Edit Product' : 'New Product'">Product Form</h1>
+                <p class="text-sm text-gray-500 mt-0.5"
+                   th:text="${editMode} ? 'Update product details and save as draft.' : 'Fill in the details below to create a new product.'">
+                    Fill in the details below.
+                </p>
+            </div>
+        </header>
+
+        <!-- Page Body -->
+        <main class="flex-1 px-8 py-6">
+
+            <!-- Error Alert -->
+            <div th:if="${error}"
+                 class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 text-sm font-medium px-4 py-3 rounded-xl mb-6">
+                <span class="material-symbols-outlined text-red-500 text-xl">error</span>
+                <span th:text="${error}">An error occurred.</span>
+            </div>
+
+            <!-- THE FORM: single form, th:object directly here, body inlined (no th:replace) -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+                <form th:action="${formAction}"
+                      th:object="${productForm}"
+                      method="post"
+                      id="product-form">
+
+                    <div class="p-8 space-y-8">
+
+                        <!-- Section: Basic Info -->
+                        <div>
+                            <h2 class="text-base font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-100">Basic Information</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                <!-- Product Name -->
+                                <div class="md:col-span-2">
+                                    <label for="name" class="form-label">
+                                        Product Name <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text"
+                                           id="name"
+                                           th:field="*{name}"
+                                           placeholder="e.g. Premium Cotton T-Shirt"
+                                           class="form-input"
+                                           th:classappend="${#fields.hasErrors('name')} ? 'input-error'" />
+                                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="field-error"></p>
+                                </div>
+
+                                <!-- Category -->
+                                <div>
+                                    <label for="categoryId" class="form-label">
+                                        Category <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="categoryId"
+                                            th:field="*{categoryId}"
+                                            class="form-input"
+                                            th:classappend="${#fields.hasErrors('categoryId')} ? 'input-error'">
+                                        <option value="">Select a category…</option>
+                                        <option th:each="cat : ${categories}"
+                                                th:value="${cat.id}"
+                                                th:text="${cat.name}">Category</option>
+                                    </select>
+                                    <p th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="field-error"></p>
+                                </div>
+
+                                <!-- SKU -->
+                                <div>
+                                    <label for="sku" class="form-label">SKU <span class="text-gray-400 font-normal">(optional)</span></label>
+                                    <input type="text"
+                                           id="sku"
+                                           th:field="*{sku}"
+                                           placeholder="e.g. PROD-001"
+                                           class="form-input" />
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Section: Description -->
+                        <div>
+                            <h2 class="text-base font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-100">Description</h2>
+                            <div>
+                                <label for="description" class="form-label">Product Description <span class="text-red-500">*</span></label>
+                                <textarea id="description"
+                                          th:field="*{description}"
+                                          rows="6"
+                                          placeholder="Describe your product in detail — features, materials, dimensions…"
+                                          class="form-input resize-y"
+                                          th:classappend="${#fields.hasErrors('description')} ? 'input-error'"></textarea>
+                                <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="field-error"></p>
+                            </div>
+                        </div>
+
+                        <!-- Section: Pricing -->
+                        <div>
+                            <h2 class="text-base font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-100">Pricing</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                <!-- Price -->
+                                <div>
+                                    <label for="price" class="form-label">Price (₦) <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">₦</span>
+                                        <input type="number"
+                                               id="price"
+                                               th:field="*{price}"
+                                               placeholder="0.00"
+                                               min="0"
+                                               step="0.01"
+                                               class="form-input pl-7"
+                                               th:classappend="${#fields.hasErrors('price')} ? 'input-error'" />
+                                    </div>
+                                    <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="field-error"></p>
+                                </div>
+
+                                <!-- Compare At Price -->
+                                <div>
+                                    <label for="compareAtPrice" class="form-label">
+                                        Compare-At Price (₦) <span class="text-gray-400 font-normal">(optional)</span>
+                                    </label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">₦</span>
+                                        <input type="number"
+                                               id="compareAtPrice"
+                                               th:field="*{compareAtPrice}"
+                                               placeholder="0.00"
+                                               min="0"
+                                               step="0.01"
+                                               class="form-input pl-7" />
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-1">Set higher than the sale price to show a strikethrough "was" price.</p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Section: Inventory & Shipping -->
+                        <div>
+                            <h2 class="text-base font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-100">Inventory &amp; Shipping</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                <!-- Stock Quantity -->
+                                <div>
+                                    <label for="stockQuantity" class="form-label">Stock Quantity <span class="text-red-500">*</span></label>
+                                    <input type="number"
+                                           id="stockQuantity"
+                                           th:field="*{stockQuantity}"
+                                           placeholder="0"
+                                           min="0"
+                                           class="form-input"
+                                           th:classappend="${#fields.hasErrors('stockQuantity')} ? 'input-error'" />
+                                    <p th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}" class="field-error"></p>
+                                </div>
+
+                                <!-- Weight -->
+                                <div>
+                                    <label for="weightGrams" class="form-label">Weight <span class="text-gray-400 font-normal">(grams, optional)</span></label>
+                                    <div class="relative">
+                                        <input type="number"
+                                               id="weightGrams"
+                                               th:field="*{weightGrams}"
+                                               placeholder="0"
+                                               min="0"
+                                               class="form-input pr-12" />
+                                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">g</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Section: Images -->
+                        <div>
+                            <h2 class="text-base font-semibold text-gray-900 mb-1 pb-3 border-b border-gray-100">Product Images</h2>
+                            <p class="text-xs text-gray-400 mb-5">Enter one image URL per line. The first URL will be used as the primary image.</p>
+
+                            <div id="image-url-list" class="space-y-3">
+                                <!-- Existing image URLs (edit mode) -->
+                                <div th:if="${productForm.imageUrls != null and !productForm.imageUrls.isEmpty()}"
+                                     th:each="imgUrl, stat : ${productForm.imageUrls}"
+                                     class="image-url-row flex items-center gap-2">
+                                    <div class="flex-1 relative">
+                                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">image</span>
+                                        <input type="url"
+                                               name="imageUrls"
+                                               th:value="${imgUrl}"
+                                               placeholder="https://example.com/image.jpg"
+                                               class="form-input pl-9" />
+                                    </div>
+                                    <button type="button"
+                                            onclick="removeImageRow(this)"
+                                            class="flex-shrink-0 p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                                        <span class="material-symbols-outlined text-xl">remove_circle</span>
+                                    </button>
+                                </div>
+
+                                <!-- Default empty row (create mode) -->
+                                <div th:if="${productForm.imageUrls == null or productForm.imageUrls.isEmpty()}"
+                                     class="image-url-row flex items-center gap-2">
+                                    <div class="flex-1 relative">
+                                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">image</span>
+                                        <input type="url"
+                                               name="imageUrls"
+                                               placeholder="https://example.com/image.jpg"
+                                               class="form-input pl-9" />
+                                    </div>
+                                    <button type="button"
+                                            onclick="removeImageRow(this)"
+                                            class="flex-shrink-0 p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                                        <span class="material-symbols-outlined text-xl">remove_circle</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="button"
+                                    onclick="addImageRow()"
+                                    class="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">
+                                <span class="material-symbols-outlined text-lg">add_circle</span>
+                                Add another image URL
+                            </button>
+                        </div>
+
+                    </div><!-- /p-8 -->
+
+                    <!-- Form Footer -->
+                    <div class="px-8 py-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex items-center justify-between">
+                        <a th:href="@{/vendor/products}"
+                           class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                            Cancel
+                        </a>
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors shadow-sm">
+                            <span class="material-symbols-outlined text-lg">save</span>
+                            Save as Draft
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        function addImageRow() {
+            const list = document.getElementById('image-url-list');
+            const row = document.createElement('div');
+            row.className = 'image-url-row flex items-center gap-2';
+            row.innerHTML = `
+                <div class="flex-1 relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">image</span>
+                    <input type="url" name="imageUrls" placeholder="https://example.com/image.jpg"
+                           style="width:100%;padding:0.5rem 0.75rem 0.5rem 2.25rem;font-size:0.875rem;border:1px solid #e5e7eb;border-radius:0.5rem;background:#fff;color:#111827;" />
+                </div>
+                <button type="button" onclick="removeImageRow(this)"
+                        class="flex-shrink-0 p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                    <span class="material-symbols-outlined text-xl">remove_circle</span>
+                </button>`;
+            list.appendChild(row);
+            row.querySelector('input').focus();
+        }
+
+        function removeImageRow(btn) {
+            const rows = document.querySelectorAll('.image-url-row');
+            if (rows.length <= 1) {
+                btn.closest('.image-url-row').querySelector('input').value = '';
+                return;
+            }
+            btn.closest('.image-url-row').remove();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const nameInput = document.getElementById('name');
+            if (nameInput) nameInput.focus();
+        });
+    </script>
+
+</body>
+</html>
