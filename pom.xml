@@ -150,6 +150,26 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.4.3</version>
+                <configuration>
+                    <from>
+                        <image>eclipse-temurin:21-jre-jammy</image>
+                    </from>
+                    <to>
+                        <image>kazeemakinrinde/ecommerce</image>
+                       
+                    </to>
+                    <container>
+                        <ports>
+                            <port>8080</port>
+                        </ports>
+                        <format>OCI</format>
+                    </container>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
