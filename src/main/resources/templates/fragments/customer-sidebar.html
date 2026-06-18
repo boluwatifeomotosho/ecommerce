@@ -23,13 +23,24 @@
             <span class="material-symbols-outlined">dashboard</span>
             <span class="font-label-md text-label-md">Dashboard</span>
         </a>
-        <a th:href="@{/products}"
+        <a th:href="@{/customer/shop}"
            th:classappend="${activePage == 'shop'} ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-high'"
            class="flex items-center gap-sm px-md py-3 rounded-lg transition-all">
             <span class="material-symbols-outlined">storefront</span>
             <span class="font-label-md text-label-md">Browse Products</span>
         </a>
-        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
+        <a th:href="@{/customer/cart}"
+           th:classappend="${activePage == 'cart'} ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-high'"
+           class="flex items-center gap-sm px-md py-3 rounded-lg transition-all">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span class="font-label-md text-label-md flex-1">My Cart</span>
+            <span th:if="${cartItemCount != null and cartItemCount > 0}"
+                  class="min-w-[20px] h-5 bg-primary text-on-primary text-[10px] font-bold rounded-full flex items-center justify-center px-1"
+                  th:text="${cartItemCount > 9 ? '9+' : cartItemCount}">0</span>
+        </a>
+        <a th:href="@{/customer/orders}"
+           th:classappend="${activePage == 'orders'} ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-high'"
+           class="flex items-center gap-sm px-md py-3 rounded-lg transition-all">
             <span class="material-symbols-outlined">package</span>
             <span class="font-label-md text-label-md">My Orders</span>
         </a>
@@ -42,10 +53,6 @@
             <span class="font-label-md text-label-md">Track Order</span>
         </a>
         <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
-            <span class="material-symbols-outlined">account_balance_wallet</span>
-            <span class="font-label-md text-label-md">Wallet &amp; Points</span>
-        </a>
-        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
             <span class="material-symbols-outlined">location_on</span>
             <span class="font-label-md text-label-md">Addresses</span>
         </a>
@@ -54,10 +61,6 @@
             <span class="font-label-md text-label-md">Reviews</span>
         </a>
         <hr class="my-xs border-outline-variant/50"/>
-        <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
-            <span class="material-symbols-outlined">help</span>
-            <span class="font-label-md text-label-md">Support</span>
-        </a>
         <a class="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-sm px-md py-3 rounded-lg transition-all" href="#">
             <span class="material-symbols-outlined">settings</span>
             <span class="font-label-md text-label-md">Settings</span>

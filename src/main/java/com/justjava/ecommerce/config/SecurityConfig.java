@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
                         .authorizationEndpoint(auth -> auth
                                 .authorizationRequestResolver(registrationAwareResolver())
                         )
@@ -78,14 +79,16 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/products", "/products/**",
-                                "/register/phone", "/register/phone/verify", "/register/phone/resend",
+                                "/login", "/register",
+                                "/register/phone", "/register/phone/verify", "/register/phone/resend", "/register/phone/success",
                                 "/register/vendor", "/register/customer",
+                                "/login/phone", "/login/phone/verify", "/login/phone/resend",
                                 "/uploads/**",
                                 "/static/**", "/css/**", "/js/**", "/webjars/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/vendor/**").hasRole("VENDOR")
-                        .requestMatchers("/customer/**").authenticated()
+                        .requestMatchers("/customer/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout

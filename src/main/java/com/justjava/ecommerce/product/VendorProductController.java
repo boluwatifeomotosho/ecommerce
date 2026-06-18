@@ -1,10 +1,11 @@
 package com.justjava.ecommerce.product;
 
-import com.justjava.ecommerce.product.dto.SaveProductRequest;
-import com.justjava.ecommerce.user.UserRepository;
+import com.justjava.ecommerce.category.CategoryDto;
 import com.justjava.ecommerce.category.CategoryService;
 import com.justjava.ecommerce.product.ProductCommandService;
 import com.justjava.ecommerce.product.ProductQueryService;
+import com.justjava.ecommerce.product.dto.SaveProductRequest;
+import com.justjava.ecommerce.user.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +19,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/vendor/products")
@@ -48,7 +52,7 @@ public class VendorProductController {
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("productForm", new SaveProductRequest(null, null, null, null, null, 0, null, null, null));
-        model.addAttribute("categories",  categoryService.getAllActive());
+        addCategoryModel(model);
         model.addAttribute("formAction",  "/vendor/products");
         model.addAttribute("editMode",    false);
         return "vendor/products/form";
@@ -63,7 +67,7 @@ public class VendorProductController {
             RedirectAttributes                flash
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("categories",  categoryService.getAllActive());
+            addCategoryModel(model);
             model.addAttribute("formAction",  "/vendor/products");
             model.addAttribute("editMode",    false);
             return "vendor/products/form";
@@ -76,7 +80,7 @@ public class VendorProductController {
             return "redirect:/vendor/products";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error",       e.getMessage());
-            model.addAttribute("categories",  categoryService.getAllActive());
+            addCategoryModel(model);
             model.addAttribute("formAction",  "/vendor/products");
             model.addAttribute("editMode",    false);
             return "vendor/products/form";
@@ -106,7 +110,7 @@ public class VendorProductController {
 
         model.addAttribute("productForm", request);
         model.addAttribute("product",     product);
-        model.addAttribute("categories",  categoryService.getAllActive());
+        addCategoryModel(model);
         model.addAttribute("formAction",  "/vendor/products/" + product.id());
         model.addAttribute("editMode",    true);
         return "vendor/products/form";
@@ -122,7 +126,7 @@ public class VendorProductController {
             RedirectAttributes                flash
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("categories",  categoryService.getAllActive());
+            addCategoryModel(model);
             model.addAttribute("formAction",  "/vendor/products/" + id);
             model.addAttribute("editMode",    true);
             return "vendor/products/form";
@@ -135,7 +139,7 @@ public class VendorProductController {
             return "redirect:/vendor/products";
         } catch (IllegalArgumentException | IllegalStateException e) {
             model.addAttribute("error",       e.getMessage());
-            model.addAttribute("categories",  categoryService.getAllActive());
+            addCategoryModel(model);
             model.addAttribute("formAction",  "/vendor/products/" + id);
             model.addAttribute("editMode",    true);
             return "vendor/products/form";
@@ -171,6 +175,16 @@ public class VendorProductController {
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
+
+    private void addCategoryModel(Model model) {
+        List<CategoryDto> all   = categoryService.getAllActive();
+        List<CategoryDto> roots = all.stream().filter(c -> c.parentId() == null).toList();
+        Map<UUID, List<CategoryDto>> subMap = all.stream()
+                .filter(c -> c.parentId() != null)
+                .collect(Collectors.groupingBy(CategoryDto::parentId));
+        model.addAttribute("rootCategories", roots);
+        model.addAttribute("subCategoryMap", subMap);
+    }
 
     private UUID resolveVendorId(OidcUser principal) {
         return userRepository.findByKeycloakId(principal.getSubject())

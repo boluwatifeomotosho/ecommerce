@@ -9,7 +9,6 @@
         @keyframes slideInLeft { from { opacity:0; transform:translateX(-40px); } to { opacity:1; transform:translateX(0); } }
         @keyframes fadeInDown  { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeInUp    { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes notif-pulse { 0%,100%{transform:scale(1);} 60%{transform:scale(1.7);opacity:.4;} }
 
         aside  { animation: slideInLeft .55s cubic-bezier(.22,1,.36,1) both; }
         header { animation: fadeInDown .5s .15s cubic-bezier(.22,1,.36,1) both; }
@@ -26,7 +25,7 @@
         .table-row.visible { opacity:1; transform:translateY(0); }
         .table-row:nth-child(1){ transition-delay:.1s; }
         .table-row:nth-child(2){ transition-delay:.2s; }
-        .notif-dot { animation: notif-pulse 2s infinite; }
+        .table-row:nth-child(3){ transition-delay:.3s; }
     </style>
 </head>
 <body class="bg-surface-bright text-on-surface overflow-x-hidden">
@@ -39,78 +38,100 @@
             <h2 class="font-headline-md text-headline-md font-bold text-on-surface">Good morning, <span th:text="${name}">Vendor</span></h2>
             <p class="font-body-md text-on-surface-variant">Here's what's happening with your store today.</p>
         </div>
-        <div class="flex items-center gap-md">
-            <div class="relative cursor-pointer">
-                <span class="material-symbols-outlined text-on-surface-variant p-2 bg-surface-container rounded-full hover:bg-surface-container-high transition-all">notifications</span>
-                <span class="notif-dot absolute top-0 right-0 w-3 h-3 bg-error border-2 border-white rounded-full"></span>
-            </div>
-            <a th:href="@{/vendor/products/new}" class="bg-primary hover:opacity-90 text-on-primary px-md py-sm rounded-lg font-label-md flex items-center gap-2 transition-all active:scale-95 shadow-md shadow-primary/20">
-                <span class="material-symbols-outlined text-sm">add</span> Add Product
-            </a>
-        </div>
+        <a th:href="@{/vendor/products/new}" class="bg-primary hover:opacity-90 text-on-primary px-md py-sm rounded-lg font-label-md flex items-center gap-2 transition-all active:scale-95 shadow-md shadow-primary/20">
+            <span class="material-symbols-outlined text-sm">add</span> Add Product
+        </a>
     </header>
 
+    <!-- KPI Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
         <div class="kpi-card bg-surface-container-lowest p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-primary">
             <div class="flex justify-between items-start mb-base">
-                <p class="font-label-md text-on-surface-variant">Today's Revenue</p>
+                <p class="font-label-md text-on-surface-variant">Total Revenue</p>
                 <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">payments</span>
             </div>
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">&#8358;<span data-count="245000">0</span></h3>
-            <div class="mt-sm flex items-center gap-1">
-                <span class="text-tertiary font-label-sm flex items-center"><span class="material-symbols-outlined text-sm">trending_up</span> 12%</span>
-                <span class="text-[10px] text-on-surface-variant">vs yesterday</span>
-            </div>
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface">
+                ₦<span th:text="${revenue != null ? #numbers.formatDecimal(revenue, 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+            </h3>
+            <p class="text-xs text-on-surface-variant mt-sm">From paid orders</p>
         </div>
         <div class="kpi-card bg-surface-container-lowest p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-secondary">
             <div class="flex justify-between items-start mb-base">
                 <p class="font-label-md text-on-surface-variant">Total Orders</p>
                 <span class="material-symbols-outlined text-secondary bg-secondary/10 p-2 rounded-lg">shopping_bag</span>
             </div>
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface"><span data-count="1240">0</span></h3>
-            <div class="mt-sm flex items-center gap-1">
-                <span class="text-tertiary font-label-sm flex items-center"><span class="material-symbols-outlined text-sm">trending_up</span> 8.4%</span>
-                <span class="text-[10px] text-on-surface-variant">lifetime</span>
-            </div>
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface" th:text="${totalOrders ?: 0}">0</h3>
+            <a th:href="@{/vendor/orders}" class="text-xs text-primary font-semibold hover:underline mt-sm block">View all orders</a>
         </div>
         <div class="kpi-card bg-surface-container-lowest p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-primary-container">
             <div class="flex justify-between items-start mb-base">
-                <p class="font-label-md text-on-surface-variant">Pending Orders</p>
-                <span class="material-symbols-outlined text-primary-container bg-primary-container/10 p-2 rounded-lg">pending_actions</span>
+                <p class="font-label-md text-on-surface-variant">Pending Payment</p>
+                <span class="material-symbols-outlined text-amber-500 bg-amber-50 p-2 rounded-lg">pending_actions</span>
             </div>
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface"><span data-count="12">0</span></h3>
-            <div class="mt-sm"><span class="px-2 py-1 bg-secondary-container/10 text-secondary text-[10px] font-bold rounded-full uppercase">Action Required</span></div>
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface" th:text="${pendingOrders ?: 0}">0</h3>
+            <p class="text-xs text-on-surface-variant mt-sm">Awaiting customer payment</p>
         </div>
         <div class="kpi-card bg-surface-container-lowest p-lg rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border-l-4 border-error">
             <div class="flex justify-between items-start mb-base">
                 <p class="font-label-md text-on-surface-variant">Low Stock Items</p>
                 <span class="material-symbols-outlined text-error bg-error/10 p-2 rounded-lg">warning</span>
             </div>
-            <h3 class="font-headline-md text-headline-md font-bold text-on-surface"><span data-count="4">0</span></h3>
-            <div class="mt-sm"><span class="px-2 py-1 bg-error-container/20 text-error text-[10px] font-bold rounded-full uppercase">Critical Alert</span></div>
+            <h3 class="font-headline-md text-headline-md font-bold text-on-surface" th:text="${lowStockCount ?: 0}">0</h3>
+            <a th:href="@{/vendor/products}" class="text-xs text-error font-semibold hover:underline mt-sm block">Review products</a>
         </div>
     </div>
 
+    <!-- Recent Orders -->
     <section class="orders-section bg-surface-container-lowest rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden border border-outline-variant/30">
         <div class="px-lg py-md border-b border-outline-variant flex justify-between items-center">
             <h4 class="font-headline-md text-on-surface">Recent Orders</h4>
-            <button class="text-primary font-label-md hover:underline">Download CSV</button>
+            <a th:href="@{/vendor/orders}" class="text-primary font-label-md hover:underline text-sm">View all</a>
         </div>
-        <div class="overflow-x-auto">
+
+        <!-- Empty state -->
+        <div th:if="${recentOrders == null or recentOrders.isEmpty()}" class="p-xl text-center">
+            <span class="material-symbols-outlined text-4xl text-outline-variant">receipt_long</span>
+            <p class="text-on-surface-variant text-sm mt-2">No orders yet. Orders for your products will appear here.</p>
+        </div>
+
+        <div th:if="${recentOrders != null and !recentOrders.isEmpty()}" class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead class="bg-surface text-on-surface-variant font-label-sm uppercase tracking-wider">
-                    <tr><th class="px-lg py-sm">Order #</th><th class="px-lg py-sm">Customer</th><th class="px-lg py-sm">Product</th><th class="px-lg py-sm">Qty</th><th class="px-lg py-sm">Status</th></tr>
+                    <tr>
+                        <th class="px-lg py-sm">Order #</th>
+                        <th class="px-lg py-sm">Customer</th>
+                        <th class="px-lg py-sm">Date</th>
+                        <th class="px-lg py-sm">Total</th>
+                        <th class="px-lg py-sm">Status</th>
+                        <th class="px-lg py-sm text-right">Action</th>
+                    </tr>
                 </thead>
                 <tbody class="divide-y divide-outline-variant font-body-md">
-                    <tr class="table-row hover:bg-surface-container-low">
-                        <td class="px-lg py-md font-bold text-primary">#NM-84920</td>
-                        <td class="px-lg py-md">Chidi Okoro</td><td class="px-lg py-md">MacBook Pro M3 14"</td><td class="px-lg py-md">1</td>
-                        <td class="px-lg py-md"><span class="px-3 py-1 bg-secondary-container/10 text-secondary rounded-full text-[12px] font-bold">Processing</span></td>
-                    </tr>
-                    <tr class="table-row hover:bg-surface-container-low">
-                        <td class="px-lg py-md font-bold text-primary">#NM-84918</td>
-                        <td class="px-lg py-md">Amina Saliu</td><td class="px-lg py-md">Sony WH-1000XM5</td><td class="px-lg py-md">2</td>
-                        <td class="px-lg py-md"><span class="px-3 py-1 bg-tertiary-container/10 text-tertiary rounded-full text-[12px] font-bold">Shipped</span></td>
+                    <tr th:each="order : ${recentOrders}" class="table-row hover:bg-surface-container-low">
+                        <td class="px-lg py-md font-bold text-primary font-mono"
+                            th:text="${#strings.substring(order.id.toString(), 0, 8).toUpperCase()}">ABCD1234</td>
+                        <td class="px-lg py-md text-on-surface-variant"
+                            th:text="${order.shippingName}">Customer</td>
+                        <td class="px-lg py-md text-on-surface-variant text-sm"
+                            th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy')}">01 Jan 2025</td>
+                        <td class="px-lg py-md font-bold">
+                            ₦<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </td>
+                        <td class="px-lg py-md">
+                            <span th:switch="${order.status.name()}">
+                                <span th:case="'PENDING_PAYMENT'" class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">Pending</span>
+                                <span th:case="'PAID'"            class="px-3 py-1 bg-blue-100  text-blue-700  rounded-full text-xs font-bold">Paid</span>
+                                <span th:case="'PROCESSING'"      class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">Processing</span>
+                                <span th:case="'SHIPPED'"         class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold">Shipped</span>
+                                <span th:case="'DELIVERED'"       class="px-3 py-1 bg-green-100  text-green-700  rounded-full text-xs font-bold">Delivered</span>
+                                <span th:case="'CANCELLED'"       class="px-3 py-1 bg-red-100    text-red-700    rounded-full text-xs font-bold">Cancelled</span>
+                                <span th:case="*"                 class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-xs font-bold" th:text="${order.status}">Status</span>
+                            </span>
+                        </td>
+                        <td class="px-lg py-md text-right">
+                            <a th:href="@{/vendor/orders/{id}(id=${order.id})}"
+                               class="text-primary text-sm font-semibold hover:underline">View</a>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -120,9 +141,7 @@
 
 <script>
 (function () {
-    function countUp(el) { var target=parseInt(el.dataset.count,10),duration=900,start=performance.now(); function step(now){var p=Math.min((now-start)/duration,1),ease=1-Math.pow(1-p,3); el.textContent=Math.floor(ease*target).toLocaleString(); if(p<1)requestAnimationFrame(step);} requestAnimationFrame(step); }
-    setTimeout(function(){ document.querySelectorAll('[data-count]').forEach(countUp); },350);
-    setTimeout(function(){ document.querySelectorAll('.table-row').forEach(function(r){ r.classList.add('visible'); }); },750);
+    setTimeout(function(){ document.querySelectorAll('.table-row').forEach(function(r){ r.classList.add('visible'); }); }, 750);
 })();
 </script>
 </body>

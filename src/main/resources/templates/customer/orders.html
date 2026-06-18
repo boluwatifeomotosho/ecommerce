@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Orders — NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+
+<aside th:replace="~{fragments/customer-sidebar :: sidebar('orders', ${name})}"></aside>
+
+<!-- ── Cancel confirmation modal ──────────────────────────────────────────── -->
+<div id="cancel-modal"
+     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+     onclick="if(event.target===this) closeCancelModal()">
+    <div class="bg-white rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl animate-[fadeInUp_.25s_ease-out_both]">
+        <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-3xl text-red-500" style="font-variation-settings:'FILL' 1">cancel</span>
+        </div>
+        <h3 class="text-center font-bold text-lg text-on-surface mb-1">Cancel Order?</h3>
+        <p class="text-center text-sm text-on-surface-variant mb-6">
+            Order <strong id="cancel-modal-ref" class="font-mono text-on-surface"></strong> will be cancelled.
+            This action cannot be undone.
+        </p>
+        <div class="flex gap-3">
+            <button onclick="closeCancelModal()"
+                    class="flex-1 px-4 py-2.5 border border-outline-variant text-on-surface-variant rounded-xl font-semibold hover:bg-surface-container transition-all">
+                Keep Order
+            </button>
+            <button id="modal-confirm-btn"
+                    class="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-all active:scale-95">
+                Yes, Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<main class="ml-[280px] min-h-screen p-lg bg-surface-bright">
+
+    <header class="mb-lg">
+        <h2 class="font-headline-lg text-headline-lg text-on-surface">My Orders</h2>
+        <p class="text-on-surface-variant text-sm mt-1">Track and manage all your purchases</p>
+    </header>
+
+    <!-- Filter tabs -->
+    <div class="flex flex-wrap gap-2 mb-lg">
+        <a th:href="@{/customer/orders}"
+           th:classappend="${activeStatus == null} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container'"
+           class="px-4 py-2 rounded-full text-sm font-semibold transition-all">
+            All Orders
+        </a>
+        <a th:href="@{/customer/orders(status='PENDING_PAYMENT')}"
+           th:classappend="${activeStatus == 'PENDING_PAYMENT'} ? 'bg-amber-500 text-white shadow-md' : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container'"
+           class="px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">schedule</span> Pending
+        </a>
+        <a th:href="@{/customer/orders(status='PAID')}"
+           th:classappend="${activeStatus == 'PAID'} ? 'bg-blue-600 text-white shadow-md' : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container'"
+           class="px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">check_circle</span> Paid
+        </a>
+        <a th:href="@{/customer/orders(status='PROCESSING')}"
+           th:classappend="${activeStatus == 'PROCESSING'} ? 'bg-purple-600 text-white shadow-md' : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container'"
+           class="px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">autorenew</span> Processing
+        </a>
+        <a th:href="@{/customer/orders(status='DELIVERED')}"
+           th:classappend="${activeStatus == 'DELIVERED'} ? 'bg-green-600 text-white shadow-md' : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container'"
+           class="px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">inventory_2</span> Delivered
+        </a>
+        <a th:href="@{/customer/orders(status='CANCELLED')}"
+           th:classappend="${activeStatus == 'CANCELLED'} ? 'bg-red-600 text-white shadow-md' : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container'"
+           class="px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">cancel</span> Cancelled
+        </a>
+    </div>
+
+    <!-- Empty state -->
+    <div th:if="${orders.isEmpty()}"
+         class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-xl text-center">
+        <span class="material-symbols-outlined text-6xl text-outline-variant mb-md block">receipt_long</span>
+        <h3 class="font-headline-sm text-on-surface font-bold mb-2">No orders found</h3>
+        <p class="text-on-surface-variant text-sm mb-lg"
+           th:text="${activeStatus != null} ? 'No orders match this filter.' : 'Your order history will appear here once you make a purchase.'">
+        </p>
+        <a th:if="${activeStatus == null}" th:href="@{/customer/shop}"
+           class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-semibold shadow-md shadow-primary/20 hover:opacity-90 transition-all">
+            <span class="material-symbols-outlined text-sm">storefront</span>
+            Start Shopping
+        </a>
+        <a th:if="${activeStatus != null}" th:href="@{/customer/orders}"
+           class="inline-flex items-center gap-2 px-6 py-3 border border-outline-variant text-on-surface-variant rounded-xl font-semibold hover:bg-surface-container transition-all text-sm">
+            View all orders
+        </a>
+    </div>
+
+    <!-- Orders list — each card rendered via the shared fragment -->
+    <div th:if="${!orders.isEmpty()}" class="space-y-md">
+        <th:block th:each="order : ${orders.content}">
+            <th:block th:replace="~{customer/order-card :: orderCard}"></th:block>
+        </th:block>
+    </div>
+
+    <!-- Pagination (preserves active status filter) -->
+    <div th:if="${orders.totalPages > 1}" class="flex justify-center gap-2 mt-xl">
+        <a th:if="${!orders.first}"
+           th:href="@{/customer/orders(page=${orders.number - 1}, status=${activeStatus})}"
+           class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors text-sm">
+            Previous
+        </a>
+        <span th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}"
+              th:if="${i >= orders.number - 2 and i <= orders.number + 2}">
+            <a th:href="@{/customer/orders(page=${i}, status=${activeStatus})}"
+               th:text="${i + 1}"
+               th:classappend="${i == orders.number} ? 'bg-primary text-on-primary' : 'border border-outline-variant text-on-surface-variant hover:bg-surface-container'"
+               class="px-4 py-2 rounded-lg text-sm transition-colors">1</a>
+        </span>
+        <a th:if="${!orders.last}"
+           th:href="@{/customer/orders(page=${orders.number + 1}, status=${activeStatus})}"
+           class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors text-sm">
+            Next
+        </a>
+    </div>
+
+</main>
+
+<script>
+(function () {
+    let pendingForm = null;
+
+    window.openCancelModal = function (btn) {
+        pendingForm = btn.closest('form');
+        document.getElementById('cancel-modal-ref').textContent = '#' + btn.dataset.orderRef;
+        const modal = document.getElementById('cancel-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
+
+    window.closeCancelModal = function () {
+        const modal = document.getElementById('cancel-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        pendingForm = null;
+    };
+
+    document.getElementById('modal-confirm-btn').addEventListener('click', function () {
+        if (pendingForm) {
+            closeCancelModal();
+            pendingForm.requestSubmit(); // HTMX intercepts this
+        }
+    });
+})();
+</script>
+</body>
+</html>

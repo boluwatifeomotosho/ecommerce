@@ -40,12 +40,15 @@
             <span class="material-symbols-outlined">rate_review</span>
             <span class="font-label-md">Pending Review</span>
         </a>
-        <a th:href="@{/products}"
-           class="text-on-surface-variant hover:bg-primary/10 hover:text-primary flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2 transition-all">
+        <a th:href="@{/admin/products/catalog}"
+           th:classappend="${activePage == 'catalog'} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'"
+           class="flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2 transition-all">
             <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-label-md">Browse Products</span>
+            <span class="font-label-md">Product Catalog</span>
         </a>
-        <a class="text-on-surface-variant hover:bg-primary/10 hover:text-primary flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2 transition-all" href="#">
+        <a th:href="@{/admin/orders}"
+           th:classappend="${activePage == 'orders'} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'"
+           class="flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2 transition-all">
             <span class="material-symbols-outlined">shopping_bag</span>
             <span class="font-label-md">Orders</span>
         </a>

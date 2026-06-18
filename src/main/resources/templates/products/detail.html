@@ -163,6 +163,48 @@
                         </div>
                     </div>
 
+                    <!-- Add to Cart -->
+                    <div class="mb-6">
+                        <!-- Customer: in stock -->
+                        <div sec:authorize="hasRole('CUSTOMER')" th:if="${product.isInStock()}">
+                            <form th:action="@{/customer/cart/items}" method="post" class="flex items-center gap-3">
+                                <input type="hidden" name="productId" th:value="${product.id}"/>
+                                <div class="flex items-center border border-outline-variant rounded-xl overflow-hidden">
+                                    <button type="button" onclick="decQty()"
+                                            class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+                                        <span class="material-symbols-outlined text-sm">remove</span>
+                                    </button>
+                                    <input id="qty-input" type="number" name="quantity"
+                                           value="1" min="1" th:max="${product.stockQuantity}"
+                                           class="w-16 h-10 text-center border-0 focus:outline-none bg-transparent text-on-surface font-medium"/>
+                                    <button type="button" onclick="incQty()"
+                                            class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+                                        <span class="material-symbols-outlined text-sm">add</span>
+                                    </button>
+                                </div>
+                                <button type="submit"
+                                        class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-semibold shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95">
+                                    <span class="material-symbols-outlined">shopping_cart</span>
+                                    Add to Cart
+                                </button>
+                            </form>
+                        </div>
+                        <!-- Customer: out of stock -->
+                        <div sec:authorize="hasRole('CUSTOMER')" th:if="${!product.isInStock()}"
+                             class="flex items-center gap-2 py-3 text-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-base">block</span>
+                            Out of stock — this item cannot be purchased right now.
+                        </div>
+                        <!-- Anonymous: prompt to login -->
+                        <div sec:authorize="isAnonymous()">
+                            <a th:href="@{/login}"
+                               class="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-semibold shadow-lg shadow-primary/20 hover:opacity-90 transition-all">
+                                <span class="material-symbols-outlined">login</span>
+                                Login to Buy
+                            </a>
+                        </div>
+                    </div>
+
                     <!-- Back Link -->
                     <div class="mt-auto pt-4">
                         <a th:href="@{/products}"
@@ -190,9 +232,19 @@
                 mainImg.classList.remove('hidden');
                 placeholder.classList.add('hidden');
             }
-            // Update active thumbnail
             document.querySelectorAll('.thumbnail-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+        }
+        function incQty() {
+            const input = document.getElementById('qty-input');
+            if (!input) return;
+            const max = parseInt(input.max) || 9999;
+            if (parseInt(input.value) < max) input.value = parseInt(input.value) + 1;
+        }
+        function decQty() {
+            const input = document.getElementById('qty-input');
+            if (!input) return;
+            if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
         }
     </script>
 

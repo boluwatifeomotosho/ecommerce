@@ -9,6 +9,16 @@ public class RegistrationController {
 
     public static final String REGISTRATION_MODE_KEY = "REGISTRATION_MODE";
 
+    @GetMapping("/login")
+    public String loginChoice() {
+        return "auth/login";
+    }
+
+    @GetMapping("/register")
+    public String registerChoice() {
+        return "auth/register";
+    }
+
     @GetMapping("/register/customer")
     public String registerCustomer(HttpSession session) {
         session.setAttribute(REGISTRATION_MODE_KEY, "CUSTOMER");

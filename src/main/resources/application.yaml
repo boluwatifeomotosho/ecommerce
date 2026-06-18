@@ -34,6 +34,10 @@ server:
 
 app:
   upload-dir: ${UPLOAD_DIR:./uploads/products}
+  base-url: ${APP_BASE_URL:http://localhost:8081}
+
+paystack:
+  secret-key: ${PAYSTACK_SECRET_KEY:sk_test_100deea18599e2e1f31d5d8397e1f46602fdf1ea}
 
 springdoc:
   pathsToMatch: /api/**
@@ -49,3 +53,11 @@ sms:
   termii:
     api-key: ${TERMII_API_KEY:}
     sender-id: ${TERMII_SENDER_ID:NaijaMart}
+  africastalking:
+    api-key: ${AT_API_KEY:}
+    username: ${AT_USERNAME:sandbox}
+    sender-id: ${AT_SENDER_ID:}
+  twilio:
+    account-sid: ${TWILIO_ACCOUNT_SID:}
+    auth-token: ${TWILIO_AUTH_TOKEN:}
+    from-number: ${TWILIO_FROM_NUMBER:}

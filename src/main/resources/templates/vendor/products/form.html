@@ -92,7 +92,15 @@
                                     <select id="categoryId" th:field="*{categoryId}" class="form-input"
                                             th:classappend="${#fields.hasErrors('categoryId')} ? 'input-error'">
                                         <option value="">Select a category…</option>
-                                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">Category</option>
+                                        <optgroup th:each="root : ${rootCategories}" th:label="${root.name()}">
+                                            <option th:value="${root.id()}"
+                                                    th:text="'All ' + ${root.name()}"
+                                                    th:selected="${productForm.categoryId != null and productForm.categoryId.equals(root.id())}">Root</option>
+                                            <option th:each="sub : ${subCategoryMap.get(root.id())}"
+                                                    th:value="${sub.id()}"
+                                                    th:text="${sub.name()}"
+                                                    th:selected="${productForm.categoryId != null and productForm.categoryId.equals(sub.id())}">Sub</option>
+                                        </optgroup>
                                     </select>
                                     <p th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="field-error"></p>
                                 </div>

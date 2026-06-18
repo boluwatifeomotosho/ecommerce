@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Order Detail — NaijaMart Admin</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('orders', ${name}, ${email})}"></aside>
+
+<main class="ml-[280px] min-h-screen p-8 bg-surface-bright">
+
+    <!-- Back -->
+    <a th:href="@{/admin/orders}"
+       class="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-primary transition-colors mb-6">
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        All Orders
+    </a>
+
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-6 bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/30">
+        <div>
+            <h2 class="text-2xl font-bold text-on-surface">
+                Order #<span th:text="${#strings.substring(order.id.toString(), 0, 8).toUpperCase()}">ABCD1234</span>
+            </h2>
+            <p class="text-on-surface-variant mt-0.5 text-sm">
+                Placed <span th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy, HH:mm')}">01 Jan 2025</span>
+            </p>
+        </div>
+        <span th:switch="${order.status.name()}">
+            <span th:case="'PENDING_PAYMENT'" class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full text-xs font-bold">Pending Payment</span>
+            <span th:case="'PAID'"            class="bg-blue-100  text-blue-700  px-3 py-1.5 rounded-full text-xs font-bold">Paid</span>
+            <span th:case="'PROCESSING'"      class="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full text-xs font-bold">Processing</span>
+            <span th:case="'SHIPPED'"         class="bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-full text-xs font-bold">Shipped</span>
+            <span th:case="'DELIVERED'"       class="bg-green-100  text-green-700  px-3 py-1.5 rounded-full text-xs font-bold">Delivered</span>
+            <span th:case="'CANCELLED'"       class="bg-red-100    text-red-700    px-3 py-1.5 rounded-full text-xs font-bold">Cancelled</span>
+            <span th:case="*"                 class="bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-xs font-bold" th:text="${order.status}">Status</span>
+        </span>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Order Items -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-outline-variant/20 flex justify-between items-center">
+                    <h3 class="font-bold text-on-surface">Items Ordered</h3>
+                    <span class="text-xs text-on-surface-variant"><span th:text="${order.items.size()}">0</span> item(s)</span>
+                </div>
+                <div class="divide-y divide-outline-variant/20">
+                    <div th:each="item : ${order.items}" class="px-6 py-4 flex justify-between items-center gap-4">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-on-surface text-sm truncate" th:text="${item.productName}">Product</p>
+                            <p class="text-xs text-on-surface-variant mt-0.5"
+                               th:text="'Sold by ' + ${item.vendorName ?: 'NaijaMart'}">Vendor</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-xs text-on-surface-variant">
+                                <span th:text="${item.quantity}">1</span> ×
+                                ₦<span th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                            </p>
+                            <p class="font-bold text-on-surface text-sm mt-0.5">
+                                ₦<span th:text="${#numbers.formatDecimal(item.lineTotal, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Totals -->
+                <div class="px-6 py-4 border-t border-outline-variant/20 space-y-2 text-sm bg-surface-container-low/30">
+                    <div class="flex justify-between text-on-surface-variant">
+                        <span>Subtotal</span>
+                        <span>₦<span th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                    </div>
+                    <div class="flex justify-between text-on-surface-variant">
+                        <span>Delivery fee</span>
+                        <span>₦<span th:text="${#numbers.formatDecimal(order.deliveryFee, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                    </div>
+                    <div class="flex justify-between font-bold text-on-surface text-base pt-2 border-t border-outline-variant/30">
+                        <span>Total</span>
+                        <span class="text-primary">₦<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Customer info -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+                <h3 class="font-bold text-on-surface mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-base">person</span>
+                    Customer
+                </h3>
+                <p class="font-semibold text-on-surface text-sm" th:text="${order.customerName ?: order.shippingName}">Name</p>
+                <p class="text-sm text-on-surface-variant mt-1" th:text="${order.shippingPhone}">Phone</p>
+            </div>
+
+            <!-- Payment info -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+                <h3 class="font-bold text-on-surface mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-base">payments</span>
+                    Payment
+                </h3>
+                <dl class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <dt class="text-on-surface-variant">Status</dt>
+                        <dd>
+                            <span th:switch="${order.status.name()}" class="px-2 py-0.5 rounded-full text-xs font-bold">
+                                <span th:case="'PAID'"            class="bg-green-100  text-green-700  px-2 py-0.5 rounded-full">Paid</span>
+                                <span th:case="'PENDING_PAYMENT'" class="bg-amber-100  text-amber-700  px-2 py-0.5 rounded-full">Pending</span>
+                                <span th:case="'CANCELLED'"       class="bg-red-100    text-red-700    px-2 py-0.5 rounded-full">Cancelled</span>
+                                <span th:case="*"                 class="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full" th:text="${order.status}">Status</span>
+                            </span>
+                        </dd>
+                    </div>
+                    <div th:if="${order.paymentChannel != null}" class="flex justify-between">
+                        <dt class="text-on-surface-variant">Channel</dt>
+                        <dd class="font-medium text-on-surface capitalize" th:text="${order.paymentChannel}">card</dd>
+                    </div>
+                    <div th:if="${order.paidAt != null}" class="flex justify-between">
+                        <dt class="text-on-surface-variant">Paid at</dt>
+                        <dd class="font-medium text-on-surface"
+                            th:text="${#temporals.format(order.paidAt, 'dd MMM yyyy HH:mm')}">01 Jan 2025</dd>
+                    </div>
+                    <div th:if="${order.paymentReference != null}" class="flex justify-between">
+                        <dt class="text-on-surface-variant">Reference</dt>
+                        <dd class="font-mono text-xs text-on-surface break-all"
+                            th:text="${#strings.substring(order.paymentReference, 0, 18)}">ref</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <!-- Shipping address -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+                <h3 class="font-bold text-on-surface mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-base">location_on</span>
+                    Delivery Address
+                </h3>
+                <p class="font-semibold text-on-surface text-sm" th:text="${order.shippingName}">Name</p>
+                <p class="text-sm text-on-surface-variant mt-1" th:text="${order.shippingPhone}">Phone</p>
+                <p class="text-sm text-on-surface-variant mt-0.5 leading-relaxed"
+                   th:text="${order.shippingAddress + ', ' + order.shippingCity + ', ' + order.shippingState}">Address</p>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

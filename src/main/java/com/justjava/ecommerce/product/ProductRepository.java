@@ -28,6 +28,10 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
     boolean existsBySkuAndIdNot(String sku, UUID id);
 
+    long countByStatus(ProductStatus status);
+
+    long countByVendorIdAndStockQuantityLessThanEqual(UUID vendorId, int threshold);
+
     @Query("""
             SELECT p FROM Product p
             JOIN FETCH p.category

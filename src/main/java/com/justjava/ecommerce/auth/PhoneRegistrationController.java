@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -40,7 +41,6 @@ public class PhoneRegistrationController {
             @RequestParam String phone,
             @RequestParam String firstName,
             @RequestParam String lastName,
-            @RequestParam String password,
             HttpSession session,
             RedirectAttributes flash
     ) {
@@ -58,7 +58,7 @@ public class PhoneRegistrationController {
             return "redirect:/register/phone";
         }
 
-        session.setAttribute(SESSION_KEY, new PendingRegistration(normalised, firstName, lastName, password));
+        session.setAttribute(SESSION_KEY, new PendingRegistration(normalised, firstName, lastName));
         return "redirect:/register/phone/verify";
     }
 
@@ -98,8 +98,9 @@ public class PhoneRegistrationController {
             }
             case OK -> {
                 try {
+                    String systemPassword = UUID.randomUUID().toString() + UUID.randomUUID().toString();
                     String keycloakId = keycloakAdminService.createUser(
-                            pending.phone(), pending.firstName(), pending.lastName(), pending.password(), false
+                            pending.phone(), pending.firstName(), pending.lastName(), systemPassword, false
                     );
                     userSyncService.syncPhoneUser(keycloakId, pending.phone(), pending.firstName(), pending.lastName());
                 } catch (Exception e) {
@@ -109,11 +110,15 @@ public class PhoneRegistrationController {
                     return "redirect:/register/phone";
                 }
                 session.removeAttribute(SESSION_KEY);
-                flash.addFlashAttribute("success", "Account created! Please log in.");
-                return "redirect:/oauth2/authorization/keycloak";
+                return "redirect:/register/phone/success";
             }
         }
         return "redirect:/register/phone";
+    }
+
+    @GetMapping("/success")
+    public String registrationSuccess() {
+        return "register-phone-success";
     }
 
     @PostMapping("/resend")
@@ -140,6 +145,6 @@ public class PhoneRegistrationController {
         return digits;
     }
 
-    record PendingRegistration(String phone, String firstName, String lastName, String password)
+    record PendingRegistration(String phone, String firstName, String lastName)
             implements Serializable {}
 }

@@ -2,7 +2,7 @@ package com.justjava.ecommerce.auth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -10,8 +10,7 @@ import org.springframework.web.client.RestClient;
 import java.util.Map;
 
 @Slf4j
-@Service
-@ConditionalOnProperty(name = "sms.termii.api-key")
+@ConditionalOnExpression("'${sms.termii.api-key:}'.length() > 0")
 public class TermiiSmsService implements SmsService {
 
     private final RestClient restClient;

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shopping Cart — NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface min-h-screen">
+
+    <nav th:replace="~{fragments/public-nav :: nav}"></nav>
+
+    <div class="max-w-container-max mx-auto px-gutter py-8">
+
+        <h1 class="text-2xl font-bold text-on-surface mb-6">Shopping Cart</h1>
+
+        <!-- Flash messages -->
+        <div th:if="${cartSuccess}"
+             class="mb-4 flex items-center gap-2 p-4 rounded-xl bg-green-50 text-green-700 border border-green-200 text-sm font-medium">
+            <span class="material-symbols-outlined text-base">check_circle</span>
+            <span th:text="${cartSuccess}">Success</span>
+        </div>
+        <div th:if="${cartError}"
+             class="mb-4 flex items-center gap-2 p-4 rounded-xl bg-red-50 text-red-700 border border-red-200 text-sm font-medium">
+            <span class="material-symbols-outlined text-base">error</span>
+            <span th:text="${cartError}">Error</span>
+        </div>
+
+        <!-- Empty Cart -->
+        <div th:if="${cart.empty}" class="flex flex-col items-center justify-center py-24 text-center">
+            <span class="material-symbols-outlined text-8xl text-outline-variant mb-4">shopping_cart</span>
+            <h2 class="text-xl font-semibold text-on-surface mb-2">Your cart is empty</h2>
+            <p class="text-on-surface-variant mb-8">Looks like you haven't added anything yet.</p>
+            <a th:href="@{/products}"
+               class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-semibold shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95">
+                <span class="material-symbols-outlined">storefront</span>
+                Browse Products
+            </a>
+        </div>
+
+        <!-- Cart Items + Summary -->
+        <div th:if="${!cart.empty}" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Items Column -->
+            <div class="lg:col-span-2 space-y-3">
+
+                <div th:each="item : ${cart.items}"
+                     class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-4 flex gap-4 shadow-sm">
+
+                    <!-- Product Image -->
+                    <a th:href="@{'/products/' + ${item.productSlug}}"
+                       class="flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden bg-surface-container-low block">
+                        <img th:if="${item.primaryImageUrl != null}"
+                             th:src="${item.primaryImageUrl}"
+                             th:alt="${item.productName}"
+                             class="w-full h-full object-cover"/>
+                        <div th:if="${item.primaryImageUrl == null}"
+                             class="w-full h-full flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl text-outline-variant">image</span>
+                        </div>
+                    </a>
+
+                    <!-- Product Info -->
+                    <div class="flex-1 min-w-0">
+                        <a th:href="@{'/products/' + ${item.productSlug}}"
+                           class="font-semibold text-on-surface hover:text-primary transition-colors line-clamp-2 leading-snug block"
+                           th:text="${item.productName}">Product Name</a>
+                        <p class="text-sm text-on-surface-variant mt-0.5"
+                           th:text="'Sold by ' + ${item.vendorName}">Sold by Vendor</p>
+                        <p class="text-sm font-semibold text-primary mt-1">
+                            ₦<span th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                            <span class="text-on-surface-variant font-normal">each</span>
+                        </p>
+
+                        <!-- Quantity Controls -->
+                        <form th:action="@{'/cart/items/' + ${item.productId} + '/quantity'}" method="post"
+                              class="flex items-center gap-2 mt-3">
+                            <button type="button"
+                                    onclick="adjustQty(this, -1)"
+                                    class="w-8 h-8 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface">
+                                <span class="material-symbols-outlined text-sm">remove</span>
+                            </button>
+                            <input type="number" name="quantity"
+                                   th:value="${item.quantity}"
+                                   th:max="${item.maxStock}"
+                                   min="1"
+                                   class="w-14 text-center border border-outline-variant rounded-lg px-1 py-1 text-sm text-on-surface bg-surface-container-low focus:outline-none focus:border-primary"/>
+                            <button type="button"
+                                    onclick="adjustQty(this, 1)"
+                                    class="w-8 h-8 rounded-lg border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface">
+                                <span class="material-symbols-outlined text-sm">add</span>
+                            </button>
+                            <button type="submit"
+                                    class="text-xs font-medium text-primary hover:text-primary/80 transition-colors underline-offset-2 hover:underline">
+                                Update
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Line Total + Remove -->
+                    <div class="flex flex-col items-end justify-between flex-shrink-0 pl-2">
+                        <span class="font-bold text-on-surface text-base">
+                            ₦<span th:text="${#numbers.formatDecimal(item.lineTotal, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </span>
+                        <form th:action="@{'/cart/items/' + ${item.productId} + '/remove'}" method="post">
+                            <button type="submit"
+                                    class="flex items-center gap-1 text-xs text-error hover:text-error/80 transition-colors px-2 py-1 rounded-lg hover:bg-error/5">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                                Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer row -->
+                <div class="flex items-center justify-between pt-2">
+                    <a th:href="@{/products}"
+                       class="inline-flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Continue Shopping
+                    </a>
+                    <form th:action="@{/cart/clear}" method="post">
+                        <button type="submit"
+                                class="text-sm text-on-surface-variant hover:text-error transition-colors"
+                                onclick="return confirm('Clear all items from your cart?')">
+                            Clear Cart
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-sm sticky top-24">
+                    <h2 class="font-bold text-on-surface text-lg mb-5">Order Summary</h2>
+
+                    <div class="space-y-3 text-sm mb-4">
+                        <div class="flex justify-between">
+                            <span class="text-on-surface-variant">
+                                Subtotal
+                                (<span th:text="${cart.totalItems}">0</span>
+                                item<span th:if="${cart.totalItems != 1}">s</span>)
+                            </span>
+                            <span class="font-semibold text-on-surface">
+                                ₦<span th:text="${#numbers.formatDecimal(cart.subtotal, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-on-surface-variant">Shipping</span>
+                            <span class="text-on-surface-variant italic text-xs self-center">Calculated at checkout</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-outline-variant/30 pt-4 mb-5">
+                        <div class="flex justify-between font-bold text-on-surface text-base">
+                            <span>Total</span>
+                            <span>₦<span th:text="${#numbers.formatDecimal(cart.subtotal, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Checkout (locked until payment integration) -->
+                    <button disabled
+                            class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary/60 text-on-primary rounded-xl font-semibold cursor-not-allowed select-none">
+                        <span class="material-symbols-outlined text-lg">lock</span>
+                        Proceed to Checkout
+                    </button>
+                    <p class="text-xs text-center text-on-surface-variant mt-3">
+                        Payment coming next — stay tuned!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/public-footer :: footer}"></footer>
+
+    <script>
+        function adjustQty(btn, delta) {
+            const form  = btn.closest('form');
+            const input = form.querySelector('input[name="quantity"]');
+            const max   = parseInt(input.max) || 9999;
+            const val   = parseInt(input.value) + delta;
+            if (val >= 1 && val <= max) {
+                input.value = val;
+                form.submit();
+            }
+        }
+    </script>
+
+</body>
+</html>

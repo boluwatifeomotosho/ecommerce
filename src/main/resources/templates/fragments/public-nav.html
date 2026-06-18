@@ -12,6 +12,15 @@
         <div class="flex items-center gap-sm">
             <!-- Authenticated user -->
             <th:block sec:authorize="isAuthenticated()">
+                <!-- Cart icon — customers only -->
+                <a sec:authorize="hasRole('CUSTOMER')" th:href="@{/customer/cart}"
+                   class="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors"
+                   title="Cart">
+                    <span class="material-symbols-outlined text-on-surface-variant">shopping_cart</span>
+                    <span th:if="${cartItemCount != null and cartItemCount > 0}"
+                          class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-primary text-on-primary text-[10px] font-bold rounded-full flex items-center justify-center px-1"
+                          th:text="${cartItemCount > 9 ? '9+' : cartItemCount}">0</span>
+                </a>
                 <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}"
                    class="hidden md:inline-flex items-center gap-1 px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">
                     <span class="material-symbols-outlined text-sm">dashboard</span> Dashboard
@@ -31,8 +40,8 @@
             <!-- Anonymous user -->
             <th:block sec:authorize="isAnonymous()">
                 <a th:href="@{/register/vendor}" class="hidden md:block text-body-md text-on-surface-variant hover:text-primary transition-colors">Become a Seller</a>
-                <a th:href="@{/oauth2/authorization/keycloak}" class="hidden md:block px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">Login</a>
-                <a th:href="@{/register/customer}" class="px-md py-2 text-label-md bg-primary text-on-primary rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95">Sign Up</a>
+                <a th:href="@{/login}" class="hidden md:block px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">Login</a>
+                <a th:href="@{/register}" class="px-md py-2 text-label-md bg-primary text-on-primary rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95">Sign Up</a>
             </th:block>
         </div>
     </div>

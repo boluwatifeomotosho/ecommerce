@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Order Confirmed — NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+
+<aside th:replace="~{fragments/customer-sidebar :: sidebar('orders', ${name})}"></aside>
+
+<main class="ml-[280px] min-h-screen p-lg bg-surface-bright flex items-start justify-center">
+    <div class="w-full max-w-2xl">
+
+        <!-- Success Banner -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-xl text-center mb-lg">
+            <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-md">
+                <span class="material-symbols-outlined text-5xl text-green-600" style="font-variation-settings:'FILL' 1;">check_circle</span>
+            </div>
+            <h2 class="font-headline-lg text-on-surface font-bold mb-2">Order Confirmed!</h2>
+            <p class="text-on-surface-variant text-sm">
+                Thank you for your purchase. Your order is being processed.
+            </p>
+            <p class="mt-3 text-xs text-on-surface-variant font-mono bg-surface-container-low inline-block px-3 py-1.5 rounded-full">
+                Ref: <span th:text="${order.paymentReference}">REF</span>
+            </p>
+        </div>
+
+        <!-- Order Details -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden mb-lg">
+            <div class="p-md border-b border-outline-variant/30 flex justify-between items-center">
+                <h3 class="font-headline-sm text-on-surface font-bold">Order Details</h3>
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700"
+                      th:text="${order.status}">PAID</span>
+            </div>
+
+            <!-- Items -->
+            <div class="divide-y divide-outline-variant/20">
+                <div th:each="item : ${order.items}"
+                     class="px-md py-4 flex justify-between items-center">
+                    <div>
+                        <p class="font-medium text-on-surface text-sm" th:text="${item.productName}">Product</p>
+                        <p class="text-xs text-on-surface-variant mt-0.5">
+                            Qty: <span th:text="${item.quantity}">1</span> ×
+                            ₦<span th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </p>
+                    </div>
+                    <span class="font-bold text-on-surface text-sm">
+                        ₦<span th:text="${#numbers.formatDecimal(item.lineTotal, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Totals -->
+            <div class="p-md border-t border-outline-variant/30 space-y-2 text-sm">
+                <div class="flex justify-between text-on-surface-variant">
+                    <span>Subtotal</span>
+                    <span>₦<span th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                </div>
+                <div class="flex justify-between text-on-surface-variant">
+                    <span>Delivery fee</span>
+                    <span>₦<span th:text="${#numbers.formatDecimal(order.deliveryFee, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                </div>
+                <div class="flex justify-between font-bold text-on-surface text-base pt-2 border-t border-outline-variant/30">
+                    <span>Total Paid</span>
+                    <span class="text-primary">₦<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-lg mb-lg">
+            <h3 class="font-headline-sm text-on-surface font-bold mb-md flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">location_on</span>
+                Delivery Address
+            </h3>
+            <p class="font-semibold text-on-surface" th:text="${order.shippingName}">Name</p>
+            <p class="text-sm text-on-surface-variant mt-1" th:text="${order.shippingPhone}">Phone</p>
+            <p class="text-sm text-on-surface-variant mt-0.5"
+               th:text="${order.shippingAddress + ', ' + order.shippingCity + ', ' + order.shippingState}">Address</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-md">
+            <a th:href="@{/customer/orders/{id}(id=${order.id})}"
+               class="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-primary text-primary rounded-xl font-semibold hover:bg-primary/5 transition-all">
+                <span class="material-symbols-outlined text-sm">receipt_long</span>
+                View Order
+            </a>
+            <a th:href="@{/customer/shop}"
+               class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-semibold shadow-md shadow-primary/20 hover:opacity-90 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-sm">storefront</span>
+                Continue Shopping
+            </a>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>

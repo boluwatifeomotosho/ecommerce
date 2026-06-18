@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Verify OTP — NaijaMart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a0a00 0%, #3d2000 50%, #6b3a1f 100%);
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; overflow: hidden;
+        }
+
+        .orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: .25; pointer-events: none; animation: orbFloat 8s ease-in-out infinite; }
+        .orb-1 { width: 360px; height: 360px; background: #c4622d; top: -80px; right: -80px; }
+        .orb-2 { width: 280px; height: 280px; background: #6b3a1f; bottom: -60px; left: -60px; animation-delay: -3s; }
+        .orb-3 { width: 180px; height: 180px; background: #e8a87c; top: 50%; left: 10%; animation-delay: -5s; }
+        @keyframes orbFloat {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33%  { transform: translate(20px,-20px) scale(1.05); }
+            66%  { transform: translate(-15px,10px) scale(.95); }
+        }
+
+        .card {
+            background: white; border-radius: 20px; padding: 40px 40px 36px;
+            width: 100%; max-width: 400px;
+            box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.05);
+            animation: cardIn .7s cubic-bezier(.22,1,.36,1) both;
+            position: relative; z-index: 1; text-align: center;
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(32px) scale(.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .brand-mark {
+            width: 52px; height: 52px;
+            background: linear-gradient(135deg, #6b3a1f, #c4622d);
+            border-radius: 14px; display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 10px; box-shadow: 0 8px 24px rgba(196,98,45,.4);
+        }
+        .brand-mark svg { width: 26px; height: 26px; fill: white; }
+        .brand-name { font-size: 20px; font-weight: 700; color: #1a0a00; letter-spacing: -.5px; margin-bottom: 24px; }
+
+        .otp-icon {
+            width: 60px; height: 60px;
+            background: rgba(196,98,45,.1); border: 2px solid rgba(196,98,45,.3);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 18px;
+        }
+
+        h2 { font-size: 18px; font-weight: 600; color: #1a0a00; margin-bottom: 6px; }
+        .sub { font-size: 13px; color: #6b7280; margin-bottom: 24px; line-height: 1.5; }
+        .sub strong { color: #1a0a00; }
+
+        .alert { padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; }
+        .alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+        .alert-info  { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
+
+        .otp-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
+        .otp-box {
+            width: 50px; height: 58px;
+            border: 1.5px solid #d1d5db; border-radius: 10px;
+            font-size: 22px; font-weight: 700; text-align: center; color: #1a0a00;
+            background: #f9fafb; outline: none;
+            caret-color: #c4622d;
+            transition: border-color .15s, background .15s, box-shadow .15s;
+        }
+        .otp-box:focus { border-color: #c4622d; background: white; box-shadow: 0 0 0 3px rgba(196,98,45,.12); }
+        .otp-box.filled { border-color: #c4622d; background: white; }
+
+        .btn {
+            width: 100%; padding: 12px;
+            background: linear-gradient(135deg, #6b3a1f, #c4622d);
+            color: white; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer;
+            box-shadow: 0 4px 16px rgba(196,98,45,.3);
+            transition: opacity .15s, transform .1s;
+        }
+        .btn:hover:not(:disabled) { opacity: .92; }
+        .btn:active:not(:disabled) { transform: scale(.99); }
+        .btn:disabled { background: #d1d5db; color: #6b7280; cursor: not-allowed; box-shadow: none; }
+
+        .resend-row { margin-top: 18px; font-size: 13px; color: #6b7280; }
+        .resend-btn {
+            background: none; border: none; cursor: pointer; padding: 0;
+            color: #6b3a1f; font-size: 13px; font-weight: 600; font-family: inherit;
+            text-decoration: underline;
+        }
+        .resend-btn:disabled { color: #9ca3af; text-decoration: none; cursor: not-allowed; }
+
+        .timer { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+        .timer.expiring { color: #dc2626; }
+
+        .back { margin-top: 16px; font-size: 13px; color: #6b7280; }
+        .back a { color: #6b3a1f; font-weight: 600; text-decoration: none; }
+        .back a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="card">
+    <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M4 19h16v2H4v-2zm15-9h1c1.1 0 2 .9 2 2v3c0 1.1-.9 2-2 2h-1.32A4.99 4.99 0 0 1 14 21H8a5 5 0 0 1-5-5V4h16v6zm0 5h1v-3h-1v3z"/></svg>
+    </div>
+    <div class="brand-name">NaijaMart</div>
+
+    <div class="otp-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c4622d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+    </div>
+
+    <h2>Enter your code</h2>
+    <p class="sub">We sent a 6-digit code to<br/><strong th:text="${phone}">+2348000000000</strong></p>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${info}"  class="alert alert-info"  th:text="${info}"></div>
+
+    <form id="otpForm" th:action="@{/login/phone/verify}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" id="otpHidden" name="otp" value=""/>
+
+        <div class="otp-row" id="otpRow">
+            <input class="otp-box" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code"/>
+            <input class="otp-box" type="text" inputmode="numeric" maxlength="1"/>
+            <input class="otp-box" type="text" inputmode="numeric" maxlength="1"/>
+            <input class="otp-box" type="text" inputmode="numeric" maxlength="1"/>
+            <input class="otp-box" type="text" inputmode="numeric" maxlength="1"/>
+            <input class="otp-box" type="text" inputmode="numeric" maxlength="1"/>
+        </div>
+
+        <button type="submit" class="btn" id="verifyBtn" disabled>Sign In</button>
+    </form>
+
+    <div class="resend-row">
+        Didn't receive it?
+        <form th:action="@{/login/phone/resend}" method="post" style="display:inline">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="resend-btn" id="resendBtn" disabled>Resend code</button>
+        </form>
+    </div>
+    <div class="timer" id="timer"></div>
+
+    <div class="back">
+        <a th:href="@{/login/phone}">&#8592; Change number</a>
+    </div>
+</div>
+
+<script>
+    const boxes     = Array.from(document.querySelectorAll('.otp-box'));
+    const hidden    = document.getElementById('otpHidden');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const resendBtn = document.getElementById('resendBtn');
+    const timerEl   = document.getElementById('timer');
+
+    boxes.forEach((box, i) => {
+        box.addEventListener('keydown', e => {
+            if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+        });
+        box.addEventListener('input', e => {
+            const val = e.target.value.replace(/\D/g, '').slice(-1);
+            box.value = val;
+            box.classList.toggle('filled', !!val);
+            if (val && i < boxes.length - 1) boxes[i + 1].focus();
+            sync();
+        });
+        box.addEventListener('paste', e => {
+            e.preventDefault();
+            const digits = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+            digits.split('').forEach((d, j) => {
+                if (boxes[j]) { boxes[j].value = d; boxes[j].classList.add('filled'); }
+            });
+            const next = Math.min(digits.length, 5);
+            boxes[next].focus();
+            sync();
+        });
+    });
+
+    function sync() {
+        const code = boxes.map(b => b.value).join('');
+        hidden.value  = code;
+        verifyBtn.disabled = code.length < 6;
+    }
+
+    // 10-minute countdown
+    let seconds = 600;
+    resendBtn.disabled = true;
+
+    const tick = setInterval(() => {
+        seconds--;
+        if (seconds <= 0) {
+            clearInterval(tick);
+            timerEl.textContent = 'Code expired. Please request a new one.';
+            timerEl.classList.add('expiring');
+            resendBtn.disabled = false;
+            return;
+        }
+        const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        timerEl.textContent = `Code expires in ${m}:${s}`;
+        if (seconds <= 30) {
+            timerEl.classList.add('expiring');
+            resendBtn.disabled = false;
+        }
+    }, 1000);
+
+    boxes[0].focus();
+</script>
+</body>
+</html>

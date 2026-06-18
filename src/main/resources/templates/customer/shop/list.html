@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shop — NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/customer-sidebar :: sidebar('shop', ${name})}"></aside>
+
+<main class="ml-[280px] min-h-screen bg-surface-bright">
+
+    <!-- Page Header -->
+    <div class="p-8 pb-0">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-on-surface">Browse Products</h1>
+                <p class="text-sm text-on-surface-variant mt-0.5" th:if="${products != null}">
+                    <span th:text="${products.totalElements}">0</span> products available
+                </p>
+            </div>
+            <a th:href="@{/customer/cart}"
+               class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-xl font-semibold text-sm shadow-md shadow-primary/20 hover:opacity-90 transition-opacity">
+                <span class="material-symbols-outlined text-base">shopping_cart</span>
+                My Cart
+                <span th:if="${cartItemCount != null and cartItemCount > 0}"
+                      class="bg-white/20 text-white text-xs font-bold px-1.5 py-0.5 rounded-full"
+                      th:text="${cartItemCount}">0</span>
+            </a>
+        </div>
+
+        <!-- Horizontal Filter Bar -->
+        <form th:action="@{/customer/shop}" method="get" id="filter-form"
+              class="flex flex-wrap gap-3 p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm mb-6">
+
+            <!-- Search -->
+            <div class="relative flex-1 min-w-[180px]">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+                <input type="text" name="search" th:value="${filter.search}"
+                       placeholder="Search products…"
+                       class="w-full pl-9 pr-3 py-2 text-sm border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface-bright"/>
+            </div>
+
+            <!-- Category -->
+            <select name="categoryId"
+                    onchange="document.getElementById('filter-form').submit()"
+                    class="px-3 py-2 text-sm border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface-bright min-w-[160px]">
+                <option value="">All Categories</option>
+                <optgroup th:each="root : ${rootCategories}" th:label="${root.name()}">
+                    <option th:value="${root.id()}"
+                            th:text="'All ' + ${root.name()}"
+                            th:selected="${filter.categoryId != null and filter.categoryId.equals(root.id())}">Root</option>
+                    <th:block th:if="${subCategoryMap != null and subCategoryMap.containsKey(root.id())}">
+                        <option th:each="sub : ${subCategoryMap.get(root.id())}"
+                                th:value="${sub.id()}"
+                                th:text="${sub.name()}"
+                                th:selected="${filter.categoryId != null and filter.categoryId.equals(sub.id())}">Sub</option>
+                    </th:block>
+                </optgroup>
+            </select>
+
+            <!-- Price range -->
+            <div class="flex items-center gap-2">
+                <input type="number" name="minPrice" th:value="${filter.minPrice}" placeholder="Min ₦"
+                       min="0" class="w-24 px-3 py-2 text-sm border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface-bright"/>
+                <span class="text-on-surface-variant text-sm">–</span>
+                <input type="number" name="maxPrice" th:value="${filter.maxPrice}" placeholder="Max ₦"
+                       min="0" class="w-24 px-3 py-2 text-sm border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface-bright"/>
+            </div>
+
+            <!-- Sort -->
+            <select name="sort" onchange="document.getElementById('filter-form').submit()"
+                    class="px-3 py-2 text-sm border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface-bright">
+                <option value="newest"     th:selected="${sort == 'newest'}">Newest</option>
+                <option value="price-asc"  th:selected="${sort == 'price-asc'}">Price: Low → High</option>
+                <option value="price-desc" th:selected="${sort == 'price-desc'}">Price: High → Low</option>
+                <option value="name"       th:selected="${sort == 'name'}">Name A–Z</option>
+            </select>
+
+            <button type="submit"
+                    class="px-5 py-2 bg-primary text-on-primary text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity">
+                Search
+            </button>
+
+            <a th:href="@{/customer/shop}"
+               th:if="${filter.search != null or filter.categoryId != null or filter.minPrice != null or filter.maxPrice != null}"
+               class="px-4 py-2 text-sm text-on-surface-variant border border-outline-variant rounded-lg hover:text-on-surface hover:border-on-surface-variant transition-colors">
+                Clear
+            </a>
+        </form>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="px-8 pb-8">
+
+        <!-- Empty State -->
+        <div th:if="${products == null or products.isEmpty()}"
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-16 text-center">
+            <span class="material-symbols-outlined text-6xl text-outline-variant">inventory_2</span>
+            <h3 class="mt-4 text-lg font-semibold text-on-surface">No products found</h3>
+            <p class="text-sm text-on-surface-variant mt-1">Try adjusting your search or filters.</p>
+            <a th:href="@{/customer/shop}"
+               class="inline-block mt-5 bg-primary text-on-primary text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity">
+                Clear Filters
+            </a>
+        </div>
+
+        <!-- Grid -->
+        <div th:if="${products != null and !products.isEmpty()}"
+             class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <a th:each="product : ${products.content}"
+               th:href="@{'/customer/shop/' + ${product.slug}}"
+               class="group bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm hover:shadow-md hover:border-primary transition-all overflow-hidden flex flex-col">
+
+                <!-- Image -->
+                <div class="relative aspect-square overflow-hidden bg-surface-container">
+                    <img th:if="${product.primaryImageUrl != null}"
+                         th:src="${product.primaryImageUrl}" th:alt="${product.name}"
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                    <div th:if="${product.primaryImageUrl == null}"
+                         class="w-full h-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-5xl text-outline-variant">image</span>
+                    </div>
+                    <div th:if="${!product.isInStock()}"
+                         class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <span class="bg-white/90 text-on-surface text-xs font-semibold px-3 py-1 rounded-full">Out of Stock</span>
+                    </div>
+                    <div th:if="${product.isOnSale()}" class="absolute top-2 left-2">
+                        <span class="bg-primary text-on-primary text-xs font-bold px-2 py-0.5 rounded-full">SALE</span>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="p-3 flex flex-col flex-1">
+                    <p class="text-xs text-primary font-medium mb-1" th:text="${product.categoryName}">Category</p>
+                    <h3 class="text-sm font-semibold text-on-surface leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors"
+                        th:text="${product.name}">Product</h3>
+                    <div class="mt-auto flex items-baseline gap-2">
+                        <span class="text-base font-bold text-on-surface">
+                            ₦<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </span>
+                        <span th:if="${product.isOnSale()}" class="text-xs text-on-surface-variant line-through">
+                            ₦<span th:text="${#numbers.formatDecimal(product.compareAtPrice, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Pagination -->
+        <div th:if="${products != null and products.totalPages > 1}"
+             class="flex items-center justify-center gap-3 mt-8">
+            <a th:if="${products.number > 0}"
+               th:href="@{/customer/shop(page=${products.number - 1}, sort=${sort}, search=${filter.search}, categoryId=${filter.categoryId}, minPrice=${filter.minPrice}, maxPrice=${filter.maxPrice})}"
+               class="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-lg">chevron_left</span> Previous
+            </a>
+            <span class="text-sm text-on-surface-variant">
+                Page <strong th:text="${products.number + 1}">1</strong> of <strong th:text="${products.totalPages}">1</strong>
+            </span>
+            <a th:if="${products.number + 1 < products.totalPages}"
+               th:href="@{/customer/shop(page=${products.number + 1}, sort=${sort}, search=${filter.search}, categoryId=${filter.categoryId}, minPrice=${filter.minPrice}, maxPrice=${filter.maxPrice})}"
+               class="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary hover:text-primary transition-colors">
+                Next <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </a>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
