@@ -38,11 +38,12 @@
                 </form>
             </th:block>
             <!-- Anonymous user -->
-            <th:block sec:authorize="isAnonymous()">
-                <a th:href="@{/register/vendor}" class="hidden md:block text-body-md text-on-surface-variant hover:text-primary transition-colors">Become a Seller</a>
-                <a th:href="@{/login}" class="hidden md:block px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">Login</a>
-                <a th:href="@{/register}" class="px-md py-2 text-label-md bg-primary text-on-primary rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95">Sign Up</a>
-            </th:block>
+             <th:block sec:authorize="isAnonymous()">
+                 <a th:href="@{/register/vendor}" class="hidden md:block text-body-md text-on-surface-variant hover:text-primary transition-colors">Become a Seller</a>
+                 <a th:href="@{/login}" class="hidden sm:block px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">Login</a>
+                 <a th:href="@{/login}" class="sm:hidden px-2 py-1 text-xs bg-primary text-on-primary rounded-md hover:opacity-90 transition-all active:scale-95">Sign In</a>
+                 <a th:href="@{/register}" class="hidden sm:block px-md py-2 text-label-md bg-primary text-on-primary rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95">Sign Up</a>
+             </th:block>
         </div>
     </div>
 </nav>
