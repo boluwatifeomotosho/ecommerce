@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,6 +26,11 @@ public class OrderServiceImpl implements OrderService {
 
     private static final BigDecimal DELIVERY_FEE = new BigDecimal("1500.00");
     private static final Set<OrderStatus> RETRYABLE = EnumSet.of(OrderStatus.PENDING_PAYMENT, OrderStatus.CANCELLED);
+    private static final Map<OrderStatus, Set<OrderStatus>> ALLOWED_TRANSITIONS = Map.of(
+            OrderStatus.PAID,       Set.of(OrderStatus.PROCESSING),
+            OrderStatus.PROCESSING, Set.of(OrderStatus.SHIPPED),
+            OrderStatus.SHIPPED,    Set.of(OrderStatus.DELIVERED)
+    );
 
     private final OrderRepository    orderRepository;
     private final CartItemRepository cartItemRepository;
@@ -212,6 +218,29 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findByIdAndVendorId(orderId, vendorId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found or not associated with your products"));
         return toDto(order);
+    }
+
+    @Override
+    public void updateOrderStatusByAdmin(UUID orderId, OrderStatus newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        validateTransition(order.getStatus(), newStatus);
+        order.setStatus(newStatus);
+    }
+
+    @Override
+    public void updateOrderStatusByVendor(UUID orderId, UUID vendorId, OrderStatus newStatus) {
+        Order order = orderRepository.findByIdAndVendorId(orderId, vendorId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found or not associated with your products"));
+        validateTransition(order.getStatus(), newStatus);
+        order.setStatus(newStatus);
+    }
+
+    private void validateTransition(OrderStatus current, OrderStatus target) {
+        Set<OrderStatus> allowed = ALLOWED_TRANSITIONS.getOrDefault(current, Set.of());
+        if (!allowed.contains(target)) {
+            throw new IllegalStateException("Cannot move order from " + current + " to " + target);
+        }
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

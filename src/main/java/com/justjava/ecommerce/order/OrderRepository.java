@@ -29,20 +29,18 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     @Query("SELECT o FROM Order o JOIN FETCH o.items ORDER BY o.createdAt DESC")
     Page<Order> findAllWithItems(Pageable pageable);
 
+    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
+
     @Query(value = "SELECT DISTINCT o FROM Order o JOIN o.items i WHERE i.product.vendor.id = :vendorId",
            countQuery = "SELECT COUNT(DISTINCT o) FROM Order o JOIN o.items i WHERE i.product.vendor.id = :vendorId")
     Page<Order> findByVendorId(@Param("vendorId") UUID vendorId, Pageable pageable);
 
-    @Query("SELECT o FROM Order o JOIN FETCH o.items i WHERE o.id = :id AND i.product.vendor.id = :vendorId")
-    Optional<Order> findByIdAndVendorId(@Param("id") UUID id, @Param("vendorId") UUID vendorId);
-
-    // ── Status-filtered list queries ─────────────────────────────────────────
-
-    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
-
     @Query(value = "SELECT DISTINCT o FROM Order o JOIN o.items i WHERE i.product.vendor.id = :vendorId AND o.status = :status",
            countQuery = "SELECT COUNT(DISTINCT o) FROM Order o JOIN o.items i WHERE i.product.vendor.id = :vendorId AND o.status = :status")
     Page<Order> findByVendorIdAndStatus(@Param("vendorId") UUID vendorId, @Param("status") OrderStatus status, Pageable pageable);
+
+    @Query("SELECT o FROM Order o JOIN FETCH o.items i WHERE o.id = :id AND i.product.vendor.id = :vendorId")
+    Optional<Order> findByIdAndVendorId(@Param("id") UUID id, @Param("vendorId") UUID vendorId);
 
     // ── Dashboard stats ───────────────────────────────────────────────────────
 

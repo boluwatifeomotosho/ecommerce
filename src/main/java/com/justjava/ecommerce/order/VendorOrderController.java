@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.UUID;
 
@@ -53,6 +54,23 @@ public class VendorOrderController {
         model.addAttribute("order", order);
         model.addAttribute("name", principal.getFullName() != null ? principal.getFullName() : "Vendor");
         return "vendor/orders/detail";
+    }
+
+    @PostMapping("/{id}/status")
+    public String updateStatus(
+            @PathVariable UUID id,
+            @RequestParam OrderStatus status,
+            @AuthenticationPrincipal OidcUser principal,
+            RedirectAttributes flash
+    ) {
+        UUID vendorId = resolveVendorId(principal);
+        try {
+            orderService.updateOrderStatusByVendor(id, vendorId, status);
+            flash.addFlashAttribute("successMessage", "Order status updated to " + status + ".");
+        } catch (Exception e) {
+            flash.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/vendor/orders/" + id;
     }
 
     private UUID resolveVendorId(OidcUser principal) {

@@ -10,6 +10,24 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #ccc3d8; border-radius: 10px; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        @keyframes slideInLeft { from { opacity:0; transform:translateX(-40px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes fadeInDown  { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeInUp    { from { opacity:0; transform:translateY(20px);  } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn      { from { opacity:0; }                              to { opacity:1; } }
+        @keyframes scaleIn     { from { opacity:0; transform:scale(.95); }        to { opacity:1; transform:scale(1); } }
+
+        .anim-slide-left  { animation: slideInLeft .5s cubic-bezier(.22,1,.36,1) both; }
+        .anim-fade-down   { animation: fadeInDown  .45s cubic-bezier(.22,1,.36,1) both; }
+        .anim-fade-up     { animation: fadeInUp    .45s cubic-bezier(.22,1,.36,1) both; }
+        .anim-fade        { animation: fadeIn      .4s ease both; }
+        .anim-scale       { animation: scaleIn     .4s cubic-bezier(.34,1.56,.64,1) both; }
+        .anim-d1 { animation-delay: .1s; }
+        .anim-d2 { animation-delay: .2s; }
+        .anim-d3 { animation-delay: .3s; }
+        .anim-d4 { animation-delay: .4s; }
+        .anim-d5 { animation-delay: .5s; }
+        .anim-d6 { animation-delay: .6s; }
     </style>
     <script>
         tailwind.config = {

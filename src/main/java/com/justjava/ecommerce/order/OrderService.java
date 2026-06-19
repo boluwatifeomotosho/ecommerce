@@ -33,4 +33,8 @@ public interface OrderService {
     Page<OrderDto> getVendorOrders(UUID vendorId, OrderStatus statusFilter, Pageable pageable);
 
     OrderDto getOrderByIdForVendor(UUID orderId, UUID vendorId);
+
+    void updateOrderStatusByAdmin(UUID orderId, OrderStatus newStatus);
+
+    void updateOrderStatusByVendor(UUID orderId, UUID vendorId, OrderStatus newStatus);
 }

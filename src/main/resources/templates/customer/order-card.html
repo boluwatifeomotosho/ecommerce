@@ -37,7 +37,9 @@
             <!-- Cancel button — only for PENDING_PAYMENT; HTMX submits form, JS opens modal -->
             <form th:if="${order.status.name() == 'PENDING_PAYMENT'}"
                   th:action="@{/customer/orders/{id}/cancel(id=${order.id})}"
-                  th:attr="hx-post=@{/customer/orders/{id}/cancel(id=${order.id})},hx-target='#order-card-' + ${order.id},hx-swap='outerHTML'"
+                  th:hx-post="@{/customer/orders/{id}/cancel(id=${order.id})}"
+                  th:hx-target="|#order-card-${order.id}|"
+                  hx-swap="outerHTML"
                   method="post">
                 <button type="button"
                         th:attr="data-order-ref=${#strings.substring(order.id.toString(),0,8).toUpperCase()}"

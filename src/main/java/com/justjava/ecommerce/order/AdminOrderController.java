@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.UUID;
 
@@ -50,6 +51,21 @@ public class AdminOrderController {
         model.addAttribute("order", order);
         enrichModel(auth, model);
         return "admin/orders/detail";
+    }
+
+    @PostMapping("/{id}/status")
+    public String updateStatus(
+            @PathVariable UUID id,
+            @RequestParam OrderStatus status,
+            RedirectAttributes flash
+    ) {
+        try {
+            orderService.updateOrderStatusByAdmin(id, status);
+            flash.addFlashAttribute("successMessage", "Order status updated to " + status + ".");
+        } catch (Exception e) {
+            flash.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/orders/" + id;
     }
 
     private void enrichModel(Authentication auth, Model model) {
