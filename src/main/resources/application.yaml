@@ -21,6 +21,7 @@ spring:
             client-secret: ${KEYCLOAK_CLIENT_SECRET:xLl1RuQ087mnGzue5AroeW6QGsf7tx4Z}
             authorization-grant-type: authorization_code
             scope: openid,profile,email
+            redirect-uri: ${APP_BASE_URL:http://localhost:8081}/login/oauth2/code/keycloak
   flyway:
     enabled: true
     locations: classpath:db/migration
