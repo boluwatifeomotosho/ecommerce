@@ -68,6 +68,13 @@ public class Product extends Auditable {
     @Column(name = "weight_grams")
     private Integer weightGrams;
 
+    @Column(name = "average_rating", columnDefinition = "NUMERIC(3,2)")
+    private Double averageRating;
+
+    @Column(name = "review_count")
+    @Builder.Default
+    private int reviewCount = 0;
+
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 

@@ -248,6 +248,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderDto toDto(Order o) {
         List<OrderDto.ItemDto> items = o.getItems().stream()
                 .map(i -> new OrderDto.ItemDto(
+                        i.getProduct() != null ? i.getProduct().getId() : null,
                         i.getProductName(), i.getVendorName(),
                         i.getUnitPrice(), i.getQuantity(), i.getLineTotal()))
                 .toList();

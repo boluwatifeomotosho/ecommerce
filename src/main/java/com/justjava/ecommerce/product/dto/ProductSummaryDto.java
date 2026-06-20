@@ -16,7 +16,9 @@ public record ProductSummaryDto(
         String        vendorName,
         int           stockQuantity,
         ProductStatus status,
-        String        rejectionReason
+        String        rejectionReason,
+        Double        averageRating,
+        int           reviewCount
 ) {
     public boolean isOnSale() {
         return compareAtPrice != null && compareAtPrice.compareTo(price) > 0;

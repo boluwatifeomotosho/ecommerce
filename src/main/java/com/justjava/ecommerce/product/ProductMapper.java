@@ -49,7 +49,9 @@ public class ProductMapper {
                 p.getVendor().getFullName(),
                 p.getStockQuantity(),
                 p.getStatus(),
-                p.getRejectionReason()
+                p.getRejectionReason(),
+                p.getAverageRating(),
+                p.getReviewCount()
         );
     }
 
@@ -76,7 +78,9 @@ public class ProductMapper {
                 p.getVendor().getFullName(),
                 p.getCreatedAt(),
                 p.getUpdatedAt(),
-                p.getPublishedAt()
+                p.getPublishedAt(),
+                p.getAverageRating(),
+                p.getReviewCount()
         );
     }
 }

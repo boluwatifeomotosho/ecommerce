@@ -1,6 +1,7 @@
 package com.justjava.ecommerce.order;
 
 import com.justjava.ecommerce.cart.CartService;
+import com.justjava.ecommerce.review.ReviewService;
 import com.justjava.ecommerce.user.User;
 import com.justjava.ecommerce.user.UserRepository;
 import jakarta.validation.Valid;
@@ -30,6 +31,7 @@ public class CheckoutController {
     private final OrderService    orderService;
     private final PaystackService paystackService;
     private final UserRepository  userRepository;
+    private final ReviewService   reviewService;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -106,6 +108,10 @@ public class CheckoutController {
         OrderDto order = orderService.getOrderById(id, customerId);
         model.addAttribute("order", order);
         model.addAttribute("name",  resolveName(auth));
+        if (order.status() == OrderStatus.DELIVERED) {
+            model.addAttribute("reviewedProductIds",
+                    reviewService.getReviewedProductIds(customerId, id));
+        }
         return "customer/order-detail";
     }
 

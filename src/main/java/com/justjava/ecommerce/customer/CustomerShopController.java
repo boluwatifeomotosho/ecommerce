@@ -4,6 +4,7 @@ import com.justjava.ecommerce.category.CategoryDto;
 import com.justjava.ecommerce.category.CategoryService;
 import com.justjava.ecommerce.product.ProductQueryService;
 import com.justjava.ecommerce.product.dto.ProductFilter;
+import com.justjava.ecommerce.review.ReviewService;
 import com.justjava.ecommerce.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ public class CustomerShopController {
 
     private final ProductQueryService productQueryService;
     private final CategoryService     categoryService;
+    private final ReviewService       reviewService;
 
     @GetMapping
     public String list(
@@ -74,6 +76,7 @@ public class CustomerShopController {
     public String detail(@PathVariable String slug, Authentication auth, Model model) {
         var product = productQueryService.getPublishedProductBySlug(slug);
         model.addAttribute("product", product);
+        model.addAttribute("reviews", reviewService.getReviewsForProduct(product.id()));
         model.addAttribute("name",    resolveName(auth));
         return "customer/shop/detail";
     }

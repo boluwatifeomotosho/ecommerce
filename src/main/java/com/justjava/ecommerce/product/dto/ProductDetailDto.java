@@ -26,7 +26,9 @@ public record ProductDetailDto(
         String            vendorName,
         LocalDateTime     createdAt,
         LocalDateTime     updatedAt,
-        LocalDateTime     publishedAt
+        LocalDateTime     publishedAt,
+        Double            averageRating,
+        int               reviewCount
 ) {
     public boolean isOnSale() {
         return compareAtPrice != null && compareAtPrice.compareTo(price) > 0;

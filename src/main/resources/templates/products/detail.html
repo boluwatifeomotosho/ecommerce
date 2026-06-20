@@ -82,10 +82,27 @@
                     <h1 class="text-3xl font-bold text-on-surface leading-tight mb-2" th:text="${product.name}">Product Name</h1>
 
                     <!-- Vendor -->
-                    <p class="text-sm text-on-surface-variant mb-5">
+                    <p class="text-sm text-on-surface-variant mb-2">
                         Sold by
                         <span class="font-medium text-on-surface" th:text="${product.vendorName}">Vendor</span>
                     </p>
+
+                    <!-- Rating -->
+                    <div th:if="${product.reviewCount > 0}" class="flex items-center gap-2 mb-5">
+                        <div class="flex">
+                            <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                                <span th:if="${product.averageRating != null and i <= product.averageRating}"
+                                      class="material-symbols-outlined text-lg text-amber-400" style="font-variation-settings:'FILL' 1;">star</span>
+                                <span th:if="${product.averageRating != null and i > product.averageRating and i - 1 < product.averageRating}"
+                                      class="material-symbols-outlined text-lg text-amber-400" style="font-variation-settings:'FILL' 1;">star_half</span>
+                                <span th:if="${product.averageRating == null or i > product.averageRating and (i - 1 >= product.averageRating or product.averageRating == null)}"
+                                      class="material-symbols-outlined text-lg text-outline-variant">star</span>
+                            </th:block>
+                        </div>
+                        <span class="text-sm font-semibold text-on-surface" th:text="${#numbers.formatDecimal(product.averageRating, 1, 'POINT', 1, 'POINT')}">0.0</span>
+                        <span class="text-sm text-on-surface-variant">(<span th:text="${product.reviewCount}">0</span> reviews)</span>
+                    </div>
+                    <div th:if="${product.reviewCount == 0}" class="mb-5"></div>
 
                     <!-- Price -->
                     <div class="flex items-baseline gap-3 mb-4">
@@ -214,6 +231,38 @@
                         </a>
                     </div>
 
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div th:if="${reviews != null and !reviews.isEmpty()}"
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden mt-6">
+            <div class="px-6 py-4 border-b border-outline-variant/20">
+                <h3 class="font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">reviews</span>
+                    Customer Reviews
+                    <span class="text-sm font-normal text-on-surface-variant">(<span th:text="${#lists.size(reviews)}">0</span>)</span>
+                </h3>
+            </div>
+            <div class="divide-y divide-outline-variant/20">
+                <div th:each="review : ${reviews}" class="px-6 py-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-sm text-primary">person</span>
+                            </div>
+                            <span class="text-sm font-semibold text-on-surface" th:text="${review.customerName}">Customer</span>
+                        </div>
+                        <span class="text-xs text-on-surface-variant" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">Date</span>
+                    </div>
+                    <div class="flex mb-2">
+                        <th:block th:each="i : ${#numbers.sequence(1,5)}">
+                            <span th:if="${i <= review.rating}" class="material-symbols-outlined text-base text-amber-400" style="font-variation-settings:'FILL' 1;">star</span>
+                            <span th:if="${i > review.rating}" class="material-symbols-outlined text-base text-outline-variant">star</span>
+                        </th:block>
+                    </div>
+                    <p th:if="${review.comment != null}" class="text-sm text-on-surface leading-relaxed" th:text="${review.comment}">Comment</p>
                 </div>
             </div>
         </div>

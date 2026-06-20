@@ -24,6 +24,7 @@ public record OrderDto(
         List<ItemDto> items
 ) {
     public record ItemDto(
+            UUID       productId,
             String     productName,
             String     vendorName,
             BigDecimal unitPrice,
