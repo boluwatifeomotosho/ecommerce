@@ -180,7 +180,8 @@
                             </span>
                             <button th:if="${reviewedProductIds == null or !reviewedProductIds.contains(item.productId)}"
                                     type="button"
-                                    th:onclick="'openReviewModal(\'' + ${item.productId} + '\', \'' + ${#strings.escapeJavaScript(item.productName)} + '\')'"
+                                    th:attr="data-pid=${item.productId}, data-pname=${item.productName}"
+                                    onclick="openReviewModal(this.dataset.pid, this.dataset.pname)"
                                     class="inline-flex items-center gap-1 text-xs text-primary bg-primary/5 border border-primary/20 px-2.5 py-1 rounded-full font-semibold hover:bg-primary/10 transition-colors">
                                 <span class="material-symbols-outlined text-sm">rate_review</span>
                                 Write a Review

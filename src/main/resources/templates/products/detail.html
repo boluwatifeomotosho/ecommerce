@@ -91,11 +91,9 @@
                     <div th:if="${product.reviewCount > 0}" class="flex items-center gap-2 mb-5">
                         <div class="flex">
                             <th:block th:each="i : ${#numbers.sequence(1,5)}">
-                                <span th:if="${product.averageRating != null and i <= product.averageRating}"
+                                <span th:if="${product.averageRating != null and product.averageRating >= i}"
                                       class="material-symbols-outlined text-lg text-amber-400" style="font-variation-settings:'FILL' 1;">star</span>
-                                <span th:if="${product.averageRating != null and i > product.averageRating and i - 1 < product.averageRating}"
-                                      class="material-symbols-outlined text-lg text-amber-400" style="font-variation-settings:'FILL' 1;">star_half</span>
-                                <span th:if="${product.averageRating == null or i > product.averageRating and (i - 1 >= product.averageRating or product.averageRating == null)}"
+                                <span th:if="${product.averageRating == null or product.averageRating < i}"
                                       class="material-symbols-outlined text-lg text-outline-variant">star</span>
                             </th:block>
                         </div>
