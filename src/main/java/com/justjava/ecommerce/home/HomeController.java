@@ -2,6 +2,7 @@ package com.justjava.ecommerce.home;
 
 import com.justjava.ecommerce.cart.CartService;
 import com.justjava.ecommerce.order.Order;
+import com.justjava.ecommerce.wishlist.WishlistService;
 import com.justjava.ecommerce.order.OrderRepository;
 import com.justjava.ecommerce.order.OrderStatus;
 import com.justjava.ecommerce.product.ProductQueryService;
@@ -34,6 +35,7 @@ public class HomeController {
     private final ProductRepository   productRepository;
     private final UserRepository      userRepository;
     private final CartService         cartService;
+    private final WishlistService     wishlistService;
 
     @GetMapping("/")
     public String landing(Model model) {
@@ -55,6 +57,7 @@ public class HomeController {
             model.addAttribute("activeOrderCount",   orderRepository.countByCustomerIdAndStatusIn(customerId, activeStatuses));
             model.addAttribute("totalOrderCount",    orderRepository.countByCustomerId(customerId));
             model.addAttribute("cartItemCount",      cartService.getCartItemCount(customerId));
+            model.addAttribute("wishlistCount",      wishlistService.getWishlistCount(customerId));
             List<Order> recent = orderRepository.findRecentByCustomerId(customerId, PageRequest.of(0, 5));
             model.addAttribute("recentOrders", recent);
         }

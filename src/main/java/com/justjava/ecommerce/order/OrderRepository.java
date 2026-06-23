@@ -70,4 +70,13 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @Query("SELECT o FROM Order o WHERE o.customer.id = :customerId ORDER BY o.createdAt DESC")
     List<Order> findRecentByCustomerId(@Param("customerId") UUID customerId, Pageable pageable);
+
+    // ── Vendor earnings ───────────────────────────────────────────────────────
+
+    @Query(value = "SELECT DISTINCT o FROM Order o JOIN o.items i WHERE i.product.vendor.id = :vendorId AND o.status IN :statuses ORDER BY o.createdAt DESC",
+           countQuery = "SELECT COUNT(DISTINCT o) FROM Order o JOIN o.items i WHERE i.product.vendor.id = :vendorId AND o.status IN :statuses")
+    Page<Order> findByVendorIdAndStatusIn(@Param("vendorId") UUID vendorId, @Param("statuses") Set<OrderStatus> statuses, Pageable pageable);
+
+    @Query("SELECT COALESCE(SUM(o.total), 0) FROM Order o JOIN o.items i WHERE i.product.vendor.id = :vendorId AND o.status IN :statuses")
+    java.math.BigDecimal sumRevenueByVendorIdAndStatusIn(@Param("vendorId") UUID vendorId, @Param("statuses") Set<OrderStatus> statuses);
 }

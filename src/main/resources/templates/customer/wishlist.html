@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Wishlist — NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/customer-sidebar :: sidebar('wishlist', ${name})}"></aside>
+
+<main class="ml-0 md:ml-[280px] mt-16 md:mt-0 min-h-screen p-lg bg-surface-bright">
+
+    <div class="mb-lg">
+        <h1 class="text-2xl font-bold text-on-surface">My Wishlist</h1>
+        <p class="text-sm text-on-surface-variant mt-1">
+            <span th:text="${#lists.size(wishlistItems)}">0</span> saved item(s)
+        </p>
+    </div>
+
+    <!-- Flash -->
+    <div th:if="${wishlistMessage}"
+         class="bg-primary/5 border border-primary/20 rounded-xl px-md py-3 text-primary text-sm mb-lg flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">check_circle</span>
+        <span th:text="${wishlistMessage}">Message</span>
+    </div>
+
+    <!-- Empty state -->
+    <div th:if="${wishlistItems == null or wishlistItems.isEmpty()}"
+         class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-16 text-center shadow-sm">
+        <span class="material-symbols-outlined text-6xl text-outline-variant">favorite</span>
+        <h3 class="mt-4 text-lg font-semibold text-on-surface">Your wishlist is empty</h3>
+        <p class="text-sm text-on-surface-variant mt-1">Save products you love to buy them later.</p>
+        <a th:href="@{/customer/shop}"
+           class="inline-block mt-6 bg-primary text-on-primary text-sm font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+            Browse Products
+        </a>
+    </div>
+
+    <!-- Wishlist grid -->
+    <div th:if="${wishlistItems != null and !wishlistItems.isEmpty()}"
+         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div th:each="item : ${wishlistItems}"
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden flex flex-col group hover:shadow-md hover:border-primary transition-all">
+
+            <!-- Image -->
+            <a th:href="@{'/customer/shop/' + ${item.product.slug}}" class="relative aspect-square overflow-hidden bg-surface-container block">
+                <img th:if="${item.product.primaryImageUrl != null}"
+                     th:src="${item.product.primaryImageUrl}" th:alt="${item.product.name}"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                <div th:if="${item.product.primaryImageUrl == null}"
+                     class="w-full h-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-5xl text-outline-variant">image</span>
+                </div>
+                <div th:if="${item.product.stockQuantity <= 0}"
+                     class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <span class="bg-white/90 text-on-surface text-xs font-semibold px-3 py-1 rounded-full">Out of Stock</span>
+                </div>
+            </a>
+
+            <!-- Info -->
+            <div class="p-3 flex flex-col flex-1">
+                <p th:if="${item.product.category != null}" class="text-xs text-primary font-medium mb-1" th:text="${item.product.category.name}">Category</p>
+                <a th:href="@{'/customer/shop/' + ${item.product.slug}}"
+                   class="text-sm font-semibold text-on-surface leading-snug mb-2 line-clamp-2 hover:text-primary transition-colors"
+                   th:text="${item.product.name}">Product</a>
+                <p class="text-base font-bold text-on-surface mb-3">
+                    ₦<span th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                </p>
+                <div class="mt-auto flex flex-col gap-2">
+                    <!-- Add to cart -->
+                    <form th:if="${item.product.stockQuantity > 0}"
+                          th:action="@{/customer/cart/items}" method="post">
+                        <input type="hidden" name="productId" th:value="${item.product.id}"/>
+                        <input type="hidden" name="quantity" value="1"/>
+                        <input type="hidden" name="returnUrl" th:value="@{/customer/wishlist}"/>
+                        <button type="submit"
+                                class="w-full flex items-center justify-center gap-1.5 py-2 bg-primary text-on-primary text-xs font-semibold rounded-lg hover:opacity-90 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-sm">shopping_cart</span>
+                            Add to Cart
+                        </button>
+                    </form>
+                    <!-- Remove from wishlist -->
+                    <form th:action="@{/customer/wishlist/toggle}" method="post">
+                        <input type="hidden" name="productId" th:value="${item.product.id}"/>
+                        <input type="hidden" name="returnUrl" value="/customer/wishlist"/>
+                        <button type="submit"
+                                class="w-full flex items-center justify-center gap-1.5 py-2 border border-error/30 text-error text-xs font-semibold rounded-lg hover:bg-error/5 transition-colors">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                            Remove
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

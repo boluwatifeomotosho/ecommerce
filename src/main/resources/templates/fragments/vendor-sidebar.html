@@ -88,9 +88,11 @@
             <span class="material-symbols-outlined">analytics</span>
             <span class="font-label-md">Analytics</span>
         </a>
-        <a class="text-on-surface-variant hover:bg-primary/10 hover:text-primary rounded-lg mx-2 px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
+        <a th:href="@{/vendor/earnings}"
+           th:classappend="${activePage == 'earnings'} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'"
+           class="rounded-lg mx-2 px-4 py-2.5 flex items-center gap-3 transition-all">
             <span class="material-symbols-outlined">payments</span>
-            <span class="font-label-md">Payouts</span>
+            <span class="font-label-md">Earnings</span>
         </a>
         <div class="my-xs border-t border-outline-variant mx-4"></div>
         <a class="text-on-surface-variant hover:bg-primary/10 hover:text-primary rounded-lg mx-2 px-4 py-2.5 flex items-center gap-3 transition-all" href="#">

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Earnings — NaijaMart Vendor</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/vendor-sidebar :: sidebar('earnings', ${name})}"></aside>
+
+<main class="ml-0 md:ml-[280px] mt-16 md:mt-0 min-h-screen p-lg bg-surface-bright">
+
+    <div class="mb-lg">
+        <h1 class="text-2xl font-bold text-on-surface">Earnings Overview</h1>
+        <p class="text-sm text-on-surface-variant mt-1">Revenue from all paid and fulfilled orders containing your products.</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-lg mb-lg">
+
+        <div class="bg-gradient-to-br from-primary to-primary-container text-white rounded-2xl p-lg shadow-lg shadow-primary/20 relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 opacity-10">
+                <span class="material-symbols-outlined text-8xl">payments</span>
+            </div>
+            <div class="relative z-10">
+                <p class="text-sm text-white/80 font-medium mb-1">Total Earned</p>
+                <h3 class="text-2xl font-bold">
+                    ₦<span th:text="${totalEarned != null ? #numbers.formatDecimal(totalEarned, 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                </h3>
+                <p class="text-xs text-white/70 mt-2">Across all paid orders</p>
+            </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl p-lg border border-outline-variant/30 shadow-sm">
+            <div class="flex justify-between items-start mb-3">
+                <p class="text-sm text-on-surface-variant font-medium">Pending Settlement</p>
+                <span class="material-symbols-outlined text-amber-500 bg-amber-50 p-2 rounded-lg">pending_actions</span>
+            </div>
+            <h3 class="text-2xl font-bold text-on-surface">
+                ₦<span th:text="${pendingEarnings != null ? #numbers.formatDecimal(pendingEarnings, 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+            </h3>
+            <p class="text-xs text-on-surface-variant mt-2">Orders that are paid but not yet delivered</p>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl p-lg border border-outline-variant/30 shadow-sm">
+            <div class="flex justify-between items-start mb-3">
+                <p class="text-sm text-on-surface-variant font-medium">Settled (Delivered)</p>
+                <span class="material-symbols-outlined text-green-600 bg-green-50 p-2 rounded-lg">check_circle</span>
+            </div>
+            <h3 class="text-2xl font-bold text-on-surface">
+                ₦<span th:text="${settledEarnings != null ? #numbers.formatDecimal(settledEarnings, 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+            </h3>
+            <p class="text-xs text-on-surface-variant mt-2">Revenue from delivered orders</p>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+        <div class="px-lg py-md border-b border-outline-variant/20 flex justify-between items-center">
+            <h3 class="font-bold text-on-surface">Revenue Breakdown</h3>
+            <span class="text-xs text-on-surface-variant">Paid &amp; active orders</span>
+        </div>
+
+        <!-- Empty -->
+        <div th:if="${orders == null or orders.isEmpty()}" class="p-16 text-center">
+            <span class="material-symbols-outlined text-5xl text-outline-variant">receipt_long</span>
+            <h3 class="mt-4 text-base font-semibold text-on-surface">No earnings yet</h3>
+            <p class="text-sm text-on-surface-variant mt-1">Revenue from paid orders will appear here.</p>
+        </div>
+
+        <div th:if="${orders != null and !orders.isEmpty()}" class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-surface-container-low/50 border-b border-outline-variant/20">
+                    <tr>
+                        <th class="text-left px-lg py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Order #</th>
+                        <th class="text-left px-lg py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Customer</th>
+                        <th class="text-left px-lg py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Date</th>
+                        <th class="text-left px-lg py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Status</th>
+                        <th class="text-right px-lg py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Amount</th>
+                        <th class="text-right px-lg py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                    <tr th:each="order : ${orders.content}" class="hover:bg-surface-container-low/30 transition-colors">
+                        <td class="px-lg py-3 font-mono font-bold text-primary"
+                            th:text="${#strings.substring(order.id.toString(), 0, 8).toUpperCase()}">ABCD1234</td>
+                        <td class="px-lg py-3 text-on-surface-variant" th:text="${order.shippingName}">Customer</td>
+                        <td class="px-lg py-3 text-on-surface-variant"
+                            th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy')}">01 Jan 2025</td>
+                        <td class="px-lg py-3">
+                            <span th:switch="${order.status.name()}">
+                                <span th:case="'PAID'"       class="px-2 py-0.5 bg-blue-100  text-blue-700  rounded-full text-xs font-bold">Paid</span>
+                                <span th:case="'PROCESSING'" class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">Processing</span>
+                                <span th:case="'SHIPPED'"    class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold">Shipped</span>
+                                <span th:case="'DELIVERED'"  class="px-2 py-0.5 bg-green-100  text-green-700  rounded-full text-xs font-bold">Delivered</span>
+                                <span th:case="*"            class="px-2 py-0.5 bg-surface-container text-on-surface-variant rounded-full text-xs font-bold" th:text="${order.status}">Status</span>
+                            </span>
+                        </td>
+                        <td class="px-lg py-3 text-right font-bold text-on-surface">
+                            ₦<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </td>
+                        <td class="px-lg py-3 text-right">
+                            <a th:href="@{/vendor/orders/{id}(id=${order.id})}"
+                               class="text-primary text-xs font-semibold hover:underline">View</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div th:if="${orders != null and orders.totalPages > 1}"
+             class="flex items-center justify-center gap-3 p-4 border-t border-outline-variant/20">
+            <a th:if="${orders.number > 0}"
+               th:href="@{/vendor/earnings(page=${orders.number - 1})}"
+               class="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-lg">chevron_left</span> Previous
+            </a>
+            <span class="text-sm text-on-surface-variant">
+                Page <strong th:text="${orders.number + 1}">1</strong> of <strong th:text="${orders.totalPages}">1</strong>
+            </span>
+            <a th:if="${orders.number + 1 < orders.totalPages}"
+               th:href="@{/vendor/earnings(page=${orders.number + 1})}"
+               class="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary hover:text-primary transition-colors">
+                Next <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </a>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

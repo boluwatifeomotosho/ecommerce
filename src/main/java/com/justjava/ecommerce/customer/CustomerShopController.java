@@ -6,6 +6,8 @@ import com.justjava.ecommerce.product.ProductQueryService;
 import com.justjava.ecommerce.product.dto.ProductFilter;
 import com.justjava.ecommerce.review.ReviewService;
 import com.justjava.ecommerce.user.User;
+import com.justjava.ecommerce.user.UserRepository;
+import com.justjava.ecommerce.wishlist.WishlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -32,6 +34,8 @@ public class CustomerShopController {
     private final ProductQueryService productQueryService;
     private final CategoryService     categoryService;
     private final ReviewService       reviewService;
+    private final WishlistService     wishlistService;
+    private final UserRepository      userRepository;
 
     @GetMapping
     public String list(
@@ -75,9 +79,11 @@ public class CustomerShopController {
     @GetMapping("/{slug}")
     public String detail(@PathVariable String slug, Authentication auth, Model model) {
         var product = productQueryService.getPublishedProductBySlug(slug);
-        model.addAttribute("product", product);
-        model.addAttribute("reviews", reviewService.getReviewsForProduct(product.id()));
-        model.addAttribute("name",    resolveName(auth));
+        UUID customerId = resolveId(auth);
+        model.addAttribute("product",      product);
+        model.addAttribute("reviews",      reviewService.getReviewsForProduct(product.id()));
+        model.addAttribute("isWishlisted", wishlistService.isWishlisted(customerId, product.id()));
+        model.addAttribute("name",         resolveName(auth));
         return "customer/shop/detail";
     }
 
@@ -90,6 +96,17 @@ public class CustomerShopController {
             case "name"       -> Sort.by("name").ascending();
             default           -> Sort.by("createdAt").descending();
         };
+    }
+
+    private UUID resolveId(Authentication auth) {
+        Object p = auth.getPrincipal();
+        if (p instanceof OidcUser u) {
+            return userRepository.findByKeycloakId(u.getSubject())
+                    .orElseThrow(() -> new IllegalStateException("User not found"))
+                    .getId();
+        }
+        if (p instanceof User u) return u.getId();
+        throw new IllegalStateException("Unsupported principal");
     }
 
     private String resolveName(Authentication auth) {
