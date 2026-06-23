@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+    <title>Shop — NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<th:block th:replace="~{fragments/mobile-nav :: mobileHeader('Shop', false, null)}"/>
+
+<main class="pt-14 pb-20 min-h-screen">
+
+    <!-- Search + Filter Bar -->
+    <div class="px-4 pt-4 pb-3 bg-surface-bright sticky top-14 z-30 border-b border-outline-variant/20">
+        <form th:action="@{/mobile/shop}" method="get" id="filterForm">
+            <div class="flex gap-2">
+                <div class="flex-1 flex items-center gap-2 px-3 py-2.5 bg-surface-container rounded-xl border border-outline-variant/30">
+                    <span class="material-symbols-outlined text-on-surface-variant text-lg">search</span>
+                    <input type="text" name="search" th:value="${filter.search}"
+                           placeholder="Search products..."
+                           class="flex-1 bg-transparent text-sm text-on-surface placeholder-on-surface-variant/60 focus:outline-none"/>
+                </div>
+                <button type="button" onclick="toggleFilters()"
+                        class="w-11 h-11 flex items-center justify-center bg-surface-container rounded-xl border border-outline-variant/30 flex-shrink-0">
+                    <span class="material-symbols-outlined text-on-surface-variant">tune</span>
+                </button>
+            </div>
+
+            <!-- Expanded filters -->
+            <div id="filter-panel" class="hidden mt-3 space-y-3">
+                <!-- Category pills -->
+                <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                    <a th:href="@{/mobile/shop(search=${filter.search}, sort=${sort})}"
+                       th:classappend="${filter.categoryId == null} ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant border border-outline-variant/30'"
+                       class="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full">All</a>
+                    <th:block th:each="cat : ${rootCategories}">
+                        <a th:href="@{/mobile/shop(categoryId=${cat.id}, search=${filter.search}, sort=${sort})}"
+                           th:text="${cat.name}"
+                           th:classappend="${filter.categoryId != null and filter.categoryId == cat.id} ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant border border-outline-variant/30'"
+                           class="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full">Category</a>
+                        <th:block th:if="${subCategoryMap[cat.id] != null}" th:each="sub : ${subCategoryMap[cat.id]}">
+                            <a th:href="@{/mobile/shop(categoryId=${sub.id}, search=${filter.search}, sort=${sort})}"
+                               th:text="${sub.name}"
+                               th:classappend="${filter.categoryId != null and filter.categoryId == sub.id} ? 'bg-secondary text-on-secondary' : 'bg-surface-container-low text-on-surface-variant border border-outline-variant/20'"
+                               class="flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full ml-1">Sub</a>
+                        </th:block>
+                    </th:block>
+                </div>
+
+                <!-- Price range + Sort -->
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="number" name="minPrice" th:value="${filter.minPrice}"
+                           placeholder="Min ₦"
+                           class="px-3 py-2 text-sm bg-surface-container rounded-xl border border-outline-variant/30 focus:outline-none focus:border-primary"/>
+                    <input type="number" name="maxPrice" th:value="${filter.maxPrice}"
+                           placeholder="Max ₦"
+                           class="px-3 py-2 text-sm bg-surface-container rounded-xl border border-outline-variant/30 focus:outline-none focus:border-primary"/>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <select name="sort" th:value="${sort}"
+                            class="flex-1 px-3 py-2 text-sm bg-surface-container rounded-xl border border-outline-variant/30 focus:outline-none focus:border-primary">
+                        <option value="newest"     th:selected="${sort == 'newest'}">Newest</option>
+                        <option value="price-asc"  th:selected="${sort == 'price-asc'}">Price: Low–High</option>
+                        <option value="price-desc" th:selected="${sort == 'price-desc'}">Price: High–Low</option>
+                        <option value="name"       th:selected="${sort == 'name'}">Name A–Z</option>
+                    </select>
+                    <button type="submit"
+                            class="px-4 py-2 bg-primary text-on-primary text-sm font-semibold rounded-xl active:opacity-80">
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Flash messages -->
+    <div th:if="${cartSuccess}"
+         class="mx-4 mt-3 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 text-green-700 text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">check_circle</span>
+        <span th:text="${cartSuccess}">Success</span>
+    </div>
+    <div th:if="${cartError}"
+         class="mx-4 mt-3 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-red-700 text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">error</span>
+        <span th:text="${cartError}">Error</span>
+    </div>
+
+    <!-- Result count -->
+    <div class="px-4 pt-3 pb-1 flex items-center justify-between">
+        <p class="text-xs text-on-surface-variant">
+            <span th:text="${products.totalElements}">0</span> products
+        </p>
+        <p th:if="${filter.categoryId != null}" class="text-xs text-primary font-semibold">Filtered</p>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="px-4 pb-2">
+        <div th:if="${products.isEmpty()}" class="text-center py-12 text-on-surface-variant">
+            <span class="material-symbols-outlined text-5xl mb-2">search_off</span>
+            <p class="text-sm">No products found.</p>
+            <a th:href="@{/mobile/shop}" class="text-primary text-sm font-semibold mt-2 inline-block">Clear filters</a>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <a th:each="product : ${products.content}"
+               th:href="@{/mobile/shop/{slug}(slug=${product.slug})}"
+               class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden shadow-sm active:scale-95 transition-transform block">
+                <div class="aspect-square bg-surface-container-low overflow-hidden relative">
+                    <img th:if="${product.primaryImageUrl != null}"
+                         th:src="${product.primaryImageUrl}"
+                         th:alt="${product.name}"
+                         class="w-full h-full object-cover"/>
+                    <div th:if="${product.primaryImageUrl == null}"
+                         class="w-full h-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-outline-variant">image</span>
+                    </div>
+                    <div th:if="${product.stockQuantity == 0}"
+                         class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <span class="text-white text-xs font-bold bg-black/60 px-2 py-1 rounded-lg">Out of stock</span>
+                    </div>
+                </div>
+                <div class="p-3">
+                    <p class="text-xs font-semibold text-on-surface line-clamp-2 mb-1" th:text="${product.name}">Product</p>
+                    <p class="text-sm font-bold text-primary">
+                        ₦<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+                    </p>
+                    <div th:if="${product.averageRating != null and product.averageRating > 0}"
+                         class="flex items-center gap-0.5 mt-1">
+                        <span class="material-symbols-outlined text-amber-500 text-xs" style="font-variation-settings:'FILL' 1">star</span>
+                        <span class="text-[10px] text-on-surface-variant"
+                              th:text="${#numbers.formatDecimal(product.averageRating, 1, 1)}">4.5</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Pagination -->
+        <div th:if="${products.totalPages > 1}" class="flex justify-center gap-3 mt-5">
+            <a th:if="${products.hasPreviousPage()}"
+               th:href="@{/mobile/shop(page=${products.number - 1}, categoryId=${filter.categoryId}, search=${filter.search}, sort=${sort})}"
+               class="px-4 py-2 bg-surface-container text-on-surface text-sm font-semibold rounded-xl border border-outline-variant/30">
+                Previous
+            </a>
+            <span class="px-4 py-2 text-sm text-on-surface-variant">
+                <span th:text="${products.number + 1}">1</span> / <span th:text="${products.totalPages}">1</span>
+            </span>
+            <a th:if="${products.hasNextPage()}"
+               th:href="@{/mobile/shop(page=${products.number + 1}, categoryId=${filter.categoryId}, search=${filter.search}, sort=${sort})}"
+               class="px-4 py-2 bg-primary text-on-primary text-sm font-semibold rounded-xl">
+                Next
+            </a>
+        </div>
+    </div>
+
+</main>
+
+<th:block th:replace="~{fragments/mobile-nav :: mobileBottomNav('shop')}"/>
+
+<script>
+function toggleFilters() {
+    document.getElementById('filter-panel').classList.toggle('hidden');
+}
+</script>
+<style>
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+</style>
+</body>
+</html>

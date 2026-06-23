@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+    <title>Order Detail — NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<th:block th:replace="~{fragments/mobile-nav :: mobileHeader('Order Detail', true, '/mobile/orders')}"/>
+
+<main class="pt-14 pb-20 min-h-screen px-4 pt-[72px] space-y-4">
+
+    <!-- Flash messages -->
+    <div th:if="${successMessage}"
+         class="bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 text-green-700 text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">check_circle</span>
+        <span th:text="${successMessage}">Success</span>
+    </div>
+    <div th:if="${paymentError}"
+         class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-red-700 text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">error</span>
+        <span th:text="${paymentError}">Error</span>
+    </div>
+
+    <!-- Status Card -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-bold px-3 py-1.5 rounded-full"
+                  th:classappend="${order.status.name() == 'DELIVERED'} ? 'bg-green-100 text-green-700' :
+                                  (${order.status.name() == 'SHIPPED'} ? 'bg-blue-100 text-blue-700' :
+                                  (${order.status.name() == 'PAID' or order.status.name() == 'PROCESSING'} ? 'bg-amber-100 text-amber-700' :
+                                  (${order.status.name() == 'CANCELLED'} ? 'bg-red-100 text-red-700' :
+                                  'bg-surface-container text-on-surface-variant')))"
+                  th:text="${order.status.name().replace('_', ' ')}">Status</span>
+            <span class="text-xs text-on-surface-variant"
+                  th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy, HH:mm')}">Date</span>
+        </div>
+
+        <!-- Progress steps -->
+        <div class="flex items-center gap-1 mt-3">
+            <th:block th:with="steps=${ {'PENDING_PAYMENT','PAID','PROCESSING','SHIPPED','DELIVERED'} }">
+                <th:block th:each="step, stat : ${steps}">
+                    <div class="flex-1 h-1.5 rounded-full"
+                         th:classappend="${order.status.name() == step or
+                                          (order.status.name() == 'DELIVERED' and true) or
+                                          (order.status.name() == 'SHIPPED' and (step == 'PENDING_PAYMENT' or step == 'PAID' or step == 'PROCESSING' or step == 'SHIPPED')) or
+                                          (order.status.name() == 'PROCESSING' and (step == 'PENDING_PAYMENT' or step == 'PAID' or step == 'PROCESSING')) or
+                                          (order.status.name() == 'PAID' and (step == 'PENDING_PAYMENT' or step == 'PAID')) or
+                                          (order.status.name() == 'PENDING_PAYMENT' and step == 'PENDING_PAYMENT')} ? 'bg-primary' : 'bg-surface-container'">
+                    </div>
+                    <div th:unless="${stat.last}" class="w-0.5"></div>
+                </th:block>
+            </th:block>
+        </div>
+        <div class="flex justify-between mt-1.5">
+            <span class="text-[9px] text-on-surface-variant">Pending</span>
+            <span class="text-[9px] text-on-surface-variant">Paid</span>
+            <span class="text-[9px] text-on-surface-variant">Processing</span>
+            <span class="text-[9px] text-on-surface-variant">Shipped</span>
+            <span class="text-[9px] text-on-surface-variant">Delivered</span>
+        </div>
+    </div>
+
+    <!-- Items -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+        <h3 class="font-bold text-on-surface text-sm mb-3">Items</h3>
+        <div class="space-y-3">
+            <div th:each="item : ${order.items}" class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-surface-container-low flex-shrink-0 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-outline-variant text-xl">inventory_2</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-on-surface truncate" th:text="${item.productName}">Product</p>
+                    <p class="text-xs text-on-surface-variant">×<span th:text="${item.quantity}">1</span>
+                        <span th:if="${item.vendorName != null}" th:text="' · ' + ${item.vendorName}"></span>
+                    </p>
+                </div>
+                <span class="text-sm font-bold text-on-surface flex-shrink-0">
+                    ₦<span th:text="${#numbers.formatDecimal(item.lineTotal, 0, 'COMMA', 0, 'POINT')}">0</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Totals -->
+        <div class="border-t border-outline-variant/30 pt-3 mt-3 space-y-1.5 text-sm">
+            <div class="flex justify-between text-on-surface-variant">
+                <span>Subtotal</span>
+                <span>₦<span th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+            </div>
+            <div class="flex justify-between text-on-surface-variant">
+                <span>Delivery</span>
+                <span>₦<span th:text="${#numbers.formatDecimal(order.deliveryFee, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+            </div>
+            <div class="flex justify-between font-bold text-on-surface pt-1 border-t border-outline-variant/30">
+                <span>Total</span>
+                <span class="text-primary">₦<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Address -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+        <h3 class="font-bold text-on-surface text-sm mb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-base">location_on</span>
+            Delivery Address
+        </h3>
+        <p class="text-sm font-semibold text-on-surface" th:text="${order.shippingName}">Name</p>
+        <p class="text-sm text-on-surface-variant mt-0.5" th:text="${order.shippingPhone}">Phone</p>
+        <p class="text-sm text-on-surface-variant" th:text="${order.shippingAddress}">Address</p>
+        <p class="text-sm text-on-surface-variant" th:text="${order.shippingCity + ', ' + order.shippingState}">City, State</p>
+    </div>
+
+    <!-- Payment Info -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+        <h3 class="font-bold text-on-surface text-sm mb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-base">payments</span>
+            Payment
+        </h3>
+        <div class="space-y-1.5 text-sm">
+            <div class="flex justify-between">
+                <span class="text-on-surface-variant">Reference</span>
+                <span class="text-on-surface font-mono text-xs truncate max-w-[160px]" th:text="${order.paymentReference}">ref</span>
+            </div>
+            <div th:if="${order.paymentChannel != null}" class="flex justify-between">
+                <span class="text-on-surface-variant">Method</span>
+                <span class="text-on-surface font-semibold capitalize" th:text="${order.paymentChannel}">card</span>
+            </div>
+            <div th:if="${order.paidAt != null}" class="flex justify-between">
+                <span class="text-on-surface-variant">Paid at</span>
+                <span class="text-on-surface text-xs" th:text="${#temporals.format(order.paidAt, 'dd MMM yyyy, HH:mm')}">time</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review prompts (DELIVERED) -->
+    <div th:if="${order.status.name() == 'DELIVERED' and order.items.size() > 0}"
+         class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+        <h3 class="font-bold text-on-surface text-sm mb-3">Rate Your Items</h3>
+        <div class="space-y-2">
+            <th:block th:each="item : ${order.items}">
+                <div th:if="${item.productId != null}"
+                     class="flex items-center justify-between">
+                    <p class="text-sm text-on-surface truncate flex-1 mr-3" th:text="${item.productName}">Product</p>
+                    <span th:if="${reviewedProductIds != null and reviewedProductIds.contains(item.productId)}"
+                          class="text-xs text-green-600 font-semibold flex-shrink-0">Reviewed</span>
+                    <a th:unless="${reviewedProductIds != null and reviewedProductIds.contains(item.productId)}"
+                       th:href="@{/customer/reviews/new(orderId=${order.id}, productId=${item.productId})}"
+                       class="text-xs font-bold text-primary flex-shrink-0 px-3 py-1 bg-primary/10 rounded-lg active:bg-primary/20">
+                        Review
+                    </a>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div th:if="${order.status.name() == 'PENDING_PAYMENT' or order.status.name() == 'CANCELLED'}"
+         class="space-y-3">
+        <form th:action="@{/mobile/orders/{id}/pay(id=${order.id})}" method="post">
+            <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary font-bold py-4 rounded-2xl active:opacity-80">
+                <span class="material-symbols-outlined">payment</span>
+                Retry Payment
+            </button>
+        </form>
+        <form th:if="${order.status.name() == 'PENDING_PAYMENT'}"
+              th:action="@{/mobile/orders/{id}/cancel(id=${order.id})}" method="post"
+              onsubmit="return confirm('Cancel this order?')">
+            <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 border border-error text-error font-bold py-3.5 rounded-2xl active:bg-error/5">
+                <span class="material-symbols-outlined">cancel</span>
+                Cancel Order
+            </button>
+        </form>
+    </div>
+
+</main>
+
+<th:block th:replace="~{fragments/mobile-nav :: mobileBottomNav('orders')}"/>
+</body>
+</html>

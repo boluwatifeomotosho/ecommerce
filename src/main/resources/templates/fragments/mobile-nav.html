@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- ── Mobile Top Header ──────────────────────────────────────────────────── -->
+<th:block th:fragment="mobileHeader(title, showBack, backUrl)">
+<header class="fixed top-0 left-0 right-0 h-14 bg-surface-container-lowest border-b border-outline-variant/30 z-50 flex items-center px-4 gap-3 shadow-sm">
+    <a th:if="${showBack}" th:href="${backUrl}"
+       class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors flex-shrink-0">
+        <span class="material-symbols-outlined text-on-surface">arrow_back</span>
+    </a>
+    <span th:unless="${showBack}"
+          class="w-9 h-9 flex-shrink-0"></span>
+    <h1 class="flex-1 text-center font-bold text-primary text-lg tracking-tight" th:text="${title != null ? title : 'NaijaMart'}">NaijaMart</h1>
+    <!-- Cart icon on header -->
+    <a th:href="@{/mobile/cart}" class="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors flex-shrink-0">
+        <span class="material-symbols-outlined text-on-surface-variant">shopping_cart</span>
+        <span th:if="${cartItemCount != null and cartItemCount > 0}"
+              class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-primary text-on-primary text-[9px] font-bold rounded-full flex items-center justify-center px-0.5"
+              th:text="${cartItemCount > 9 ? '9+' : cartItemCount}">0</span>
+    </a>
+</header>
+</th:block>
+
+<!-- ── Mobile Bottom Navigation ──────────────────────────────────────────── -->
+<th:block th:fragment="mobileBottomNav(activePage)">
+<nav class="fixed bottom-0 left-0 right-0 h-16 bg-surface-container-lowest border-t border-outline-variant/30 z-50 flex items-center justify-around px-2 safe-bottom">
+    <a th:href="@{/mobile}"
+       class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors"
+       th:classappend="${activePage == 'home'} ? 'text-primary' : 'text-on-surface-variant'">
+        <span class="material-symbols-outlined text-2xl"
+              th:style="${activePage == 'home'} ? 'font-variation-settings:\'FILL\' 1' : ''">home</span>
+        <span class="text-[10px] font-semibold">Home</span>
+    </a>
+    <a th:href="@{/mobile/shop}"
+       class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors"
+       th:classappend="${activePage == 'shop'} ? 'text-primary' : 'text-on-surface-variant'">
+        <span class="material-symbols-outlined text-2xl"
+              th:style="${activePage == 'shop'} ? 'font-variation-settings:\'FILL\' 1' : ''">storefront</span>
+        <span class="text-[10px] font-semibold">Shop</span>
+    </a>
+    <a th:href="@{/mobile/cart}"
+       class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors relative"
+       th:classappend="${activePage == 'cart'} ? 'text-primary' : 'text-on-surface-variant'">
+        <span class="material-symbols-outlined text-2xl"
+              th:style="${activePage == 'cart'} ? 'font-variation-settings:\'FILL\' 1' : ''">shopping_cart</span>
+        <span th:if="${cartItemCount != null and cartItemCount > 0}"
+              class="absolute top-0 right-2 min-w-[16px] h-4 bg-primary text-on-primary text-[9px] font-bold rounded-full flex items-center justify-center px-0.5"
+              th:text="${cartItemCount > 9 ? '9+' : cartItemCount}">0</span>
+        <span class="text-[10px] font-semibold">Cart</span>
+    </a>
+    <a th:href="@{/mobile/orders}"
+       class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors"
+       th:classappend="${activePage == 'orders'} ? 'text-primary' : 'text-on-surface-variant'">
+        <span class="material-symbols-outlined text-2xl"
+              th:style="${activePage == 'orders'} ? 'font-variation-settings:\'FILL\' 1' : ''">package</span>
+        <span class="text-[10px] font-semibold">Orders</span>
+    </a>
+    <a th:href="@{/mobile/dashboard}"
+       class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors"
+       th:classappend="${activePage == 'account'} ? 'text-primary' : 'text-on-surface-variant'">
+        <span class="material-symbols-outlined text-2xl"
+              th:style="${activePage == 'account'} ? 'font-variation-settings:\'FILL\' 1' : ''">person</span>
+        <span class="text-[10px] font-semibold">Account</span>
+    </a>
+</nav>
+</th:block>
+
+</html>

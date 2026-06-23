@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+    <title th:text="${product.name} + ' — NaijaMart'">Product — NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<th:block th:replace="~{fragments/mobile-nav :: mobileHeader(null, true, '/mobile/shop')}"/>
+
+<main class="pt-14 pb-28 min-h-screen">
+
+    <!-- Image Gallery -->
+    <div class="relative bg-surface-container-low overflow-hidden" style="max-height: 320px;">
+        <div id="img-track" class="flex transition-transform duration-300 ease-out">
+            <div th:if="${product.images == null or product.images.isEmpty()}"
+                 class="w-full flex-shrink-0 h-64 flex items-center justify-center">
+                <span class="material-symbols-outlined text-7xl text-outline-variant">image</span>
+            </div>
+            <img th:each="img : ${product.images}"
+                 th:src="${img.url}"
+                 th:alt="${product.name}"
+                 class="w-full flex-shrink-0 object-cover"
+                 style="height: 280px;"/>
+        </div>
+        <!-- Dot indicators -->
+        <div th:if="${product.images != null and product.images.size() > 1}"
+             class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+            <button th:each="img, stat : ${product.images}"
+                    th:attr="data-idx=${stat.index}"
+                    onclick="goToSlide(this.dataset.idx)"
+                    th:classappend="${stat.first} ? 'bg-primary w-5' : 'bg-white/60 w-2'"
+                    class="h-2 rounded-full transition-all"></button>
+        </div>
+        <!-- Wishlist button -->
+        <form th:action="@{/mobile/wishlist/toggle}" method="post"
+              class="absolute top-3 right-3">
+            <input type="hidden" name="productId" th:value="${product.id}"/>
+            <input type="hidden" name="returnUrl" th:value="@{/mobile/shop/{slug}(slug=${product.slug})}"/>
+            <button type="submit"
+                    class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center active:scale-90 transition-transform">
+                <span class="material-symbols-outlined text-xl"
+                      th:classappend="${isWishlisted} ? 'text-error' : 'text-on-surface-variant'"
+                      th:style="${isWishlisted} ? 'font-variation-settings:\'FILL\' 1' : ''">favorite</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Product Info -->
+    <div class="px-4 pt-4">
+        <!-- Category -->
+        <span th:if="${product.category != null}"
+              class="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full"
+              th:text="${product.category.name}">Category</span>
+
+        <!-- Name & Price -->
+        <h1 class="text-lg font-bold text-on-surface mt-2 mb-1" th:text="${product.name}">Product Name</h1>
+        <div class="flex items-baseline gap-3 mb-3">
+            <span class="text-2xl font-bold text-primary">
+                ₦<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+            </span>
+            <span th:if="${product.compareAtPrice != null}"
+                  class="text-sm text-on-surface-variant line-through">
+                ₦<span th:text="${#numbers.formatDecimal(product.compareAtPrice, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+            </span>
+        </div>
+
+        <!-- Rating -->
+        <div th:if="${product.averageRating != null and product.averageRating > 0}"
+             class="flex items-center gap-1.5 mb-3">
+            <div class="flex">
+                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                    <span class="material-symbols-outlined text-sm"
+                          th:classappend="${i <= product.averageRating} ? 'text-amber-500' : 'text-outline-variant'"
+                          th:style="${i <= product.averageRating} ? 'font-variation-settings:\'FILL\' 1' : ''">star</span>
+                </th:block>
+            </div>
+            <span class="text-sm text-on-surface-variant"
+                  th:text="${#numbers.formatDecimal(product.averageRating, 1, 1)} + ' (' + ${product.reviewCount} + ' reviews)'">4.5 (12 reviews)</span>
+        </div>
+
+        <!-- Stock badge -->
+        <div class="mb-4">
+            <span th:if="${product.stockQuantity > 0}"
+                  class="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-2.5 py-1 rounded-full">
+                <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1">check_circle</span>
+                In Stock (<span th:text="${product.stockQuantity}">0</span> left)
+            </span>
+            <span th:if="${product.stockQuantity == 0}"
+                  class="inline-flex items-center gap-1 text-xs font-semibold text-error bg-red-50 border border-red-200 px-2.5 py-1 rounded-full">
+                <span class="material-symbols-outlined text-xs">cancel</span>
+                Out of Stock
+            </span>
+        </div>
+
+        <!-- Vendor -->
+        <div th:if="${product.vendorName != null}" class="flex items-center gap-2 mb-4 p-3 bg-surface-container rounded-xl">
+            <span class="material-symbols-outlined text-on-surface-variant text-base">store</span>
+            <span class="text-sm text-on-surface-variant">Sold by <strong class="text-on-surface" th:text="${product.vendorName}">Vendor</strong></span>
+        </div>
+
+        <!-- Description -->
+        <div th:if="${product.description != null}" class="mb-5">
+            <h3 class="font-bold text-on-surface text-sm mb-2">Description</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed" th:text="${product.description}">Description</p>
+        </div>
+
+        <!-- Reviews Section -->
+        <div th:if="${reviews != null and !reviews.isEmpty()}" class="mb-4">
+            <h3 class="font-bold text-on-surface text-sm mb-3">Customer Reviews</h3>
+            <div class="space-y-3">
+                <div th:each="review : ${reviews}" class="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-3">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex">
+                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                <span class="material-symbols-outlined text-xs"
+                                      th:classappend="${i <= review.rating} ? 'text-amber-500' : 'text-outline-variant'"
+                                      th:style="${i <= review.rating} ? 'font-variation-settings:\'FILL\' 1' : ''">star</span>
+                            </th:block>
+                        </div>
+                        <span class="text-[10px] text-on-surface-variant"
+                              th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">Date</span>
+                    </div>
+                    <p class="text-sm font-semibold text-on-surface" th:text="${review.reviewerName}">Name</p>
+                    <p th:if="${review.comment != null}" class="text-xs text-on-surface-variant mt-1 leading-relaxed"
+                       th:text="${review.comment}">Comment</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- Fixed bottom Add to Cart -->
+<div th:if="${product.stockQuantity > 0}"
+     class="fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant/30 p-4 pb-safe z-40">
+    <form th:action="@{/mobile/cart/items}" method="post" class="flex gap-3">
+        <input type="hidden" name="productId" th:value="${product.id}"/>
+        <input type="hidden" name="returnUrl" th:value="@{/mobile/shop/{slug}(slug=${product.slug})}"/>
+        <div class="flex items-center border border-outline-variant rounded-xl overflow-hidden">
+            <button type="button" onclick="changeQty(-1)"
+                    class="w-11 h-11 flex items-center justify-center text-on-surface-variant active:bg-surface-container">
+                <span class="material-symbols-outlined text-lg">remove</span>
+            </button>
+            <input type="number" name="quantity" id="qty" value="1" min="1"
+                   th:max="${product.stockQuantity}"
+                   class="w-12 text-center text-sm font-bold text-on-surface bg-transparent focus:outline-none"/>
+            <button type="button" onclick="changeQty(1)"
+                    class="w-11 h-11 flex items-center justify-center text-on-surface-variant active:bg-surface-container">
+                <span class="material-symbols-outlined text-lg">add</span>
+            </button>
+        </div>
+        <button type="submit"
+                class="flex-1 flex items-center justify-center gap-2 bg-primary text-on-primary font-bold rounded-xl active:opacity-80 transition-opacity">
+            <span class="material-symbols-outlined text-lg">shopping_cart</span>
+            Add to Cart
+        </button>
+    </form>
+</div>
+<div th:if="${product.stockQuantity == 0}"
+     class="fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant/30 p-4 pb-safe z-40">
+    <button disabled class="w-full py-3 bg-surface-container text-on-surface-variant font-bold rounded-xl cursor-not-allowed">
+        Out of Stock
+    </button>
+</div>
+
+<script>
+var imgs = document.querySelectorAll('#img-track img');
+var current = 0;
+function goToSlide(idx) {
+    current = parseInt(idx);
+    document.getElementById('img-track').style.transform = 'translateX(-' + (current * 100) + '%)';
+    document.querySelectorAll('[data-idx]').forEach(function(btn, i) {
+        btn.classList.toggle('bg-primary', i === current);
+        btn.classList.toggle('w-5', i === current);
+        btn.classList.toggle('bg-white/60', i !== current);
+        btn.classList.toggle('w-2', i !== current);
+    });
+}
+function changeQty(delta) {
+    var el = document.getElementById('qty');
+    var val = parseInt(el.value) + delta;
+    var max = parseInt(el.max) || 99;
+    el.value = Math.max(1, Math.min(max, val));
+}
+</script>
+<style>
+.pb-safe { padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+</style>
+</body>
+</html>

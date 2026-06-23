@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+    <title>Checkout — NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<th:block th:replace="~{fragments/mobile-nav :: mobileHeader('Checkout', true, '/mobile/cart')}"/>
+
+<main class="pt-14 pb-6 min-h-screen">
+
+    <form th:action="@{/mobile/checkout}" th:object="${request}" method="post" class="px-4 pt-4 space-y-4">
+
+        <!-- Saved addresses picker -->
+        <div th:if="${savedAddresses != null and !savedAddresses.isEmpty()}"
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+            <h3 class="font-bold text-on-surface text-sm mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-base">location_on</span>
+                Delivery Address
+            </h3>
+            <div class="space-y-2" id="addr-cards">
+                <div th:each="addr, stat : ${savedAddresses}"
+                     class="addr-card flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                     th:classappend="${stat.first} ? 'border-primary bg-primary/5' : 'border-outline-variant'"
+                     th:attr="data-name=${addr.recipientName},
+                              data-phone=${addr.phone},
+                              data-address=${addr.addressLine},
+                              data-city=${addr.city},
+                              data-state=${addr.state}"
+                     onclick="pickSaved(this)">
+                    <span class="addr-radio w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 transition-colors"
+                          th:classappend="${stat.first} ? 'border-primary bg-primary' : 'border-outline-variant'"></span>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <p class="text-sm font-semibold text-on-surface" th:text="${addr.recipientName}">Name</p>
+                            <span th:if="${addr.isDefault}"
+                                  class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full uppercase">Default</span>
+                        </div>
+                        <p class="text-xs text-on-surface-variant mt-0.5"
+                           th:text="${addr.addressLine + ', ' + addr.city + ', ' + addr.state}">Address</p>
+                    </div>
+                </div>
+                <div id="new-addr-card"
+                     class="addr-card flex items-center gap-3 p-3 rounded-xl border-2 border-outline-variant cursor-pointer"
+                     onclick="pickNew()">
+                    <span class="addr-radio w-4 h-4 rounded-full border-2 border-outline-variant flex-shrink-0"></span>
+                    <span class="text-sm font-semibold text-on-surface-variant">Enter a different address</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Address Fields -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+            <h3 class="font-bold text-on-surface text-sm mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-base">local_shipping</span>
+                Delivery Details
+            </h3>
+            <div id="addr-form-fields" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-on-surface-variant mb-1">Full Name</label>
+                    <input th:field="*{shippingName}" type="text" placeholder="e.g. Emeka Okafor"
+                           class="addr-input w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm text-on-surface"/>
+                    <p th:if="${#fields.hasErrors('shippingName')}" th:errors="*{shippingName}" class="text-error text-xs mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-on-surface-variant mb-1">Phone Number</label>
+                    <input th:field="*{shippingPhone}" type="tel" placeholder="e.g. 08012345678"
+                           class="addr-input w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm text-on-surface"/>
+                    <p th:if="${#fields.hasErrors('shippingPhone')}" th:errors="*{shippingPhone}" class="text-error text-xs mt-1"></p>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-on-surface-variant mb-1">Street Address</label>
+                    <textarea th:field="*{shippingAddress}" rows="2" placeholder="House number, street name, area"
+                              class="addr-input w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm text-on-surface resize-none"></textarea>
+                    <p th:if="${#fields.hasErrors('shippingAddress')}" th:errors="*{shippingAddress}" class="text-error text-xs mt-1"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-on-surface-variant mb-1">City</label>
+                        <input th:field="*{shippingCity}" type="text" placeholder="e.g. Lagos"
+                               class="addr-input w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm text-on-surface"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-on-surface-variant mb-1">State</label>
+                        <input th:field="*{shippingState}" type="text" placeholder="e.g. Lagos State"
+                               class="addr-input w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm text-on-surface"/>
+                    </div>
+                </div>
+                <!-- Save address checkbox (shown only when entering new address) -->
+                <div class="hidden" id="save-addr-row"
+                     th:if="${savedAddresses != null and !savedAddresses.isEmpty() and #lists.size(savedAddresses) < 4}">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" th:field="*{saveAddress}" class="w-4 h-4 accent-primary rounded"/>
+                        <span class="text-sm text-on-surface-variant">Save as new delivery address</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+            <h3 class="font-bold text-on-surface text-sm mb-3">Order Summary</h3>
+            <div class="space-y-2 max-h-44 overflow-y-auto mb-3">
+                <div th:each="item : ${cart.items}" class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-lg overflow-hidden bg-surface-container-low flex-shrink-0">
+                        <img th:if="${item.primaryImageUrl != null}" th:src="${item.primaryImageUrl}"
+                             class="w-full h-full object-cover" th:alt="${item.productName}"/>
+                        <div th:if="${item.primaryImageUrl == null}" class="w-full h-full flex items-center justify-center">
+                            <span class="material-symbols-outlined text-outline-variant text-lg">image</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-medium text-on-surface truncate" th:text="${item.productName}">Product</p>
+                        <p class="text-xs text-on-surface-variant">×<span th:text="${item.quantity}">1</span></p>
+                    </div>
+                    <span class="text-sm font-bold text-on-surface flex-shrink-0">
+                        ₦<span th:text="${#numbers.formatDecimal(item.lineTotal, 0, 'COMMA', 0, 'POINT')}">0</span>
+                    </span>
+                </div>
+            </div>
+            <div class="border-t border-outline-variant/30 pt-3 space-y-1.5 text-sm">
+                <div class="flex justify-between text-on-surface-variant">
+                    <span>Subtotal</span>
+                    <span>₦<span th:text="${#numbers.formatDecimal(cart.subtotal, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                </div>
+                <div class="flex justify-between text-on-surface-variant">
+                    <span>Delivery</span>
+                    <span>₦1,500.00</span>
+                </div>
+                <div class="flex justify-between font-bold text-on-surface border-t border-outline-variant/30 pt-2">
+                    <span>Total</span>
+                    <span class="text-primary">₦<span th:text="${#numbers.formatDecimal(cart.subtotal + 1500, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment note -->
+        <div class="bg-primary/5 border border-primary/20 rounded-xl p-3 flex items-start gap-2">
+            <span class="material-symbols-outlined text-primary text-base mt-0.5">info</span>
+            <p class="text-xs text-on-surface-variant">You'll be redirected to Paystack to complete payment securely.</p>
+        </div>
+
+        <button type="submit"
+                class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary font-bold py-4 rounded-2xl shadow-md shadow-primary/20 active:opacity-80 text-base">
+            <span class="material-symbols-outlined">lock</span>
+            Pay Now
+        </button>
+    </form>
+
+</main>
+
+<script>
+(function() {
+    var addrCards = document.getElementById('addr-cards');
+    if (!addrCards) return;
+    var fields = {
+        name:    document.getElementById('shippingName'),
+        phone:   document.getElementById('shippingPhone'),
+        address: document.getElementById('shippingAddress'),
+        city:    document.getElementById('shippingCity'),
+        state:   document.getElementById('shippingState')
+    };
+    var saveRow = document.getElementById('save-addr-row');
+
+    function setReadonly(ro) {
+        Object.values(fields).forEach(function(el) {
+            if (!el) return;
+            if (ro) {
+                el.setAttribute('readonly', true);
+                el.classList.add('bg-surface-container-low', 'text-on-surface-variant', 'cursor-not-allowed');
+                el.classList.remove('bg-surface', 'text-on-surface');
+            } else {
+                el.removeAttribute('readonly');
+                el.classList.remove('bg-surface-container-low', 'text-on-surface-variant', 'cursor-not-allowed');
+                el.classList.add('bg-surface', 'text-on-surface');
+            }
+        });
+    }
+
+    function highlight(active) {
+        document.querySelectorAll('.addr-card').forEach(function(c) {
+            c.classList.remove('border-primary', 'bg-primary/5');
+            c.classList.add('border-outline-variant');
+            var dot = c.querySelector('.addr-radio');
+            if (dot) { dot.classList.remove('bg-primary', 'border-primary'); dot.classList.add('border-outline-variant'); }
+        });
+        active.classList.add('border-primary', 'bg-primary/5');
+        active.classList.remove('border-outline-variant');
+        var dot = active.querySelector('.addr-radio');
+        if (dot) { dot.classList.add('bg-primary', 'border-primary'); dot.classList.remove('border-outline-variant'); }
+    }
+
+    window.pickSaved = function(card) {
+        highlight(card);
+        if (fields.name)    fields.name.value    = card.dataset.name    || '';
+        if (fields.phone)   fields.phone.value   = card.dataset.phone   || '';
+        if (fields.address) fields.address.value = card.dataset.address || '';
+        if (fields.city)    fields.city.value    = card.dataset.city    || '';
+        if (fields.state)   fields.state.value   = card.dataset.state   || '';
+        setReadonly(true);
+        if (saveRow) saveRow.classList.add('hidden');
+    };
+
+    window.pickNew = function() {
+        highlight(document.getElementById('new-addr-card'));
+        Object.values(fields).forEach(function(el) { if (el) el.value = ''; });
+        setReadonly(false);
+        if (saveRow) saveRow.classList.remove('hidden');
+        if (fields.name) fields.name.focus();
+    };
+
+    var first = addrCards.querySelector('.addr-card[data-name]');
+    if (first) pickSaved(first);
+})();
+</script>
+</body>
+</html>

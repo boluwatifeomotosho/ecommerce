@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+    <title>NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<th:block th:replace="~{fragments/mobile-nav :: mobileHeader(null, false, null)}"/>
+
+<main class="pt-14 pb-20 min-h-screen">
+
+    <!-- Hero Banner -->
+    <div class="bg-gradient-to-br from-primary to-primary/80 text-on-primary px-5 py-8 mx-3 mt-3 rounded-2xl">
+        <p class="text-xs font-semibold uppercase tracking-widest opacity-80 mb-1">Welcome back,</p>
+        <h2 class="text-xl font-bold mb-1" th:text="${name}">Customer</h2>
+        <p class="text-sm opacity-90 mb-4">What are you shopping for today?</p>
+        <a th:href="@{/mobile/shop}"
+           class="inline-flex items-center gap-1.5 bg-on-primary text-primary text-sm font-bold px-4 py-2 rounded-xl shadow-md active:scale-95 transition-transform">
+            <span class="material-symbols-outlined text-base">storefront</span>
+            Browse Products
+        </a>
+    </div>
+
+    <!-- Categories -->
+    <section class="px-4 mt-6">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-on-surface text-base">Categories</h3>
+            <a th:href="@{/mobile/shop}" class="text-xs text-primary font-semibold">See all</a>
+        </div>
+        <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+            <a th:each="cat : ${categories}"
+               th:href="@{/mobile/shop(categoryId=${cat.id})}"
+               class="flex flex-col items-center gap-1.5 flex-shrink-0">
+                <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-2xl"
+                          th:text="${cat.icon}">category</span>
+                </div>
+                <span class="text-[11px] font-medium text-on-surface-variant text-center w-16 truncate"
+                      th:text="${cat.name}">Category</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="px-4 mt-6">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-on-surface text-base">Featured Products</h3>
+            <a th:href="@{/mobile/shop}" class="text-xs text-primary font-semibold">See all</a>
+        </div>
+
+        <div th:if="${featuredProducts == null or featuredProducts.isEmpty()}"
+             class="text-center py-8 text-on-surface-variant text-sm">
+            No products yet. Check back soon!
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <a th:each="product : ${featuredProducts}"
+               th:href="@{/mobile/shop/{slug}(slug=${product.slug})}"
+               class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden shadow-sm active:scale-95 transition-transform block">
+                <div class="aspect-square bg-surface-container-low overflow-hidden">
+                    <img th:if="${product.primaryImageUrl != null}"
+                         th:src="${product.primaryImageUrl}"
+                         th:alt="${product.name}"
+                         class="w-full h-full object-cover"/>
+                    <div th:if="${product.primaryImageUrl == null}"
+                         class="w-full h-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-outline-variant">image</span>
+                    </div>
+                </div>
+                <div class="p-3">
+                    <p class="text-xs font-semibold text-on-surface line-clamp-2 mb-1" th:text="${product.name}">Product</p>
+                    <p class="text-sm font-bold text-primary">
+                        ₦<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+                    </p>
+                    <div th:if="${product.averageRating != null and product.averageRating > 0}"
+                         class="flex items-center gap-1 mt-1">
+                        <span class="material-symbols-outlined text-amber-500 text-xs" style="font-variation-settings:'FILL' 1">star</span>
+                        <span class="text-[10px] text-on-surface-variant"
+                              th:text="${#numbers.formatDecimal(product.averageRating, 1, 1)}">4.5</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+</main>
+
+<th:block th:replace="~{fragments/mobile-nav :: mobileBottomNav('home')}"/>
+
+<style>
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+</style>
+</body>
+</html>
