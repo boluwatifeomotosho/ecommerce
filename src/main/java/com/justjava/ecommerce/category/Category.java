@@ -34,6 +34,10 @@ public class Category extends Auditable {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
+    @Column(nullable = false, length = 100)
+    @Builder.Default
+    private String icon = "category";
+
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 

@@ -9,7 +9,7 @@
                 <a th:href="@{/products}" class="text-body-md text-on-surface-variant hover:text-primary transition-colors">Shop</a>
             </div>
         </div>
-        <div class="flex items-center gap-sm">
+        <div class="flex items-center gap-xs sm:gap-sm">
             <!-- Authenticated user -->
             <th:block sec:authorize="isAuthenticated()">
                 <!-- Cart icon — customers only -->
@@ -42,8 +42,8 @@
                  <a th:href="@{/register/vendor}" class="hidden md:block text-body-md text-on-surface-variant hover:text-primary transition-colors">Become a Seller</a>
                  <a th:href="@{/login}" class="hidden sm:block px-md py-2 text-label-md text-primary border border-primary rounded-lg hover:bg-primary/5 transition-all">Login</a>
                  <a th:href="@{/register}" class="hidden sm:block px-md py-2 text-label-md bg-primary text-on-primary rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95">Sign Up</a>
-                 <a th:href="@{/login}" class="sm:hidden px-2.5 py-1.5 text-xs text-primary border border-primary rounded-md hover:bg-primary/5 transition-all">Sign In</a>
-                 <a th:href="@{/register}" class="sm:hidden px-2.5 py-1.5 text-xs bg-primary text-on-primary rounded-md hover:opacity-90 transition-all active:scale-95">Sign Up</a>
+                 <a th:href="@{/login}" class="sm:hidden shrink-0 px-2.5 py-1.5 text-xs text-primary border border-primary rounded-md hover:bg-primary/5 transition-all">Sign In</a>
+                 <a th:href="@{/register}" class="sm:hidden shrink-0 px-2.5 py-1.5 text-xs bg-primary text-on-primary rounded-md hover:opacity-90 transition-all active:scale-95">Sign Up</a>
              </th:block>
         </div>
     </div>

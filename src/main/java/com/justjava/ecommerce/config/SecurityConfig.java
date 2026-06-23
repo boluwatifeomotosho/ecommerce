@@ -31,6 +31,7 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -48,6 +49,9 @@ public class SecurityConfig {
     private final UserSyncService userSyncService;
     private final KeycloakAdminService keycloakAdminService;
     private final ObjectMapper objectMapper;
+
+    @Value("${app.base-url}")
+    private String appBaseUrl;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -163,6 +167,14 @@ public class SecurityConfig {
                 role = "WAREHOUSE_OFFICER";
             } else if (!hasRole(authorities, "ROLE_CUSTOMER")) {
                 keycloakAdminService.assignCustomerRole(oidcUser.getSubject());
+
+                Set<GrantedAuthority> updated = new HashSet<>(authorities);
+                updated.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
+                OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+                SecurityContextHolder.getContext().setAuthentication(
+                        new OAuth2AuthenticationToken(
+                                oauthToken.getPrincipal(), updated,
+                                oauthToken.getAuthorizedClientRegistrationId()));
             }
 
             userSyncService.syncUser(oidcUser, role);
@@ -242,7 +254,7 @@ public class SecurityConfig {
     private LogoutSuccessHandler oidcLogoutSuccessHandler() {
         OidcClientInitiatedLogoutSuccessHandler handler =
                 new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
-        handler.setPostLogoutRedirectUri("{baseUrl}");
+        handler.setPostLogoutRedirectUri(appBaseUrl);
         return handler;
     }
 }
