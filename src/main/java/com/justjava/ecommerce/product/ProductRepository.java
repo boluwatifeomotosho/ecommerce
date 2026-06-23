@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -47,4 +48,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             WHERE p.slug = :slug AND p.status = 'PUBLISHED'
             """)
     Optional<Product> findPublishedBySlug(@Param("slug") String slug);
+
+    @Modifying
+    @Query("UPDATE Product p SET p.stockQuantity = CASE WHEN p.stockQuantity >= :qty THEN p.stockQuantity - :qty ELSE 0 END WHERE p.id = :id")
+    void decrementStock(@Param("id") UUID id, @Param("qty") int qty);
 }

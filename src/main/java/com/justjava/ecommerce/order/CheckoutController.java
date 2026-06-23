@@ -1,5 +1,7 @@
 package com.justjava.ecommerce.order;
 
+import com.justjava.ecommerce.address.AddressForm;
+import com.justjava.ecommerce.address.CustomerAddressService;
 import com.justjava.ecommerce.cart.CartService;
 import com.justjava.ecommerce.review.ReviewService;
 import com.justjava.ecommerce.user.User;
@@ -27,11 +29,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CheckoutController {
 
-    private final CartService     cartService;
-    private final OrderService    orderService;
-    private final PaystackService paystackService;
-    private final UserRepository  userRepository;
-    private final ReviewService   reviewService;
+    private final CartService            cartService;
+    private final OrderService           orderService;
+    private final PaystackService        paystackService;
+    private final UserRepository         userRepository;
+    private final ReviewService          reviewService;
+    private final CustomerAddressService addressService;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -45,9 +48,21 @@ public class CheckoutController {
 
         if (cart.empty()) return "redirect:/customer/cart";
 
-        model.addAttribute("cart",    cart);
-        model.addAttribute("request", new CheckoutRequest());
-        model.addAttribute("name",    resolveName(auth));
+        var savedAddresses = addressService.getAddresses(customerId);
+        var req = new CheckoutRequest();
+        // Prepopulate form with default saved address if one exists
+        addressService.getDefaultAddress(customerId).ifPresent(a -> {
+            req.setShippingName(a.getRecipientName());
+            req.setShippingPhone(a.getPhone());
+            req.setShippingAddress(a.getAddressLine());
+            req.setShippingCity(a.getCity());
+            req.setShippingState(a.getState());
+        });
+
+        model.addAttribute("cart",           cart);
+        model.addAttribute("request",        req);
+        model.addAttribute("savedAddresses", savedAddresses);
+        model.addAttribute("name",           resolveName(auth));
         return "customer/checkout";
     }
 
@@ -63,12 +78,29 @@ public class CheckoutController {
         UUID customerId = resolveId(auth);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("cart", cartService.getCart(customerId));
-            model.addAttribute("name", resolveName(auth));
+            model.addAttribute("cart",           cartService.getCart(customerId));
+            model.addAttribute("savedAddresses", addressService.getAddresses(customerId));
+            model.addAttribute("name",           resolveName(auth));
             return "customer/checkout";
         }
 
         Order order = orderService.placeOrder(customerId, request);
+
+        // Save new address if customer explicitly requested it and hasn't hit the cap
+        if (request.isSaveAddress()) {
+            try {
+                AddressForm af = new AddressForm();
+                af.setRecipientName(request.getShippingName());
+                af.setPhone(request.getShippingPhone());
+                af.setAddressLine(request.getShippingAddress());
+                af.setCity(request.getShippingCity());
+                af.setState(request.getShippingState());
+                addressService.addAddress(customerId, af, false);
+            } catch (Exception ignored) {
+                // Non-fatal: address cap reached or duplicate — proceed to payment anyway
+            }
+        }
+
         return redirectToPaystack(order, auth);
     }
 

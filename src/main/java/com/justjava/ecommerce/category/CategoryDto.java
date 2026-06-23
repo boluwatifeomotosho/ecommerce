@@ -7,6 +7,7 @@ public record CategoryDto(
         String name,
         String slug,
         String imageUrl,
+        String icon,
         UUID   parentId,
         String parentName
 ) {}

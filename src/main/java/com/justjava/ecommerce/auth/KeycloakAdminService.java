@@ -120,6 +120,26 @@ public class KeycloakAdminService {
         return userId;
     }
 
+    public void updateUserName(String keycloakId, String firstName, String lastName) {
+        try {
+            String token = getAdminToken();
+            Map<String, Object> body = new HashMap<>();
+            body.put("firstName", firstName);
+            body.put("lastName", lastName);
+            restClient.put()
+                    .uri("/admin/realms/{realm}/users/{userId}", realm, keycloakId)
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(body)
+                    .retrieve()
+                    .toBodilessEntity();
+            log.info("Updated Keycloak name for user {}", keycloakId);
+        } catch (Exception e) {
+            log.warn("Could not update Keycloak name for user {}: {}", keycloakId, e.getMessage());
+            throw new RuntimeException("Failed to update name in authentication system: " + e.getMessage(), e);
+        }
+    }
+
     private void assignRealmRoleToUser(String token, String userId, Map<String, Object> role) {
         restClient.post()
                 .uri("/admin/realms/{realm}/users/{userId}/role-mappings/realm", realm, userId)

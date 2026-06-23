@@ -22,6 +22,7 @@ public class ProductMapper {
                 c.getName(),
                 c.getSlug(),
                 c.getImageUrl(),
+                c.getIcon(),
                 parent != null ? parent.getId()   : null,
                 parent != null ? parent.getName() : null
         );

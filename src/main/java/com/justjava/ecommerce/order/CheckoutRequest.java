@@ -22,4 +22,7 @@ public class CheckoutRequest {
 
     @NotBlank(message = "State is required")
     private String shippingState;
+
+    /** True when the customer explicitly wants this address saved to their profile. */
+    private boolean saveAddress = false;
 }

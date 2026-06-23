@@ -1,8 +1,10 @@
 package com.justjava.ecommerce.order;
 
+import com.justjava.ecommerce.address.CustomerAddressService;
 import com.justjava.ecommerce.cart.CartItemRepository;
 import com.justjava.ecommerce.cart.CartService;
 import com.justjava.ecommerce.product.Product;
+import com.justjava.ecommerce.product.ProductRepository;
 import com.justjava.ecommerce.user.User;
 import com.justjava.ecommerce.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +34,12 @@ public class OrderServiceImpl implements OrderService {
             OrderStatus.SHIPPED,    Set.of(OrderStatus.DELIVERED)
     );
 
-    private final OrderRepository    orderRepository;
-    private final CartItemRepository cartItemRepository;
-    private final CartService        cartService;
-    private final UserRepository     userRepository;
+    private final OrderRepository          orderRepository;
+    private final CartItemRepository       cartItemRepository;
+    private final CartService              cartService;
+    private final UserRepository           userRepository;
+    private final ProductRepository        productRepository;
+    private final CustomerAddressService   addressService;
 
     @Override
     public Order placeOrder(UUID customerId, CheckoutRequest req) {
@@ -103,14 +107,24 @@ public class OrderServiceImpl implements OrderService {
         order.setPaidAt(LocalDateTime.now());
 
         for (OrderItem item : order.getItems()) {
-            Product product = item.getProduct();
-            if (product != null) {
-                int newStock = product.getStockQuantity() - item.getQuantity();
-                product.setStockQuantity(Math.max(newStock, 0));
+            if (item.getProduct() != null) {
+                productRepository.decrementStock(item.getProduct().getId(), item.getQuantity());
             }
         }
 
-        cartService.clearCart(order.getCustomer().getId());
+        UUID customerId = order.getCustomer().getId();
+        cartService.clearCart(customerId);
+
+        // Auto-save shipping address as the customer's first saved address
+        addressService.autoSaveFromCheckout(
+                customerId,
+                order.getShippingName(),
+                order.getShippingPhone(),
+                order.getShippingAddress(),
+                order.getShippingCity(),
+                order.getShippingState()
+        );
+
         return order.getId();
     }
 
