@@ -112,6 +112,7 @@
     <!-- Logout -->
     <div class="mx-4 mt-4 mb-2">
         <form th:action="@{/logout}" method="post">
+            <input type="hidden" name="mobile" value="true"/>
             <button type="submit"
                     class="w-full flex items-center justify-center gap-2 border border-error/30 text-error font-semibold py-3.5 rounded-2xl active:bg-error/5 transition-colors">
                 <span class="material-symbols-outlined">logout</span>

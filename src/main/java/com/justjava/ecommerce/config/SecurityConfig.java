@@ -87,6 +87,7 @@ public class SecurityConfig {
                                 "/register/phone", "/register/phone/verify", "/register/phone/resend", "/register/phone/success",
                                 "/register/vendor", "/register/customer",
                                 "/login/phone", "/login/phone/verify", "/login/phone/resend",
+                                "/mobile/login",
                                 "/uploads/**",
                                 "/static/**", "/css/**", "/js/**", "/webjars/**"
                         ).permitAll()
@@ -139,8 +140,10 @@ public class SecurityConfig {
             String registrationMode = session != null
                     ? (String) session.getAttribute(RegistrationController.REGISTRATION_MODE_KEY)
                     : null;
+            boolean isMobile = session != null && Boolean.TRUE.equals(session.getAttribute("mobile"));
             if (session != null) {
                 session.removeAttribute(RegistrationController.REGISTRATION_MODE_KEY);
+                session.removeAttribute("mobile");
             }
 
             if (hasRole(authorities, "ROLE_ADMIN")) {
@@ -178,6 +181,11 @@ public class SecurityConfig {
             }
 
             userSyncService.syncUser(oidcUser, role);
+
+            if (isMobile && "/customer/dashboard".equals(redirectUrl)) {
+                redirectUrl = "/mobile";
+            }
+
             response.sendRedirect(redirectUrl);
         };
     }
@@ -252,9 +260,20 @@ public class SecurityConfig {
     }
 
     private LogoutSuccessHandler oidcLogoutSuccessHandler() {
-        OidcClientInitiatedLogoutSuccessHandler handler =
+        OidcClientInitiatedLogoutSuccessHandler desktopHandler =
                 new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
-        handler.setPostLogoutRedirectUri(appBaseUrl);
-        return handler;
+        desktopHandler.setPostLogoutRedirectUri(appBaseUrl);
+
+        OidcClientInitiatedLogoutSuccessHandler mobileHandler =
+                new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+        mobileHandler.setPostLogoutRedirectUri(appBaseUrl + "/mobile/login");
+
+        return (request, response, authentication) -> {
+            if ("true".equals(request.getParameter("mobile"))) {
+                mobileHandler.onLogoutSuccess(request, response, authentication);
+            } else {
+                desktopHandler.onLogoutSuccess(request, response, authentication);
+            }
+        };
     }
 }
