@@ -68,8 +68,9 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         Product product = productRepository.findByIdAndVendorId(productId, vendorId)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found or not owned by vendor"));
 
-        if (!product.getStatus().isEditable()) {
-            throw new IllegalStateException("Product in status " + product.getStatus() + " cannot be edited");
+        ProductStatus originalStatus = product.getStatus();
+        if (!originalStatus.isEditable()) {
+            throw new IllegalStateException("Product in status " + originalStatus + " cannot be edited");
         }
 
         var category = categoryRepository.findById(request.getCategoryId())
@@ -94,6 +95,13 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         product.getImages().clear();
         product.getImages().addAll(buildImages(request.getImageUrls()));
         linkImages(product);
+
+        // Editing a live product re-opens admin review and hides it from customers
+        // until the edit is approved or rejected.
+        if (originalStatus == ProductStatus.PUBLISHED || originalStatus == ProductStatus.PENDING_EDIT) {
+            product.setStatus(ProductStatus.PENDING_EDIT);
+            product.setRejectionReason(null);
+        }
 
         return mapper.toDetail(productRepository.save(product));
     }

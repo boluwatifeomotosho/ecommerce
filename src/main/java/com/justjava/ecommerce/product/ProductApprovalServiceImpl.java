@@ -46,9 +46,9 @@ public class ProductApprovalServiceImpl implements ProductApprovalService {
     private Product getPendingProduct(UUID productId) {
         Product product = productRepository.findByIdWithDetails(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found: " + productId));
-        if (product.getStatus() != ProductStatus.PENDING_REVIEW) {
+        if (!product.getStatus().isAwaitingReview()) {
             throw new IllegalStateException(
-                    "Product " + productId + " is not in PENDING_REVIEW (status=" + product.getStatus() + ")");
+                    "Product " + productId + " is not awaiting review (status=" + product.getStatus() + ")");
         }
         return product;
     }

@@ -54,7 +54,8 @@ public class ProductQueryServiceImpl implements ProductQueryService {
 
     @Override
     public Page<ProductSummaryDto> getPendingProducts(Pageable pageable) {
-        return productRepository.findByStatus(ProductStatus.PENDING_REVIEW, pageable)
+        return productRepository
+                .findByStatusIn(java.util.List.of(ProductStatus.PENDING_REVIEW, ProductStatus.PENDING_EDIT), pageable)
                 .map(mapper::toSummary);
     }
 

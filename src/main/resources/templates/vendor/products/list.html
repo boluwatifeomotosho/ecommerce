@@ -78,6 +78,7 @@
                                 <span th:case="'DRAFT'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container text-on-surface-variant">Draft</span>
                                 <span th:case="'PENDING_REVIEW'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">Pending Review</span>
                                 <span th:case="'PUBLISHED'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Published</span>
+                                <span th:case="'PENDING_EDIT'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Edit Pending Review</span>
                                 <span th:case="'REJECTED'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">Rejected</span>
                                 <span th:case="'ARCHIVED'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container text-on-surface-variant">Archived</span>
                                 <span th:case="*" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container text-on-surface-variant" th:text="${product.status}">Unknown</span>
@@ -85,7 +86,7 @@
                         </td>
                         <td class="px-4 py-4">
                             <div class="flex items-center justify-end gap-2">
-                                <a th:if="${product.status.name() == 'DRAFT' or product.status.name() == 'REJECTED'}" th:href="@{/vendor/products/{id}/edit(id=${product.id})}"
+                                <a th:if="${product.status.name() == 'DRAFT' or product.status.name() == 'REJECTED' or product.status.name() == 'PUBLISHED' or product.status.name() == 'PENDING_EDIT'}" th:href="@{/vendor/products/{id}/edit(id=${product.id})}"
                                    class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-on-surface bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary hover:text-primary transition-colors">
                                     <span class="material-symbols-outlined text-sm">edit</span> Edit
                                 </a>
@@ -100,6 +101,17 @@
                                         <span class="material-symbols-outlined text-sm">archive</span> Archive
                                     </button>
                                 </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${product.status.name() == 'PENDING_EDIT'}">
+                        <td colspan="6" class="px-6 pb-4 pt-0">
+                            <div class="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 ml-13">
+                                <span class="material-symbols-outlined text-amber-500 text-lg mt-0.5">hourglass_top</span>
+                                <div>
+                                    <span class="text-xs font-semibold text-amber-700 uppercase tracking-wider">Edit Awaiting Approval</span>
+                                    <p class="text-sm text-amber-800 mt-0.5">Your changes are pending admin review. This product is hidden from customers until the edit is approved or rejected.</p>
+                                </div>
                             </div>
                         </td>
                     </tr>

@@ -21,6 +21,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
     Page<Product> findByStatus(ProductStatus status, Pageable pageable);
 
+    Page<Product> findByStatusIn(java.util.Collection<ProductStatus> statuses, Pageable pageable);
+
     Page<Product> findByVendorId(UUID vendorId, Pageable pageable);
 
     boolean existsBySlug(String slug);

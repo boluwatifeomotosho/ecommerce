@@ -47,7 +47,13 @@
                             <span class="material-symbols-outlined text-[20px]">image</span>
                         </div>
                         <div>
-                            <p class="font-medium text-on-surface truncate max-w-[200px]" th:text="${p.name}"></p>
+                            <div class="flex items-center gap-2">
+                                <p class="font-medium text-on-surface truncate max-w-[200px]" th:text="${p.name}"></p>
+                                <span th:if="${p.status.name() == 'PENDING_EDIT'}"
+                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700">Edit</span>
+                                <span th:if="${p.status.name() == 'PENDING_REVIEW'}"
+                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700">New</span>
+                            </div>
                             <p class="text-xs text-on-surface-variant mt-0.5">ID: <span th:text="${#strings.abbreviate(p.id.toString(), 16)}"></span></p>
                         </div>
                     </div>
