@@ -41,7 +41,7 @@
         <div th:each="item : ${cart.items}"
              class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-3 flex gap-3">
             <!-- Image -->
-            <a th:href="@{/mobile/shop/{slug}(slug=${item.slug})}"
+            <a th:href="@{/mobile/shop/{slug}(slug=${item.productSlug})}"
                class="w-20 h-20 rounded-xl overflow-hidden bg-surface-container-low flex-shrink-0">
                 <img th:if="${item.primaryImageUrl != null}"
                      th:src="${item.primaryImageUrl}"
@@ -54,7 +54,7 @@
             </a>
             <!-- Details -->
             <div class="flex-1 min-w-0">
-                <a th:href="@{/mobile/shop/{slug}(slug=${item.slug})}">
+                <a th:href="@{/mobile/shop/{slug}(slug=${item.productSlug})}">
                     <p class="text-sm font-semibold text-on-surface line-clamp-2" th:text="${item.productName}">Product</p>
                 </a>
                 <p class="text-xs text-on-surface-variant mt-0.5" th:if="${item.vendorName != null}" th:text="${item.vendorName}">Vendor</p>

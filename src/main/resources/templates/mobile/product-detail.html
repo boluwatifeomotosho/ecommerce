@@ -123,7 +123,7 @@
                         <span class="text-[10px] text-on-surface-variant"
                               th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">Date</span>
                     </div>
-                    <p class="text-sm font-semibold text-on-surface" th:text="${review.reviewerName}">Name</p>
+                    <p class="text-sm font-semibold text-on-surface" th:text="${review.customerName}">Name</p>
                     <p th:if="${review.comment != null}" class="text-xs text-on-surface-variant mt-1 leading-relaxed"
                        th:text="${review.comment}">Comment</p>
                 </div>
