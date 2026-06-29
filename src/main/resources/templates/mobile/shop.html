@@ -6,7 +6,7 @@
     <title>Shop — NaijaMart</title>
     <th:block th:replace="~{fragments/head :: resources}"/>
 </head>
-<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+<body class="bg-surface-bright text-on-surface overflow-x-hidden page-enter">
 
 <th:block th:replace="~{fragments/mobile-nav :: mobileHeader('Shop', false, null)}"/>
 
@@ -77,12 +77,12 @@
 
     <!-- Flash messages -->
     <div th:if="${cartSuccess}"
-         class="mx-4 mt-3 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 text-green-700 text-sm flex items-center gap-2">
+         class="mx-4 mt-3 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 text-green-700 text-sm flex items-center gap-2 anim-fade-down">
         <span class="material-symbols-outlined text-base">check_circle</span>
         <span th:text="${cartSuccess}">Success</span>
     </div>
     <div th:if="${cartError}"
-         class="mx-4 mt-3 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-red-700 text-sm flex items-center gap-2">
+         class="mx-4 mt-3 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-red-700 text-sm flex items-center gap-2 anim-fade-down">
         <span class="material-symbols-outlined text-base">error</span>
         <span th:text="${cartError}">Error</span>
     </div>
@@ -103,7 +103,7 @@
             <a th:href="@{/mobile/shop}" class="text-primary text-sm font-semibold mt-2 inline-block">Clear filters</a>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-3 anim-list">
             <a th:each="product : ${products.content}"
                th:href="@{/mobile/shop/{slug}(slug=${product.slug})}"
                class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden shadow-sm active:scale-95 transition-transform block">
@@ -138,7 +138,7 @@
 
         <!-- Pagination -->
         <div th:if="${products.totalPages > 1}" class="flex justify-center gap-3 mt-5">
-            <a th:if="${products.hasPreviousPage()}"
+            <a th:if="${products.hasPrevious()}"
                th:href="@{/mobile/shop(page=${products.number - 1}, categoryId=${filter.categoryId}, search=${filter.search}, sort=${sort})}"
                class="px-4 py-2 bg-surface-container text-on-surface text-sm font-semibold rounded-xl border border-outline-variant/30">
                 Previous
@@ -146,7 +146,7 @@
             <span class="px-4 py-2 text-sm text-on-surface-variant">
                 <span th:text="${products.number + 1}">1</span> / <span th:text="${products.totalPages}">1</span>
             </span>
-            <a th:if="${products.hasNextPage()}"
+            <a th:if="${products.hasNext()}"
                th:href="@{/mobile/shop(page=${products.number + 1}, categoryId=${filter.categoryId}, search=${filter.search}, sort=${sort})}"
                class="px-4 py-2 bg-primary text-on-primary text-sm font-semibold rounded-xl">
                 Next

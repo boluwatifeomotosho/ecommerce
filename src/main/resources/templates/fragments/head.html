@@ -3,6 +3,22 @@
 <th:block th:fragment="resources">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+    <script>
+    // Smooth page exit for mobile pages (only runs when body has .page-enter)
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!document.body.classList.contains('page-enter')) return;
+        document.addEventListener('click', function(e) {
+            var a = e.target.closest('a[href]');
+            if (!a || a.target || e.ctrlKey || e.metaKey || e.shiftKey) return;
+            var href = a.getAttribute('href');
+            if (!href || href.charAt(0) === '#') return;
+            e.preventDefault();
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity .15s ease';
+            setTimeout(function() { location.href = href; }, 150);
+        });
+    });
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <style>
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
@@ -16,6 +32,7 @@
         @keyframes fadeInUp    { from { opacity:0; transform:translateY(20px);  } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeIn      { from { opacity:0; }                              to { opacity:1; } }
         @keyframes scaleIn     { from { opacity:0; transform:scale(.95); }        to { opacity:1; transform:scale(1); } }
+        @keyframes pageEnter   { from { opacity:0; }                              to { opacity:1; } }
 
         .anim-slide-left  { animation: slideInLeft .5s cubic-bezier(.22,1,.36,1) both; }
         .anim-fade-down   { animation: fadeInDown  .45s cubic-bezier(.22,1,.36,1) both; }
@@ -28,6 +45,23 @@
         .anim-d4 { animation-delay: .4s; }
         .anim-d5 { animation-delay: .5s; }
         .anim-d6 { animation-delay: .6s; }
+
+        /* Whole-page fade-in — add to <body> */
+        .page-enter { animation: pageEnter .22s ease both; }
+
+        /* Staggered list — add class="anim-list" to the container */
+        .anim-list > * { animation: fadeInUp .38s cubic-bezier(.22,1,.36,1) both; }
+        .anim-list > *:nth-child(1) { animation-delay: .12s; }
+        .anim-list > *:nth-child(2) { animation-delay: .18s; }
+        .anim-list > *:nth-child(3) { animation-delay: .24s; }
+        .anim-list > *:nth-child(4) { animation-delay: .29s; }
+        .anim-list > *:nth-child(5) { animation-delay: .34s; }
+        .anim-list > *:nth-child(6) { animation-delay: .38s; }
+        .anim-list > *:nth-child(n+7) { animation-delay: .42s; }
+
+        /* Tap feedback */
+        .tap-scale { transition: transform .12s cubic-bezier(.34,1.56,.64,1); }
+        .tap-scale:active { transform: scale(.95); }
     </style>
     <script>
         tailwind.config = {

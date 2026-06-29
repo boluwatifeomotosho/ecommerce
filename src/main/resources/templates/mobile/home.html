@@ -10,14 +10,14 @@
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
-<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+<body class="bg-surface-bright text-on-surface overflow-x-hidden page-enter">
 
 <th:block th:replace="~{fragments/mobile-nav :: mobileHeader(null, false, null)}"/>
 
 <main class="pt-14 pb-20 min-h-screen">
 
     <!-- Hero Banner -->
-    <div class="bg-gradient-to-br from-primary to-primary/80 text-on-primary px-5 py-8 mx-3 mt-3 rounded-2xl">
+    <div class="bg-gradient-to-br from-primary to-primary/80 text-on-primary px-5 py-8 mx-3 mt-3 rounded-2xl anim-scale anim-d1">
         <p class="text-xs font-semibold uppercase tracking-widest opacity-80 mb-1">Welcome back,</p>
         <h2 class="text-xl font-bold mb-1" th:text="${name}">Customer</h2>
         <p class="text-sm opacity-90 mb-4">What are you shopping for today?</p>
@@ -34,7 +34,7 @@
             <h3 class="font-bold text-on-surface text-base">Categories</h3>
             <a th:href="@{/mobile/shop}" class="text-xs text-primary font-semibold">See all</a>
         </div>
-        <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+        <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 anim-list">
             <a th:each="cat : ${categories}"
                th:href="@{/mobile/shop(categoryId=${cat.id})}"
                class="flex flex-col items-center gap-1.5 flex-shrink-0">
@@ -60,7 +60,7 @@
             No products yet. Check back soon!
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-3 anim-list">
             <a th:each="product : ${featuredProducts}"
                th:href="@{/mobile/shop/{slug}(slug=${product.slug})}"
                class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden shadow-sm active:scale-95 transition-transform block">

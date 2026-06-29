@@ -6,7 +6,7 @@
     <title>Checkout — NaijaMart</title>
     <th:block th:replace="~{fragments/head :: resources}"/>
 </head>
-<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+<body class="bg-surface-bright text-on-surface overflow-x-hidden page-enter">
 
 <th:block th:replace="~{fragments/mobile-nav :: mobileHeader('Checkout', true, '/mobile/cart')}"/>
 
@@ -16,7 +16,7 @@
 
         <!-- Saved addresses picker -->
         <div th:if="${savedAddresses != null and !savedAddresses.isEmpty()}"
-             class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4 anim-fade-up anim-d1">
             <h3 class="font-bold text-on-surface text-sm mb-3 flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary text-base">location_on</span>
                 Delivery Address
@@ -53,7 +53,7 @@
         </div>
 
         <!-- Address Fields -->
-        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4 anim-fade-up anim-d2">
             <h3 class="font-bold text-on-surface text-sm mb-3 flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary text-base">local_shipping</span>
                 Delivery Details
@@ -101,7 +101,7 @@
         </div>
 
         <!-- Order Summary -->
-        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4">
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4 anim-fade-up anim-d3">
             <h3 class="font-bold text-on-surface text-sm mb-3">Order Summary</h3>
             <div class="space-y-2 max-h-44 overflow-y-auto mb-3">
                 <div th:each="item : ${cart.items}" class="flex items-center gap-2">
@@ -144,7 +144,7 @@
         </div>
 
         <button type="submit"
-                class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary font-bold py-4 rounded-2xl shadow-md shadow-primary/20 active:opacity-80 text-base">
+                class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary font-bold py-4 rounded-2xl shadow-md shadow-primary/20 active:opacity-80 text-base anim-scale anim-d4">
             <span class="material-symbols-outlined">lock</span>
             Pay Now
         </button>

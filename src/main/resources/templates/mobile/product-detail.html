@@ -6,7 +6,7 @@
     <title th:text="${product.name} + ' — NaijaMart'">Product — NaijaMart</title>
     <th:block th:replace="~{fragments/head :: resources}"/>
 </head>
-<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+<body class="bg-surface-bright text-on-surface overflow-x-hidden page-enter">
 
 <th:block th:replace="~{fragments/mobile-nav :: mobileHeader(null, true, '/mobile/shop')}"/>
 
@@ -49,7 +49,7 @@
     </div>
 
     <!-- Product Info -->
-    <div class="px-4 pt-4">
+    <div class="px-4 pt-4 anim-fade-up anim-d1">
         <!-- Category -->
         <span th:if="${product.category != null}"
               class="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full"
@@ -135,7 +135,7 @@
 
 <!-- Fixed bottom Add to Cart -->
 <div th:if="${product.stockQuantity > 0}"
-     class="fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant/30 p-4 pb-safe z-40">
+     class="fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant/30 p-4 pb-safe z-40 anim-fade-up anim-d2">
     <form th:action="@{/mobile/cart/items}" method="post" class="flex gap-3">
         <input type="hidden" name="productId" th:value="${product.id}"/>
         <input type="hidden" name="returnUrl" th:value="@{/mobile/shop/{slug}(slug=${product.slug})}"/>
