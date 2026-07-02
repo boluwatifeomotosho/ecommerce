@@ -35,6 +35,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
     long countByVendorIdAndStockQuantityLessThanEqual(UUID vendorId, int threshold);
 
+    long countByVendorIdAndStatus(UUID vendorId, ProductStatus status);
+
     @Query("""
             SELECT p FROM Product p
             JOIN FETCH p.category

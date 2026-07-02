@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Reports — NaijaMart Admin</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+    <style>
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+        .stat-card { animation: fadeInUp .5s both; opacity:0; }
+        .stat-card:nth-child(1){ animation-delay:.15s; }
+        .stat-card:nth-child(2){ animation-delay:.25s; }
+        .stat-card:nth-child(3){ animation-delay:.35s; }
+        .stat-card:nth-child(4){ animation-delay:.45s; }
+        .content-card { animation: fadeInUp .5s .55s both; opacity:0; }
+    </style>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('reports', ${name}, ${email})}"></aside>
+
+<main class="ml-0 md:ml-[280px] mt-16 md:mt-0 min-h-screen p-8 bg-surface-bright">
+    <header class="flex justify-between items-center mb-8 bg-surface-container-lowest p-6 rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border border-outline-variant/30">
+        <div>
+            <h2 class="text-2xl font-bold text-on-surface">Reports &amp; Statistics</h2>
+            <p class="text-on-surface-variant mt-1">Platform-wide snapshot of orders, revenue, users, and products.</p>
+        </div>
+        <a th:href="@{/admin/orders}" class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity shadow-md shadow-primary/20 active:scale-95">
+            <span class="material-symbols-outlined text-sm">shopping_bag</span>
+            View Orders
+        </a>
+    </header>
+
+    <!-- Top stat cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="stat-card bg-gradient-to-br from-primary to-primary-container text-white rounded-2xl p-6 shadow-lg shadow-primary/20 relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 opacity-10">
+                <span class="material-symbols-outlined text-8xl">payments</span>
+            </div>
+            <div class="relative z-10">
+                <div class="flex justify-between items-start mb-4">
+                    <p class="text-sm text-white/80 font-medium">Platform Revenue</p>
+                    <span class="material-symbols-outlined text-white/80 bg-white/10 p-2 rounded-xl">payments</span>
+                </div>
+                <h3 class="text-2xl font-bold">
+                    ₦<span th:text="${platformRevenue != null ? #numbers.formatDecimal(platformRevenue, 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                </h3>
+                <p class="text-xs text-white/70 mt-2 font-semibold">From confirmed payments</p>
+            </div>
+        </div>
+        <div class="stat-card bg-surface-container-lowest rounded-2xl p-6 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border border-outline-variant/30">
+            <div class="flex justify-between items-start mb-4">
+                <p class="text-sm text-on-surface-variant font-medium">Total Orders</p>
+                <span class="material-symbols-outlined text-blue-500 bg-blue-50 p-2 rounded-xl">shopping_bag</span>
+            </div>
+            <h3 class="text-2xl font-bold text-on-surface" th:text="${#numbers.formatInteger(totalOrders ?: 0, 1, 'COMMA')}">0</h3>
+            <a th:href="@{/admin/orders}" class="text-xs text-primary mt-2 font-semibold hover:underline block">View all orders</a>
+        </div>
+        <div class="stat-card bg-surface-container-lowest rounded-2xl p-6 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border border-outline-variant/30">
+            <div class="flex justify-between items-start mb-4">
+                <p class="text-sm text-on-surface-variant font-medium">Total Customers</p>
+                <span class="material-symbols-outlined text-primary bg-primary/5 p-2 rounded-xl">people</span>
+            </div>
+            <h3 class="text-2xl font-bold text-on-surface" th:text="${#numbers.formatInteger(totalCustomers ?: 0, 1, 'COMMA')}">0</h3>
+            <a th:href="@{/admin/users}" class="text-xs text-primary mt-2 font-semibold hover:underline block">View customers</a>
+        </div>
+        <div class="stat-card bg-surface-container-lowest rounded-2xl p-6 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border border-outline-variant/30">
+            <div class="flex justify-between items-start mb-4">
+                <p class="text-sm text-on-surface-variant font-medium">Active Vendors</p>
+                <span class="material-symbols-outlined text-secondary bg-secondary/10 p-2 rounded-xl">storefront</span>
+            </div>
+            <h3 class="text-2xl font-bold text-on-surface" th:text="${#numbers.formatInteger(totalVendors ?: 0, 1, 'COMMA')}">0</h3>
+            <a th:href="@{/admin/vendors}" class="text-xs text-primary mt-2 font-semibold hover:underline block">View vendors</a>
+        </div>
+    </div>
+
+    <!-- Order Status + Product Stats -->
+    <div class="content-card grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+        <!-- Order status breakdown -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/20 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">receipt_long</span>
+                <h3 class="font-bold text-on-surface">Orders by Status</h3>
+            </div>
+            <div class="divide-y divide-outline-variant/10">
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">Pending Payment</span>
+                    </div>
+                    <span class="font-bold text-on-surface" th:text="${#numbers.formatInteger(pendingPaymentOrders ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">Paid</span>
+                    </div>
+                    <span class="font-bold text-on-surface" th:text="${#numbers.formatInteger(paidOrders ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2.5 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">Processing</span>
+                    </div>
+                    <span class="font-bold text-on-surface" th:text="${#numbers.formatInteger(processingOrders ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold">Shipped</span>
+                    </div>
+                    <span class="font-bold text-on-surface" th:text="${#numbers.formatInteger(shippedOrders ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2.5 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-bold">Delivered</span>
+                    </div>
+                    <span class="font-bold text-on-surface" th:text="${#numbers.formatInteger(deliveredOrders ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2.5 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-bold">Cancelled</span>
+                    </div>
+                    <span class="font-bold text-on-surface" th:text="${#numbers.formatInteger(cancelledOrders ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product stats -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/20 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">inventory_2</span>
+                <h3 class="font-bold text-on-surface">Product Catalogue</h3>
+            </div>
+            <div class="divide-y divide-outline-variant/10">
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span>
+                        <span class="text-sm text-on-surface-variant">Published</span>
+                    </div>
+                    <span class="font-bold text-on-surface" th:text="${#numbers.formatInteger(publishedProducts ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+                        <span class="text-sm text-on-surface-variant">Pending Review</span>
+                    </div>
+                    <span class="font-bold text-amber-700" th:text="${#numbers.formatInteger(pendingProducts ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
+                        <span class="text-sm text-on-surface-variant">Rejected</span>
+                    </div>
+                    <span class="font-bold text-red-700" th:text="${#numbers.formatInteger(rejectedProducts ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-surface-container-low/30 transition-colors bg-surface-container-low/20">
+                    <div class="flex items-center gap-3">
+                        <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
+                        <span class="text-sm font-semibold text-on-surface">Total Products</span>
+                    </div>
+                    <span class="font-bold text-primary" th:text="${#numbers.formatInteger(totalProducts ?: 0, 1, 'COMMA')}">0</span>
+                </div>
+            </div>
+            <div class="px-6 py-3 border-t border-outline-variant/20 flex gap-4">
+                <a th:href="@{/admin/products/pending}" class="text-xs text-amber-600 font-semibold hover:underline">Review pending →</a>
+                <a th:href="@{/admin/products/catalog}" class="text-xs text-primary font-semibold hover:underline">Browse catalog →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Vendors by Revenue -->
+    <div class="content-card bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden">
+        <div class="px-6 py-4 border-b border-outline-variant/20 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">leaderboard</span>
+                <h3 class="font-bold text-on-surface">Top Vendors by Revenue</h3>
+            </div>
+            <a th:href="@{/admin/vendors}" class="text-primary text-sm font-semibold hover:underline">View all vendors</a>
+        </div>
+
+        <div th:if="${topVendors == null or topVendors.isEmpty()}" class="p-10 text-center">
+            <span class="material-symbols-outlined text-5xl text-outline-variant">bar_chart</span>
+            <p class="text-sm text-on-surface-variant mt-3">Revenue data will appear here once orders are fulfilled.</p>
+        </div>
+
+        <div th:if="${topVendors != null and !topVendors.isEmpty()}" class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-surface-container-low/50 border-b border-outline-variant/20">
+                    <tr>
+                        <th class="text-left px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">#</th>
+                        <th class="text-left px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Vendor / Store</th>
+                        <th class="text-right px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Orders</th>
+                        <th class="text-right px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Revenue</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/10">
+                    <tr th:each="row, stat : ${topVendors}" class="hover:bg-surface-container-low/30 transition-colors">
+                        <td class="px-6 py-3.5 text-xs font-bold text-on-surface-variant" th:text="${stat.count}">1</td>
+                        <td class="px-6 py-3.5 font-semibold text-on-surface" th:text="${row[0]}">Vendor Name</td>
+                        <td class="px-6 py-3.5 text-right text-on-surface-variant" th:text="${row[2] ?: 0}">0</td>
+                        <td class="px-6 py-3.5 text-right font-bold text-primary">
+                            ₦<span th:text="${row[1] != null ? #numbers.formatDecimal(row[1], 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

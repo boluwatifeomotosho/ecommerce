@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Settings — NaijaMart Admin</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('settings', ${name}, ${email})}"></aside>
+
+<div class="ml-0 md:ml-[280px] mt-16 md:mt-0 flex-1 flex flex-col min-h-screen">
+    <header class="bg-surface-container-lowest border-b border-outline-variant px-8 py-4 flex items-center gap-3 sticky top-0 z-20">
+        <span class="material-symbols-outlined text-primary">settings</span>
+        <div>
+            <h1 class="text-xl font-bold text-on-surface">Platform Settings</h1>
+            <p class="text-sm text-on-surface-variant mt-0.5">Configure platform-wide options</p>
+        </div>
+    </header>
+
+    <main class="flex-1 px-8 py-6 max-w-2xl space-y-6">
+
+        <!-- Flash -->
+        <div th:if="${success}" class="flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 text-sm font-medium px-4 py-3 rounded-xl">
+            <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+            <span th:text="${success}">Saved</span>
+        </div>
+
+        <!-- Platform Configuration -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-lg">tune</span>
+                <h2 class="font-bold text-on-surface">Platform Configuration</h2>
+            </div>
+            <form th:action="@{/admin/settings}" method="post" class="p-6 space-y-4">
+
+                <div>
+                    <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Platform Name</label>
+                    <input type="text" name="platform.name"
+                           th:value="${settings != null ? settings['platform.name'] : 'NaijaMart'}"
+                           placeholder="NaijaMart"
+                           class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm transition-all"/>
+                    <p class="text-xs text-on-surface-variant mt-1">Displayed across the platform.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Support Email</label>
+                    <input type="email" name="support.email"
+                           th:value="${settings != null ? settings['support.email'] : ''}"
+                           placeholder="support@naija.mart"
+                           class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm transition-all"/>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Support Phone</label>
+                    <input type="tel" name="support.phone"
+                           th:value="${settings != null ? settings['support.phone'] : ''}"
+                           placeholder="+234 000 000 0000"
+                           class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm transition-all"/>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-on-surface-variant mb-1.5">
+                        Commission Rate (%) <span class="text-error">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="number" name="commission.rate" min="0" max="100" step="0.1"
+                               th:value="${settings != null ? settings['commission.rate'] : '10'}"
+                               placeholder="10"
+                               class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm transition-all pr-10"/>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">%</span>
+                    </div>
+                    <p class="text-xs text-on-surface-variant mt-1">Platform fee deducted from each vendor payout.</p>
+                </div>
+
+                <button type="submit"
+                        class="inline-flex items-center gap-2 bg-primary hover:opacity-90 text-on-primary text-sm font-semibold px-5 py-2.5 rounded-xl transition-all shadow-md shadow-primary/20 active:scale-95">
+                    <span class="material-symbols-outlined text-lg">save</span>
+                    Save Settings
+                </button>
+            </form>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-lg">link</span>
+                <h2 class="font-bold text-on-surface">Quick Links</h2>
+            </div>
+            <div class="divide-y divide-outline-variant/20">
+                <a th:href="@{/admin/users}" class="flex items-center justify-between px-6 py-4 hover:bg-surface-container-low/40 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">people</span>
+                        <div>
+                            <p class="text-sm font-medium text-on-surface">Customer Management</p>
+                            <p class="text-xs text-on-surface-variant">View and manage customer accounts</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
+                </a>
+                <a th:href="@{/admin/vendors}" class="flex items-center justify-between px-6 py-4 hover:bg-surface-container-low/40 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">storefront</span>
+                        <div>
+                            <p class="text-sm font-medium text-on-surface">Vendor Management</p>
+                            <p class="text-xs text-on-surface-variant">View and manage vendor accounts</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
+                </a>
+                <a th:href="@{/admin/products/pending}" class="flex items-center justify-between px-6 py-4 hover:bg-surface-container-low/40 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">rate_review</span>
+                        <div>
+                            <p class="text-sm font-medium text-on-surface">Product Moderation</p>
+                            <p class="text-xs text-on-surface-variant">Review and approve pending products</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
+                </a>
+                <a th:href="@{/admin/reports}" class="flex items-center justify-between px-6 py-4 hover:bg-surface-container-low/40 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">analytics</span>
+                        <div>
+                            <p class="text-sm font-medium text-on-surface">Reports &amp; Statistics</p>
+                            <p class="text-xs text-on-surface-variant">Platform-wide performance overview</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
+                </a>
+            </div>
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

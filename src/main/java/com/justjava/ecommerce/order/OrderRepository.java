@@ -79,4 +79,30 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @Query("SELECT COALESCE(SUM(o.total), 0) FROM Order o JOIN o.items i WHERE i.product.vendor.id = :vendorId AND o.status IN :statuses")
     java.math.BigDecimal sumRevenueByVendorIdAndStatusIn(@Param("vendorId") UUID vendorId, @Param("statuses") Set<OrderStatus> statuses);
+
+    // ── Analytics ─────────────────────────────────────────────────────────────
+
+    long countByStatus(OrderStatus status);
+
+    @Query("""
+            SELECT i.vendorName, SUM(i.lineTotal), COUNT(DISTINCT i.order.id)
+            FROM OrderItem i
+            WHERE i.order.status IN :statuses
+            GROUP BY i.vendorName
+            ORDER BY SUM(i.lineTotal) DESC
+            """)
+    List<Object[]> findTopVendorsByRevenue(@Param("statuses") Set<OrderStatus> statuses, Pageable pageable);
+
+    @Query("""
+            SELECT i.productName, SUM(i.quantity), SUM(i.lineTotal)
+            FROM OrderItem i
+            WHERE i.product.vendor.id = :vendorId
+              AND i.order.status IN :statuses
+            GROUP BY i.productName
+            ORDER BY SUM(i.quantity) DESC
+            """)
+    List<Object[]> findTopProductsByVendor(
+            @Param("vendorId") UUID vendorId,
+            @Param("statuses") Set<OrderStatus> statuses,
+            Pageable pageable);
 }
