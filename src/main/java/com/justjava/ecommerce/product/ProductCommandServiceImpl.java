@@ -129,6 +129,19 @@ public class ProductCommandServiceImpl implements ProductCommandService {
         productRepository.save(product);
     }
 
+    @Override
+    public void unarchive(UUID productId, UUID vendorId) {
+        Product product = productRepository.findByIdAndVendorId(productId, vendorId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found or not owned by vendor"));
+
+        if (product.getStatus() != ProductStatus.ARCHIVED) {
+            throw new IllegalStateException("Only archived products can be unarchived");
+        }
+
+        product.setStatus(ProductStatus.DRAFT);
+        productRepository.save(product);
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private List<ProductImage> buildImages(List<String> urls) {

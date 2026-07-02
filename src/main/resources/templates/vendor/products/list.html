@@ -95,10 +95,16 @@
                                         <span class="material-symbols-outlined text-sm">send</span> Submit
                                     </button>
                                 </form>
-                                <form th:action="@{/vendor/products/{id}/archive(id=${product.id})}" method="post" class="inline">
+                                <form th:if="${product.status.name() != 'ARCHIVED'}" th:action="@{/vendor/products/{id}/archive(id=${product.id})}" method="post" class="inline">
                                     <button type="submit" onclick="return confirm('Archive this product?')"
                                             class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-on-surface-variant bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-red-300 hover:text-red-500 transition-colors">
                                         <span class="material-symbols-outlined text-sm">archive</span> Archive
+                                    </button>
+                                </form>
+                                <form th:if="${product.status.name() == 'ARCHIVED'}" th:action="@{/vendor/products/{id}/unarchive(id=${product.id})}" method="post" class="inline">
+                                    <button type="submit"
+                                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 border border-primary/30 rounded-lg hover:bg-primary/20 transition-colors">
+                                        <span class="material-symbols-outlined text-sm">unarchive</span> Restore
                                     </button>
                                 </form>
                             </div>

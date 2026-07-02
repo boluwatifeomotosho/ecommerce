@@ -36,6 +36,21 @@ public class User {
     @Column(nullable = false)
     private String status;
 
+    @Column(name = "store_name", length = 255)
+    private String storeName;
+
+    @Column(name = "store_bio", columnDefinition = "TEXT")
+    private String storeBio;
+
+    @Column(name = "bank_name", length = 100)
+    private String bankName;
+
+    @Column(name = "bank_account_number", length = 20)
+    private String bankAccountNumber;
+
+    @Column(name = "bank_account_name", length = 255)
+    private String bankAccountName;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

@@ -38,6 +38,11 @@ public class ProductMapper {
         );
     }
 
+    private String vendorDisplayName(Product p) {
+        String storeName = p.getVendor().getStoreName();
+        return (storeName != null && !storeName.isBlank()) ? storeName : p.getVendor().getFullName();
+    }
+
     public ProductSummaryDto toSummary(Product p) {
         return new ProductSummaryDto(
                 p.getId(),
@@ -47,7 +52,7 @@ public class ProductMapper {
                 p.getCompareAtPrice(),
                 p.getPrimaryImageUrl(),
                 p.getCategory().getName(),
-                p.getVendor().getFullName(),
+                vendorDisplayName(p),
                 p.getStockQuantity(),
                 p.getStatus(),
                 p.getRejectionReason(),
@@ -76,7 +81,7 @@ public class ProductMapper {
                 toCategoryDto(p.getCategory()),
                 images,
                 p.getVendor().getId(),
-                p.getVendor().getFullName(),
+                vendorDisplayName(p),
                 p.getCreatedAt(),
                 p.getUpdatedAt(),
                 p.getPublishedAt(),

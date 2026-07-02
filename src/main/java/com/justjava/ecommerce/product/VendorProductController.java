@@ -174,6 +174,22 @@ public class VendorProductController {
         return "redirect:/vendor/products";
     }
 
+    @PostMapping("/{id}/unarchive")
+    public String unarchive(
+            @PathVariable UUID               id,
+            @AuthenticationPrincipal OidcUser principal,
+            RedirectAttributes               flash
+    ) {
+        UUID vendorId = resolveVendorId(principal);
+        try {
+            productCommandService.unarchive(id, vendorId);
+            flash.addFlashAttribute("success", "Product restored to draft. You can now edit and resubmit it.");
+        } catch (IllegalStateException e) {
+            flash.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/vendor/products";
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private void addCategoryModel(Model model) {

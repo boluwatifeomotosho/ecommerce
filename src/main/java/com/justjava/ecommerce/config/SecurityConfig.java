@@ -34,6 +34,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import java.util.*;
@@ -99,7 +100,8 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessHandler(oidcLogoutSuccessHandler())
                         .logoutUrl("/logout")
-                );
+                )
+                .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class);
 
         return http.build();
     }

@@ -18,4 +18,6 @@ public interface ProductCommandService {
     void submitForReview(UUID productId, UUID vendorId);
 
     void archive(UUID productId, UUID vendorId);
+
+    void unarchive(UUID productId, UUID vendorId);
 }
