@@ -221,12 +221,18 @@ public class SecurityConfig {
             return authRequest;
         }
 
+        String mode = (String) session.getAttribute(RegistrationController.REGISTRATION_MODE_KEY);
+
         String authUri = authRequest.getAuthorizationUri()
                 .replace("/protocol/openid-connect/auth",
                          "/protocol/openid-connect/registrations");
 
+        Map<String, Object> additional = new HashMap<>(authRequest.getAdditionalParameters());
+        additional.put("account_type", "VENDOR".equals(mode) ? "vendor" : "customer");
+
         return OAuth2AuthorizationRequest.from(authRequest)
                 .authorizationUri(authUri)
+                .additionalParameters(additional)
                 .build();
     }
 
