@@ -48,11 +48,13 @@
         </button>
     </div>
     <div class="mx-md mb-md p-sm bg-white/60 rounded-xl flex items-center gap-sm border border-white shadow-sm">
-        <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-md shadow-primary/20">
-            <span class="material-symbols-outlined">storefront</span>
+        <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0 shadow-md shadow-primary/20 overflow-hidden">
+            <img th:if="${vendorLogoUrl}" th:src="${vendorLogoUrl}" alt="Logo" class="w-full h-full object-cover"/>
+            <span th:unless="${vendorLogoUrl}" class="material-symbols-outlined">storefront</span>
         </div>
         <div class="overflow-hidden">
-            <p class="font-label-md text-label-md font-bold truncate" th:text="${userName}">Vendor</p>
+            <p class="font-label-md text-label-md font-bold truncate"
+               th:text="${vendorStoreName != null and !#strings.isEmpty(vendorStoreName)} ? ${vendorStoreName} : ${userName}">Vendor</p>
             <div class="flex items-center gap-1">
                 <span class="material-symbols-outlined text-[12px] text-tertiary" style="font-variation-settings:'FILL' 1;">verified</span>
                 <span class="text-[10px] uppercase tracking-wider font-bold text-tertiary">Verified</span>

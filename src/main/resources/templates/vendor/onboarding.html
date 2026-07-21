@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Complete your vendor profile | NaijaMart</title>
+    <th:block th:replace="~{fragments/head :: resources}" />
+</head>
+<body class="bg-surface-bright text-on-surface min-h-screen">
+
+<div class="max-w-2xl mx-auto px-6 py-10">
+
+    <div class="flex items-center gap-3 mb-8">
+        <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary">storefront</span>
+        </div>
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface">Finish setting up your store</h1>
+            <p class="text-sm text-on-surface-variant">Just a few more details before you can start selling.</p>
+        </div>
+    </div>
+
+    <div th:if="${error}"
+         class="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2">
+        <span class="material-symbols-outlined text-red-500 text-lg">error</span>
+        <span th:text="${error}">Something went wrong</span>
+    </div>
+
+    <form method="post" th:action="@{/vendor/onboarding}" enctype="multipart/form-data"
+          class="bg-surface-container-lowest rounded-2xl shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border border-outline-variant/30 p-8 space-y-6">
+
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <!-- Company logo -->
+        <div>
+            <label class="block text-sm font-semibold text-on-surface mb-2">Company logo <span class="text-red-500">*</span></label>
+            <label for="companyLogo"
+                   class="flex items-center gap-4 p-4 border-2 border-dashed border-outline-variant rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all">
+                <div id="logoPreview" class="w-20 h-20 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <img th:if="${vendor.companyLogoUrl}" th:src="${vendor.companyLogoUrl}"
+                         alt="Current logo" class="w-full h-full object-cover"/>
+                    <span th:unless="${vendor.companyLogoUrl}"
+                          class="material-symbols-outlined text-on-surface-variant text-3xl">image</span>
+                </div>
+                <div class="text-sm">
+                    <span id="logoLabel" class="font-medium text-on-surface block">
+                        <span th:if="${vendor.companyLogoUrl}">Replace your logo</span>
+                        <span th:unless="${vendor.companyLogoUrl}">Click to upload logo</span>
+                    </span>
+                    <span class="text-xs text-on-surface-variant">PNG, JPG or WebP · square works best · max 2 MB</span>
+                </div>
+            </label>
+            <input type="file" id="companyLogo" name="companyLogo"
+                   accept="image/png,image/jpeg,image/webp" class="hidden"/>
+        </div>
+
+        <!-- Company name -->
+        <div>
+            <label for="companyName" class="block text-sm font-semibold text-on-surface mb-2">Company name</label>
+            <input type="text" id="companyName" name="companyName"
+                   th:value="${vendor.storeName}"
+                   placeholder="e.g. Acme Trading Ltd"
+                   class="w-full px-4 py-3 rounded-xl border border-outline-variant focus:outline-none focus:ring-2 focus:ring-primary bg-surface-container-lowest"/>
+        </div>
+
+        <!-- Phone -->
+        <div>
+            <label for="phoneNumber" class="block text-sm font-semibold text-on-surface mb-2">Contact phone number</label>
+            <input type="tel" id="phoneNumber" name="phoneNumber" inputmode="tel"
+                   th:value="${vendor.phone}"
+                   placeholder="+2348012345678 or 08012345678"
+                   class="w-full px-4 py-3 rounded-xl border border-outline-variant focus:outline-none focus:ring-2 focus:ring-primary bg-surface-container-lowest"/>
+            <p class="text-xs text-on-surface-variant mt-1.5">
+                Use +234 or leading 0 format. Customers won't see this — it's for order support.
+            </p>
+        </div>
+
+        <!-- Website -->
+        <div>
+            <label for="websiteUrl" class="block text-sm font-semibold text-on-surface mb-2">Website URL</label>
+            <input type="url" id="websiteUrl" name="websiteUrl"
+                   th:value="${vendor.websiteUrl}"
+                   placeholder="https://your-company.com"
+                   class="w-full px-4 py-3 rounded-xl border border-outline-variant focus:outline-none focus:ring-2 focus:ring-primary bg-surface-container-lowest"/>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+            <button type="submit"
+                    class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-on-primary font-semibold hover:bg-primary/90 transition-colors">
+                <span class="material-symbols-outlined text-lg">check_circle</span>
+                Save &amp; continue
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    (function() {
+        const input   = document.getElementById('companyLogo');
+        const preview = document.getElementById('logoPreview');
+        const label   = document.getElementById('logoLabel');
+        if (!input) return;
+        input.addEventListener('change', () => {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Logo must be 2 MB or smaller.');
+                input.value = '';
+                return;
+            }
+            const url = URL.createObjectURL(file);
+            preview.innerHTML = '<img src="' + url + '" alt="Preview" class="w-full h-full object-cover"/>';
+            label.textContent = file.name;
+        });
+    })();
+</script>
+</body>
+</html>

@@ -35,13 +35,19 @@
         </a>
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-secondary text-2xl">storefront</span>
+                <div class="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    <img th:if="${vendor.companyLogoUrl}" th:src="${vendor.companyLogoUrl}" alt="Logo" class="w-full h-full object-cover"/>
+                    <span th:unless="${vendor.companyLogoUrl}" class="material-symbols-outlined text-secondary text-2xl">storefront</span>
                 </div>
                 <div>
                     <h1 class="text-2xl font-bold text-on-surface"
                         th:text="${vendor.storeName ?: vendor.fullName ?: 'Unnamed vendor'}">Vendor</h1>
                     <p class="text-sm text-on-surface-variant" th:text="${vendor.email ?: '—'}">email</p>
+                    <a th:if="${vendor.websiteUrl}" th:href="${vendor.websiteUrl}" target="_blank" rel="noopener"
+                       class="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                        <span class="material-symbols-outlined text-sm">language</span>
+                        <span th:text="${vendor.websiteUrl}">website</span>
+                    </a>
                 </div>
             </div>
             <div>

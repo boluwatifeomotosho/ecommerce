@@ -120,6 +120,78 @@ public class KeycloakAdminService {
         return userId;
     }
 
+    @SuppressWarnings("unchecked")
+    public void updateUserAttributes(String keycloakId, Map<String, String> attributes) {
+        if (attributes == null || attributes.isEmpty()) return;
+        try {
+            String token = getAdminToken();
+
+            Map<String, Object> current = restClient.get()
+                    .uri("/admin/realms/{realm}/users/{userId}", realm, keycloakId)
+                    .header("Authorization", "Bearer " + token)
+                    .retrieve()
+                    .body(Map.class);
+            if (current == null) throw new IllegalStateException("Keycloak user not found: " + keycloakId);
+
+            Map<String, List<String>> merged = new HashMap<>();
+            Object existing = current.get("attributes");
+            if (existing instanceof Map) {
+                ((Map<String, Object>) existing).forEach((k, v) -> {
+                    if (v instanceof List) merged.put(k, (List<String>) v);
+                });
+            }
+            attributes.forEach((k, v) -> merged.put(k, v == null ? List.of() : List.of(v)));
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("attributes", merged);
+
+            restClient.put()
+                    .uri("/admin/realms/{realm}/users/{userId}", realm, keycloakId)
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(body)
+                    .retrieve()
+                    .toBodilessEntity();
+            log.info("Updated Keycloak attributes for user {}: {}", keycloakId, attributes.keySet());
+        } catch (Exception e) {
+            log.warn("Could not update Keycloak attributes for user {}: {}", keycloakId, e.getMessage());
+            throw new RuntimeException("Failed to update profile in authentication system: " + e.getMessage(), e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getUserAttributes(String keycloakId) {
+        Map<String, String> flat = new HashMap<>();
+        try {
+            String token = getAdminToken();
+            Map<String, Object> current = restClient.get()
+                    .uri("/admin/realms/{realm}/users/{userId}", realm, keycloakId)
+                    .header("Authorization", "Bearer " + token)
+                    .retrieve()
+                    .body(Map.class);
+            if (current == null) return flat;
+
+            Object attrs = current.get("attributes");
+            if (attrs instanceof Map<?, ?> map) {
+                map.forEach((k, v) -> {
+                    if (v instanceof List<?> list && !list.isEmpty() && list.get(0) != null) {
+                        flat.put(k.toString(), list.get(0).toString());
+                    } else if (v != null) {
+                        flat.put(k.toString(), v.toString());
+                    }
+                });
+            }
+
+            // Also surface top-level fields we care about
+            if (current.get("firstName") instanceof String fn && !fn.isBlank()) flat.putIfAbsent("firstName", fn);
+            if (current.get("lastName")  instanceof String ln && !ln.isBlank()) flat.putIfAbsent("lastName",  ln);
+            if (current.get("email")     instanceof String em && !em.isBlank()) flat.putIfAbsent("email",     em);
+        } catch (Exception e) {
+            log.warn("Could not fetch Keycloak attributes for user {}: {}", keycloakId, e.getMessage());
+        }
+        return flat;
+    }
+
     public void updateUserName(String keycloakId, String firstName, String lastName) {
         try {
             String token = getAdminToken();

@@ -3,8 +3,12 @@ package com.justjava.ecommerce.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.justjava.ecommerce.auth.RegistrationController;
 import com.justjava.ecommerce.auth.KeycloakAdminService;
+import com.justjava.ecommerce.user.User;
+import com.justjava.ecommerce.user.UserRepository;
 import com.justjava.ecommerce.user.UserSyncService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +53,7 @@ public class SecurityConfig {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final UserSyncService userSyncService;
     private final KeycloakAdminService keycloakAdminService;
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
     @Value("${app.base-url}")
@@ -148,13 +153,26 @@ public class SecurityConfig {
                 session.removeAttribute("mobile");
             }
 
+            // Cookie fallback: sessions can be dropped across the Keycloak round-trip
+            // (new session on callback, cookie policy quirks). This is set by
+            // RegistrationController and cleared once consumed.
+            String cookieMode = readRegistrationModeCookie(request);
+            clearRegistrationModeCookie(response);
+
+            // Also honor the accountType attribute Keycloak captures on registration
+            // (exposed as an OIDC claim via a client mapper).
+            String accountTypeClaim = asString(oidcUser.getClaim("accountType"));
+            boolean claimSaysVendor   = "vendor".equalsIgnoreCase(accountTypeClaim);
+            boolean sessionSaysVendor = "VENDOR".equals(registrationMode);
+            boolean cookieSaysVendor  = "VENDOR".equals(cookieMode);
+
             if (hasRole(authorities, "ROLE_ADMIN")) {
                 role        = "ADMIN";
                 redirectUrl = "/admin/dashboard";
             } else if (hasRole(authorities, "ROLE_VENDOR")) {
                 role        = "VENDOR";
                 redirectUrl = "/vendor/dashboard";
-            } else if ("VENDOR".equals(registrationMode)) {
+            } else if (sessionSaysVendor || claimSaysVendor || cookieSaysVendor) {
                 keycloakAdminService.assignVendorRole(oidcUser.getSubject());
                 role        = "VENDOR";
                 redirectUrl = "/vendor/dashboard";
@@ -184,12 +202,23 @@ public class SecurityConfig {
 
             userSyncService.syncUser(oidcUser, role);
 
-            if (isMobile && "/customer/dashboard".equals(redirectUrl)) {
+            if ("VENDOR".equals(role) && needsVendorOnboarding(oidcUser.getSubject())) {
+                redirectUrl = "/vendor/onboarding";
+            } else if (isMobile && "/customer/dashboard".equals(redirectUrl)) {
                 redirectUrl = "/mobile";
             }
 
             response.sendRedirect(redirectUrl);
         };
+    }
+
+    private boolean needsVendorOnboarding(String keycloakId) {
+        return userRepository.findByKeycloakId(keycloakId)
+                .map(u -> {
+                    String logo = u.getCompanyLogoUrl();
+                    return logo == null || logo.isBlank();
+                })
+                .orElse(true);
     }
 
     // ── OAuth2 Authorization Request Resolver ────────────────────────────────
@@ -265,6 +294,35 @@ public class SecurityConfig {
 
     private boolean hasRole(Collection<? extends GrantedAuthority> authorities, String role) {
         return authorities.stream().anyMatch(a -> a.getAuthority().equals(role));
+    }
+
+    private String readRegistrationModeCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
+        for (Cookie c : cookies) {
+            if (RegistrationController.REGISTRATION_MODE_COOKIE.equals(c.getName())) {
+                return c.getValue();
+            }
+        }
+        return null;
+    }
+
+    private void clearRegistrationModeCookie(HttpServletResponse response) {
+        Cookie clear = new Cookie(RegistrationController.REGISTRATION_MODE_COOKIE, "");
+        clear.setPath("/");
+        clear.setHttpOnly(true);
+        clear.setMaxAge(0);
+        response.addCookie(clear);
+    }
+
+    private String asString(Object value) {
+        if (value == null) return null;
+        if (value instanceof String s) return s;
+        if (value instanceof Collection<?> c && !c.isEmpty()) {
+            Object first = c.iterator().next();
+            return first == null ? null : first.toString();
+        }
+        return value.toString();
     }
 
     private LogoutSuccessHandler oidcLogoutSuccessHandler() {

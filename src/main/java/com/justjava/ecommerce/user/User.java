@@ -42,6 +42,12 @@ public class User {
     @Column(name = "store_bio", columnDefinition = "TEXT")
     private String storeBio;
 
+    @Column(name = "website_url", length = 500)
+    private String websiteUrl;
+
+    @Column(name = "company_logo_url", length = 500)
+    private String companyLogoUrl;
+
     @Column(name = "bank_name", length = 100)
     private String bankName;
 
