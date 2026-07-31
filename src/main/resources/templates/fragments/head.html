@@ -19,6 +19,202 @@
         });
     });
     </script>
+
+    <!-- Global confirmation modal (any form/link with data-confirm="msg") -->
+    <script>
+    (function() {
+        var modal, titleEl, msgEl, okBtn, cancelBtn, pending;
+
+        function build() {
+            if (modal) return;
+            modal = document.createElement('div');
+            modal.id = 'confirm-modal';
+            modal.setAttribute('aria-hidden', 'true');
+            modal.innerHTML =
+                '<div class="cm-backdrop"></div>' +
+                '<div class="cm-panel" role="dialog" aria-modal="true">' +
+                '  <div class="cm-icon"><span class="material-symbols-outlined">help</span></div>' +
+                '  <h3 class="cm-title">Are you sure?</h3>' +
+                '  <p class="cm-msg"></p>' +
+                '  <div class="cm-actions">' +
+                '    <button type="button" class="cm-cancel">Cancel</button>' +
+                '    <button type="button" class="cm-ok">Confirm</button>' +
+                '  </div>' +
+                '</div>';
+            document.body.appendChild(modal);
+            titleEl   = modal.querySelector('.cm-title');
+            msgEl     = modal.querySelector('.cm-msg');
+            okBtn     = modal.querySelector('.cm-ok');
+            cancelBtn = modal.querySelector('.cm-cancel');
+            modal.querySelector('.cm-backdrop').addEventListener('click', close);
+            cancelBtn.addEventListener('click', close);
+            okBtn.addEventListener('click', function() {
+                var p = pending; close();
+                if (p && typeof p.onConfirm === 'function') p.onConfirm();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (modal.classList.contains('open') && e.key === 'Escape') close();
+            });
+        }
+
+        function open(opts) {
+            build();
+            pending = opts;
+            titleEl.textContent = opts.title  || 'Are you sure?';
+            msgEl.textContent   = opts.message || '';
+            okBtn.textContent   = opts.confirmText || 'Confirm';
+            okBtn.className     = 'cm-ok' + (opts.danger ? ' cm-danger' : '');
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            setTimeout(function() { okBtn.focus(); }, 50);
+        }
+
+        function close() {
+            if (!modal) return;
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            pending = null;
+        }
+
+        function looksDestructive(msg) {
+            if (!msg) return false;
+            return /remove|delete|cancel|archive|clear|revoke|kick|discard/i.test(msg);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            build();
+            document.addEventListener('submit', function(e) {
+                var f = e.target;
+                if (!f || f.tagName !== 'FORM') return;
+                var msg = f.getAttribute('data-confirm')
+                       || (f.querySelector('[data-confirm]') && f.querySelector('[data-confirm]').getAttribute('data-confirm'));
+                if (!msg) return;
+                if (f.dataset.confirmed === '1') { f.dataset.confirmed = ''; return; }
+                e.preventDefault();
+                open({
+                    title:       f.getAttribute('data-confirm-title'),
+                    message:     msg,
+                    confirmText: f.getAttribute('data-confirm-btn'),
+                    danger:      looksDestructive(msg),
+                    onConfirm: function() {
+                        f.dataset.confirmed = '1';
+                        if (typeof f.requestSubmit === 'function') f.requestSubmit();
+                        else f.submit();
+                    }
+                });
+            }, true);
+
+            document.addEventListener('click', function(e) {
+                var a = e.target.closest('a[data-confirm]');
+                if (!a) return;
+                var msg = a.getAttribute('data-confirm');
+                if (a.dataset.confirmed === '1') { a.dataset.confirmed = ''; return; }
+                e.preventDefault();
+                open({
+                    title:       a.getAttribute('data-confirm-title'),
+                    message:     msg,
+                    confirmText: a.getAttribute('data-confirm-btn'),
+                    danger:      looksDestructive(msg),
+                    onConfirm: function() {
+                        a.dataset.confirmed = '1';
+                        window.location.href = a.href;
+                    }
+                });
+            }, true);
+        });
+    })();
+    </script>
+
+    <!-- Global top-of-page loading indicator -->
+    <script>
+    (function() {
+        var bar, trickleTimer, progress;
+
+        function ensureBar() {
+            if (bar) return bar;
+            bar = document.createElement('div');
+            bar.id = 'page-progress-bar';
+            (document.body || document.documentElement).appendChild(bar);
+            return bar;
+        }
+
+        function setWidth(pct) {
+            progress = pct;
+            var b = ensureBar();
+            b.style.opacity = '1';
+            b.style.transform = 'translateX(' + (pct - 100) + '%)';
+        }
+
+        function start() {
+            if (progress !== undefined && progress < 100) return;
+            progress = 0;
+            var b = ensureBar();
+            b.style.transition = 'none';
+            b.style.transform = 'translateX(-100%)';
+            // force reflow so the reset transform actually applies
+            b.offsetWidth;
+            b.style.transition = 'transform .35s cubic-bezier(.22,1,.36,1), opacity .3s ease';
+            setWidth(15);
+            clearInterval(trickleTimer);
+            trickleTimer = setInterval(function() {
+                if (progress >= 90) return;
+                var step = progress < 50 ? 8 : (progress < 75 ? 4 : 1.5);
+                setWidth(Math.min(progress + step, 90));
+            }, 400);
+        }
+
+        function done() {
+            clearInterval(trickleTimer);
+            if (progress === undefined) return;
+            setWidth(100);
+            setTimeout(function() {
+                if (!bar) return;
+                bar.style.opacity = '0';
+                setTimeout(function() {
+                    bar.style.transform = 'translateX(-100%)';
+                    progress = undefined;
+                }, 300);
+            }, 200);
+        }
+
+        function isNavigable(a, e) {
+            if (!a || a.target || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button === 1) return false;
+            var href = a.getAttribute('href');
+            if (!href || href.charAt(0) === '#' || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return false;
+            if (a.hasAttribute('download')) return false;
+            try {
+                var url = new URL(a.href, location.href);
+                if (url.origin !== location.origin) return false;
+                // Same page, only hash changed
+                if (url.pathname === location.pathname && url.search === location.search && url.hash) return false;
+            } catch (_) { return false; }
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            ensureBar();
+            document.addEventListener('click', function(e) {
+                var a = e.target.closest('a[href]');
+                if (!a || !isNavigable(a, e)) return;
+                // Skip if a confirm modal is pending (data-confirm not yet confirmed)
+                if (a.hasAttribute('data-confirm') && a.dataset.confirmed !== '1') return;
+                start();
+            }, true);
+            document.addEventListener('submit', function(e) {
+                var f = e.target;
+                if (!f || f.tagName !== 'FORM') return;
+                if (f.hasAttribute('data-confirm') && f.dataset.confirmed !== '1') return;
+                start();
+            }, true);
+            window.addEventListener('beforeunload', start);
+            window.addEventListener('pageshow', function(e) {
+                if (e.persisted) done();
+            });
+        });
+    })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <style>
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
@@ -62,6 +258,53 @@
         /* Tap feedback */
         .tap-scale { transition: transform .12s cubic-bezier(.34,1.56,.64,1); }
         .tap-scale:active { transform: scale(.95); }
+
+        /* Global confirmation modal */
+        #confirm-modal { position: fixed; inset: 0; z-index: 10000; display: none; align-items: center; justify-content: center; padding: 1rem; }
+        #confirm-modal.open { display: flex; }
+        #confirm-modal .cm-backdrop { position: absolute; inset: 0; background: rgba(15,23,42,.45); backdrop-filter: blur(4px); opacity: 0; animation: fadeIn .2s ease forwards; }
+        #confirm-modal .cm-panel {
+            position: relative; background: #fff; border-radius: 1rem; padding: 1.5rem;
+            width: 100%; max-width: 26rem;
+            box-shadow: 0 20px 50px -12px rgba(15,23,42,.35), 0 8px 20px -8px rgba(15,23,42,.15);
+            border: 1px solid #ccc3d8;
+            transform: scale(.92); opacity: 0;
+            animation: scaleIn .28s cubic-bezier(.34,1.56,.64,1) forwards;
+        }
+        #confirm-modal .cm-icon { width: 3rem; height: 3rem; border-radius: 9999px; background: #ede0ff; color: #630ed4; display: flex; align-items: center; justify-content: center; margin-bottom: .75rem; }
+        #confirm-modal .cm-icon .material-symbols-outlined { font-size: 28px; font-variation-settings: 'FILL' 1; }
+        #confirm-modal .cm-title { font-size: 1.05rem; font-weight: 700; color: #111c2d; margin-bottom: .35rem; font-family: 'Plus Jakarta Sans', sans-serif; }
+        #confirm-modal .cm-msg { font-size: .875rem; color: #4a4455; margin-bottom: 1.25rem; line-height: 1.5; font-family: 'Plus Jakarta Sans', sans-serif; }
+        #confirm-modal .cm-actions { display: flex; justify-content: flex-end; gap: .5rem; }
+        #confirm-modal .cm-cancel, #confirm-modal .cm-ok {
+            padding: .55rem 1.1rem; border-radius: .55rem; font-size: .8125rem; font-weight: 600;
+            cursor: pointer; transition: transform .1s ease, background .15s ease, opacity .15s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        #confirm-modal .cm-cancel { background: #f0f3ff; color: #4a4455; border: 1px solid #ccc3d8; }
+        #confirm-modal .cm-cancel:hover { background: #e7eeff; }
+        #confirm-modal .cm-ok { background: #630ed4; color: #fff; border: 1px solid transparent; }
+        #confirm-modal .cm-ok:hover { background: #5a00c6; }
+        #confirm-modal .cm-ok.cm-danger { background: #dc2626; }
+        #confirm-modal .cm-ok.cm-danger:hover { background: #b91c1c; }
+        #confirm-modal .cm-ok.cm-danger + .cm-icon,
+        #confirm-modal .cm-panel:has(.cm-danger) .cm-icon { background: #fee2e2; color: #dc2626; }
+        #confirm-modal .cm-cancel:active, #confirm-modal .cm-ok:active { transform: scale(.96); }
+
+        /* Global top progress bar */
+        #page-progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #7c3aed, #630ed4, #d2bbff);
+            box-shadow: 0 0 10px rgba(99,14,212,.4), 0 0 4px rgba(99,14,212,.3);
+            transform: translateX(-100%);
+            opacity: 0;
+            z-index: 9999;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
     </style>
     <script>
         tailwind.config = {

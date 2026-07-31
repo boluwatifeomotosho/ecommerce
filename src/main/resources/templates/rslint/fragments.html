@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"/></head>
+<body>
+
+<!-- ============================================================
+     HEAD RESOURCES (Tailwind, fonts, base styles)
+     ============================================================ -->
+<th:block th:fragment="pagehead(title)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${title} + ' | RSL International Limited'">RSL International Limited</title>
+    <meta name="description" content="RSL International Limited — Nigeria's trusted FMCG distributor. Delivering quality brands with convenience since 2012."/>
+    <link rel="icon" type="image/x-icon" href="/rslint/favicon.png"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['"Playfair Display"', 'Georgia', 'serif'],
+                    },
+                    colors: {
+                        rsl: {
+                            50:  '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#0e9e4c',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        gold: {
+                            400: '#f4d35e',
+                            500: '#efc62c',
+                            600: '#d4a91a',
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background:#fbfaf7; }
+        .font-display { font-family: 'Playfair Display', Georgia, serif; letter-spacing:-0.015em; }
+
+        /* Selection */
+        ::selection { background:#14532d; color:#efc62c; }
+
+        /* Hero background (subtle warm cream + green wash) */
+        .hero-gradient {
+            background:
+                radial-gradient(1200px 600px at 10% -10%, rgba(14,158,76,0.10), transparent 60%),
+                radial-gradient(900px 500px at 100% 30%, rgba(239,198,44,0.12), transparent 60%),
+                radial-gradient(700px 400px at 30% 110%, rgba(20,83,45,0.08), transparent 60%),
+                linear-gradient(180deg, #fbfaf7 0%, #f5f2ec 100%);
+        }
+        .mesh-bg {
+            background:
+                radial-gradient(at 27% 37%, hsla(150, 60%, 45%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 97% 21%, hsla(45, 85%, 55%, 0.18) 0px, transparent 50%),
+                radial-gradient(at 52% 99%, hsla(150, 60%, 30%, 0.12) 0px, transparent 50%);
+        }
+
+        /* Subtle grain overlay for premium feel */
+        .grain { position:relative; }
+        .grain::after {
+            content:''; position:absolute; inset:0; pointer-events:none; opacity:.35; mix-blend-mode:overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+        }
+
+        /* Keyframes */
+        @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @keyframes floaty { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-14px); } }
+        @keyframes floaty-slow { 0%,100% { transform:translateY(0) rotate(-3deg); } 50% { transform:translateY(-18px) rotate(3deg); } }
+        @keyframes shimmer { 0% { background-position:-500px 0; } 100% { background-position:500px 0; } }
+        @keyframes pulse-ring { 0% { transform:scale(.8); opacity:.8; } 100% { transform:scale(2.2); opacity:0; } }
+        @keyframes kenBurns { 0% { transform:scale(1) translate(0,0); } 100% { transform:scale(1.12) translate(-1%, -1%); } }
+        @keyframes marqueeSlow { 0% { transform:translateX(0);} 100% { transform:translateX(-50%);} }
+        @keyframes gradientPan { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+        @keyframes blink { 0%,49% { opacity:1; } 50%,100% { opacity:0; } }
+        @keyframes drawLine { from { stroke-dashoffset:400; } to { stroke-dashoffset:0; } }
+        @keyframes wordUp {
+            0% { opacity:0; transform:translateY(100%); }
+            100% { opacity:1; transform:translateY(0); }
+        }
+
+        .anim-fadeUp { animation: fadeUp .9s cubic-bezier(.22,1,.36,1) both; }
+        .anim-fadeIn { animation: fadeIn 1s ease both; }
+        .anim-floaty { animation: floaty 7s ease-in-out infinite; }
+        .anim-floaty-slow { animation: floaty-slow 9s ease-in-out infinite; }
+        .anim-kenburns { animation: kenBurns 18s ease-in-out infinite alternate; }
+        .anim-blink { animation: blink 1s steps(1) infinite; }
+
+        .delay-100 { animation-delay:.1s; }
+        .delay-200 { animation-delay:.2s; }
+        .delay-300 { animation-delay:.3s; }
+        .delay-400 { animation-delay:.4s; }
+        .delay-500 { animation-delay:.5s; }
+        .delay-700 { animation-delay:.7s; }
+        .delay-900 { animation-delay:.9s; }
+
+        /* Kinetic headline — each word slides up */
+        .kinetic { display:inline-block; overflow:hidden; padding:0 .05em; }
+        .kinetic > span { display:inline-block; animation: wordUp .9s cubic-bezier(.22,1,.36,1) both; }
+
+        /* Scroll reveal */
+        .reveal { opacity:0; transform:translateY(30px); transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+        .reveal-left { opacity:0; transform:translateX(-40px); transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1); }
+        .reveal-left.visible { opacity:1; transform:translateX(0); }
+        .reveal-right { opacity:0; transform:translateX(40px); transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1); }
+        .reveal-right.visible { opacity:1; transform:translateX(0); }
+        .reveal-scale { opacity:0; transform:scale(.94); transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1); }
+        .reveal-scale.visible { opacity:1; transform:scale(1); }
+
+        /* Tilt (JS-driven via data-tilt) */
+        .tilt { transform-style: preserve-3d; transition: transform .3s cubic-bezier(.22,1,.36,1); will-change: transform; }
+
+        /* Marquee */
+        .marquee-slow { display:flex; overflow:hidden; mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent); }
+        .marquee-slow > .marquee-track { display:flex; gap:5rem; animation: marqueeSlow 40s linear infinite; }
+
+        /* Split text scale on scroll */
+        .parallax-slow { transition: transform .1s linear; will-change: transform; }
+
+        /* Nav */
+        .nav-link { position:relative; }
+        .nav-link::after {
+            content:''; position:absolute; left:50%; bottom:-6px;
+            width:0; height:2px; background:#0e9e4c;
+            transition: all .3s ease; transform:translateX(-50%);
+        }
+        .nav-link:hover::after, .nav-link.active::after { width:100%; }
+
+        /* Cards */
+        .card-hover { transition: all .35s cubic-bezier(.22,1,.36,1); }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -12px rgba(14,158,76,0.25); }
+
+        /* Buttons — premium with sliding sheen */
+        .btn-primary {
+            position:relative; overflow:hidden;
+            background: linear-gradient(135deg, #0e9e4c 0%, #14532d 100%);
+            color:white; padding:.95rem 1.9rem; border-radius:9999px;
+            font-weight:600; letter-spacing:.01em; font-size:.95rem;
+            box-shadow: 0 10px 30px -8px rgba(14,158,76,0.55), inset 0 1px 0 rgba(255,255,255,0.15);
+            transition: all .4s cubic-bezier(.22,1,.36,1); display:inline-flex; align-items:center; gap:.55rem;
+        }
+        .btn-primary::before {
+            content:''; position:absolute; inset:0;
+            background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+            transform: translateX(-100%); transition: transform .7s cubic-bezier(.22,1,.36,1);
+        }
+        .btn-primary:hover { transform:translateY(-3px); box-shadow: 0 18px 40px -10px rgba(14,158,76,0.65); }
+        .btn-primary:hover::before { transform:translateX(100%); }
+
+        .btn-ghost {
+            padding:.95rem 1.9rem; border-radius:9999px;
+            border:1.5px solid rgba(255,255,255,0.35); color:white; font-weight:600; font-size:.95rem;
+            transition: all .35s cubic-bezier(.22,1,.36,1); display:inline-flex; align-items:center; gap:.55rem;
+            backdrop-filter: blur(8px); background: rgba(255,255,255,0.04);
+        }
+        .btn-ghost:hover { background:white; color:#0e9e4c; border-color:white; transform:translateY(-2px); }
+
+        .btn-gold {
+            position:relative; overflow:hidden;
+            background: linear-gradient(135deg, #efc62c 0%, #d4a91a 100%);
+            color:#14532d; padding:.95rem 1.9rem; border-radius:9999px;
+            font-weight:700; box-shadow: 0 10px 30px -8px rgba(239,198,44,0.55);
+            transition: all .4s cubic-bezier(.22,1,.36,1); display:inline-flex; align-items:center; gap:.55rem;
+        }
+        .btn-gold:hover { transform:translateY(-3px); box-shadow: 0 18px 40px -10px rgba(239,198,44,0.7); }
+
+        .btn-outline-dark {
+            padding:.95rem 1.9rem; border-radius:9999px;
+            border:1.5px solid #14532d; color:#14532d; font-weight:600; font-size:.95rem;
+            transition: all .35s cubic-bezier(.22,1,.36,1); display:inline-flex; align-items:center; gap:.55rem;
+        }
+        .btn-outline-dark:hover { background:#14532d; color:white; transform:translateY(-2px); }
+
+        /* Section eyebrow */
+        .eyebrow {
+            display:inline-flex; align-items:center; gap:.65rem;
+            font-size:.72rem; font-weight:700; letter-spacing:.22em;
+            text-transform:uppercase; color:#0e9e4c;
+        }
+        .eyebrow::before { content:''; width:28px; height:1.5px; background:#efc62c; }
+
+        /* Big display headline */
+        .display-hero {
+            font-family:'Playfair Display', Georgia, serif;
+            font-weight:800;
+            font-size: clamp(2.75rem, 6vw, 5.5rem);
+            line-height: 1.02;
+            letter-spacing: -0.03em;
+            color:#0a1e12;
+        }
+        .display-hero em { font-style: italic; color:#0e9e4c; font-weight:800; }
+
+        /* Marquee */
+        .marquee { display:flex; overflow:hidden; }
+        .marquee-track { display:flex; gap:4rem; animation: marquee 30s linear infinite; }
+        @keyframes marquee { 0% { transform:translateX(0);} 100% { transform:translateX(-50%);} }
+
+        /* Sticky nav shadow when scrolled */
+        .nav-scrolled { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+
+        /* Page banner (inner pages) */
+        .page-banner {
+            background: linear-gradient(120deg, #0e9e4c 0%, #14532d 60%, #166534 100%);
+            position:relative; overflow:hidden;
+        }
+        .page-banner::before {
+            content:''; position:absolute; inset:0;
+            background: radial-gradient(circle at 80% 20%, rgba(239,198,44,0.35), transparent 40%);
+        }
+        .page-banner::after {
+            content:''; position:absolute; inset:0;
+            background-image: linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.03) 49%, rgba(255,255,255,0.03) 51%, transparent 52%);
+            background-size: 20px 20px;
+        }
+    </style>
+</th:block>
+
+<!-- ============================================================
+     NAVIGATION BAR
+     ============================================================ -->
+<nav th:fragment="navbar(active)" id="rslNav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300 nav-scrolled">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+            <!-- Logo -->
+            <a href="/rslint" class="flex items-center gap-3 group">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-rsl-600 to-rsl-800 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <span class="text-white font-black text-lg tracking-tighter">RSL</span>
+                </div>
+                <div class="hidden sm:block">
+                    <div class="font-display font-bold text-lg text-gray-900 leading-none">RSL International</div>
+                    <div class="text-[10px] text-rsl-600 font-semibold tracking-widest uppercase mt-0.5">Quality • Convenience</div>
+                </div>
+            </a>
+
+            <!-- Desktop nav -->
+            <div class="hidden lg:flex items-center gap-8">
+                <a href="/rslint" class="nav-link text-sm font-semibold text-gray-700 hover:text-rsl-600"
+                   th:classappend="${active == 'home'} ? 'active text-rsl-600' : ''">Home</a>
+
+                <div class="relative group">
+                    <button class="nav-link text-sm font-semibold text-gray-700 hover:text-rsl-600 flex items-center gap-1"
+                            th:classappend="${active == 'about'} ? 'active text-rsl-600' : ''">
+                        About <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </button>
+                    <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all absolute top-full left-1/2 -translate-x-1/2 pt-4 w-56">
+                        <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 overflow-hidden">
+                            <a href="/rslint/about" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700 transition"><i class="fa-solid fa-building text-rsl-500 w-5"></i> Our Story</a>
+                            <a href="/rslint/mission" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700 transition"><i class="fa-solid fa-bullseye text-rsl-500 w-5"></i> Mission</a>
+                            <a href="/rslint/vision" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700 transition"><i class="fa-solid fa-eye text-rsl-500 w-5"></i> Vision</a>
+                            <a href="/rslint/philosophy" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700 transition"><i class="fa-solid fa-lightbulb text-rsl-500 w-5"></i> Philosophy</a>
+                            <a href="/rslint/awards" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700 transition"><i class="fa-solid fa-award text-rsl-500 w-5"></i> Awards</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/rslint/brands" class="nav-link text-sm font-semibold text-gray-700 hover:text-rsl-600"
+                   th:classappend="${active == 'brands'} ? 'active text-rsl-600' : ''">Brands</a>
+                <a href="/rslint/partners" class="nav-link text-sm font-semibold text-gray-700 hover:text-rsl-600"
+                   th:classappend="${active == 'partners'} ? 'active text-rsl-600' : ''">Partners</a>
+                <a href="/rslint/distributors" class="nav-link text-sm font-semibold text-gray-700 hover:text-rsl-600"
+                   th:classappend="${active == 'distributors'} ? 'active text-rsl-600' : ''">Distributors</a>
+
+                <div class="relative group">
+                    <button class="nav-link text-sm font-semibold text-gray-700 hover:text-rsl-600 flex items-center gap-1"
+                            th:classappend="${active == 'media'} ? 'active text-rsl-600' : ''">
+                        Media <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </button>
+                    <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all absolute top-full left-1/2 -translate-x-1/2 pt-4 w-56">
+                        <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 overflow-hidden">
+                            <a href="/rslint/gallery" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700 transition"><i class="fa-solid fa-images text-rsl-500 w-5"></i> Gallery</a>
+                            <a href="/rslint/video" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700 transition"><i class="fa-solid fa-video text-rsl-500 w-5"></i> Video</a>
+                            <a href="/rslint/blog" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700 transition"><i class="fa-solid fa-newspaper text-rsl-500 w-5"></i> Blog</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/rslint/contact" class="nav-link text-sm font-semibold text-gray-700 hover:text-rsl-600"
+                   th:classappend="${active == 'contact'} ? 'active text-rsl-600' : ''">Contact</a>
+            </div>
+
+            <div class="hidden lg:flex items-center gap-3">
+                <a href="tel:+2348056798559" class="text-sm font-semibold text-gray-600 hover:text-rsl-600 transition flex items-center gap-2">
+                    <i class="fa-solid fa-phone text-rsl-600"></i> +234 805 679 8559
+                </a>
+                <a href="/rslint/distributors" class="btn-primary text-sm">Get Started <i class="fa-solid fa-arrow-right text-xs"></i></a>
+            </div>
+
+            <!-- Mobile toggle -->
+            <button id="rslMobileToggle" class="lg:hidden w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center text-gray-700">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="rslMobileMenu" class="lg:hidden hidden border-t border-gray-100 bg-white">
+        <div class="px-4 py-4 space-y-1">
+            <a href="/rslint" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Home</a>
+            <a href="/rslint/about" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">About Us</a>
+            <a href="/rslint/mission" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Mission</a>
+            <a href="/rslint/vision" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Vision</a>
+            <a href="/rslint/philosophy" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Philosophy</a>
+            <a href="/rslint/awards" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Awards</a>
+            <a href="/rslint/brands" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Brands</a>
+            <a href="/rslint/partners" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Partners</a>
+            <a href="/rslint/distributors" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Distributors</a>
+            <a href="/rslint/gallery" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Gallery</a>
+            <a href="/rslint/video" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Video</a>
+            <a href="/rslint/blog" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Blog</a>
+            <a href="/rslint/contact" class="block py-3 px-3 rounded-lg font-medium text-gray-700 hover:bg-rsl-50 hover:text-rsl-700">Contact</a>
+            <a href="/rslint/distributors" class="btn-primary w-full justify-center mt-3">Get Started</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer th:fragment="pagefooter" class="bg-gradient-to-br from-rsl-900 via-rsl-800 to-gray-900 text-gray-300 pt-20 pb-8 mt-24 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 30%, #efc62c 0%, transparent 40%), radial-gradient(circle at 80% 70%, #22c55e 0%, transparent 40%);"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- CTA strip -->
+        <div class="rounded-3xl bg-gradient-to-r from-gold-500 to-gold-600 text-rsl-900 p-8 md:p-12 mb-16 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <h3 class="font-display text-2xl md:text-3xl font-bold">Ready to grow with us?</h3>
+                <p class="text-rsl-900/80 mt-2 max-w-xl">Join our distribution network and get access to Nigeria's most trusted FMCG brands.</p>
+            </div>
+            <a href="/rslint/distributors" class="whitespace-nowrap bg-rsl-900 text-white px-8 py-4 rounded-full font-semibold hover:bg-black transition shadow-lg flex items-center gap-2">
+                Become a Distributor <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-gold-500 to-gold-600 flex items-center justify-center">
+                        <span class="text-rsl-900 font-black text-lg">RSL</span>
+                    </div>
+                    <div class="font-display font-bold text-white text-lg">RSL International</div>
+                </div>
+                <p class="text-sm text-gray-400 leading-relaxed">Founded in 2012, marketing and distributing quality FMCG brands across Nigeria with an obsession for convenience.</p>
+                <div class="flex gap-3 mt-6">
+                    <a href="https://facebook.com/RSL-International-LTD-270576559757495/" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 hover:text-rsl-900 flex items-center justify-center transition"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/rslintltd/" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 hover:text-rsl-900 flex items-center justify-center transition"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/in/rsl-international-limited-173a8897" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 hover:text-rsl-900 flex items-center justify-center transition"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 hover:text-rsl-900 flex items-center justify-center transition"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-4 uppercase tracking-wider text-xs">Company</h4>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="/rslint/about" class="hover:text-gold-400 transition">Our Story</a></li>
+                    <li><a href="/rslint/mission" class="hover:text-gold-400 transition">Mission</a></li>
+                    <li><a href="/rslint/vision" class="hover:text-gold-400 transition">Vision</a></li>
+                    <li><a href="/rslint/philosophy" class="hover:text-gold-400 transition">Philosophy</a></li>
+                    <li><a href="/rslint/awards" class="hover:text-gold-400 transition">Awards</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-4 uppercase tracking-wider text-xs">Explore</h4>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="/rslint/brands" class="hover:text-gold-400 transition">Brands We Carry</a></li>
+                    <li><a href="/rslint/partners" class="hover:text-gold-400 transition">Partners</a></li>
+                    <li><a href="/rslint/distributors" class="hover:text-gold-400 transition">Join Distributors</a></li>
+                    <li><a href="/rslint/gallery" class="hover:text-gold-400 transition">Gallery</a></li>
+                    <li><a href="/rslint/blog" class="hover:text-gold-400 transition">News &amp; Blog</a></li>
+                    <li><a href="/rslint/contact" class="hover:text-gold-400 transition">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-semibold mb-4 uppercase tracking-wider text-xs">Reach Us</h4>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-start gap-3"><i class="fa-solid fa-location-dot text-gold-400 mt-1"></i><span>Plot 22, Block 91 Akanbi Disu St, Lekki Phase 1, Lagos</span></li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-phone text-gold-400"></i><a href="tel:+2348056798559" class="hover:text-gold-400">+234 805 679 8559</a></li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-envelope text-gold-400"></i><a href="mailto:info@rslint.com" class="hover:text-gold-400">info@rslint.com</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+            <div>&copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2026</span> RSL International Limited. All rights reserved.</div>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-gold-400">Privacy</a>
+                <a href="#" class="hover:text-gold-400">Terms</a>
+                <a href="/rslint/contact" class="hover:text-gold-400">Support</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS (nav toggle + scroll reveal)
+     ============================================================ -->
+<th:block th:fragment="scripts">
+    <script>
+        // Mobile menu toggle
+        (function(){
+            var t = document.getElementById('rslMobileToggle');
+            var m = document.getElementById('rslMobileMenu');
+            if (t && m) {
+                t.addEventListener('click', function(){
+                    m.classList.toggle('hidden');
+                    var icon = t.querySelector('i');
+                    if (m.classList.contains('hidden')) { icon.className = 'fa-solid fa-bars'; }
+                    else { icon.className = 'fa-solid fa-xmark'; }
+                });
+            }
+        })();
+
+        // Nav scroll shadow
+        (function(){
+            var nav = document.getElementById('rslNav');
+            if (!nav) return;
+            function update() {
+                if (window.scrollY > 20) nav.classList.add('shadow-lg');
+                else nav.classList.remove('shadow-lg');
+            }
+            window.addEventListener('scroll', update, { passive:true });
+            update();
+        })();
+
+        // Scroll-reveal (supports .reveal, .reveal-left, .reveal-right, .reveal-scale)
+        (function(){
+            var selector = '.reveal, .reveal-left, .reveal-right, .reveal-scale';
+            var els = document.querySelectorAll(selector);
+            if (!('IntersectionObserver' in window)) {
+                els.forEach(function(e){ e.classList.add('visible'); });
+                return;
+            }
+            var io = new IntersectionObserver(function(entries){
+                entries.forEach(function(en){
+                    if (en.isIntersecting) {
+                        // Optional stagger via data-stagger index
+                        var d = en.target.getAttribute('data-stagger');
+                        if (d) en.target.style.transitionDelay = (parseInt(d,10) * 90) + 'ms';
+                        en.target.classList.add('visible');
+                        io.unobserve(en.target);
+                    }
+                });
+            }, { threshold: 0.14 });
+            els.forEach(function(e){ io.observe(e); });
+        })();
+
+        // Count-up numbers (data-count="1234")
+        (function(){
+            var nums = document.querySelectorAll('[data-count]');
+            if (!nums.length || !('IntersectionObserver' in window)) return;
+            var io = new IntersectionObserver(function(entries){
+                entries.forEach(function(en){
+                    if (!en.isIntersecting) return;
+                    var el = en.target;
+                    var target = parseFloat(el.getAttribute('data-count'));
+                    var duration = 1600;
+                    var start = performance.now();
+                    var suffix = el.getAttribute('data-suffix') || '';
+                    var prefix = el.getAttribute('data-prefix') || '';
+                    function step(now){
+                        var p = Math.min(1, (now - start) / duration);
+                        var eased = 1 - Math.pow(1 - p, 3);
+                        var v = target * eased;
+                        var shown = (target % 1 === 0) ? Math.round(v).toLocaleString() : v.toFixed(1);
+                        el.textContent = prefix + shown + suffix;
+                        if (p < 1) requestAnimationFrame(step);
+                    }
+                    requestAnimationFrame(step);
+                    io.unobserve(el);
+                });
+            }, { threshold: 0.4 });
+            nums.forEach(function(el){ io.observe(el); });
+        })();
+
+        // Magnetic buttons (data-magnetic on element)
+        (function(){
+            if (window.matchMedia('(hover: none)').matches) return;
+            document.querySelectorAll('[data-magnetic]').forEach(function(btn){
+                btn.addEventListener('mousemove', function(e){
+                    var r = btn.getBoundingClientRect();
+                    var x = e.clientX - r.left - r.width/2;
+                    var y = e.clientY - r.top - r.height/2;
+                    btn.style.transform = 'translate('+ (x*0.18) +'px,'+ (y*0.22) +'px)';
+                });
+                btn.addEventListener('mouseleave', function(){ btn.style.transform = ''; });
+            });
+        })();
+
+        // 3D tilt on cards (data-tilt)
+        (function(){
+            if (window.matchMedia('(hover: none)').matches) return;
+            document.querySelectorAll('[data-tilt]').forEach(function(card){
+                card.classList.add('tilt');
+                card.addEventListener('mousemove', function(e){
+                    var r = card.getBoundingClientRect();
+                    var px = (e.clientX - r.left) / r.width - 0.5;
+                    var py = (e.clientY - r.top) / r.height - 0.5;
+                    card.style.transform = 'perspective(900px) rotateX('+ (-py*8) +'deg) rotateY('+ (px*10) +'deg) translateY(-4px)';
+                });
+                card.addEventListener('mouseleave', function(){ card.style.transform = ''; });
+            });
+        })();
+
+        // Simple parallax for [data-parallax="0.15"] (fraction of scroll)
+        (function(){
+            var items = document.querySelectorAll('[data-parallax]');
+            if (!items.length) return;
+            function update(){
+                var y = window.scrollY;
+                items.forEach(function(el){
+                    var factor = parseFloat(el.getAttribute('data-parallax')) || 0.1;
+                    el.style.transform = 'translateY(' + (y * factor * -1) + 'px)';
+                });
+            }
+            window.addEventListener('scroll', update, { passive:true });
+            update();
+        })();
+    </script>
+</th:block>
+
+<!-- ============================================================
+     PAGE BANNER (used on inner pages)
+     ============================================================ -->
+<section th:fragment="pagebanner(title, subtitle, crumb)" class="page-banner pt-40 pb-24 text-white relative">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <nav class="flex justify-center items-center gap-2 text-sm text-white/70 mb-4 anim-fadeIn">
+            <a href="/rslint" class="hover:text-gold-400 transition">Home</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-gold-400" th:text="${crumb}">Page</span>
+        </nav>
+        <h1 class="font-display text-4xl md:text-6xl font-bold mb-4 anim-fadeUp" th:text="${title}">Page Title</h1>
+        <p class="text-lg md:text-xl text-white/80 max-w-2xl mx-auto anim-fadeUp delay-100" th:text="${subtitle}">Subtitle</p>
+    </div>
+    <!-- decorative wave -->
+    <svg class="absolute bottom-0 left-0 w-full text-white" viewBox="0 0 1440 80" fill="currentColor" preserveAspectRatio="none">
+        <path d="M0,32 C240,80 480,80 720,48 C960,16 1200,16 1440,48 L1440,80 L0,80 Z"/>
+    </svg>
+</section>
+
+</body>
+</html>

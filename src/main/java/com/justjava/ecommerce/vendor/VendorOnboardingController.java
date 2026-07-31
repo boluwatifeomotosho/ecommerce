@@ -43,16 +43,19 @@ public class VendorOnboardingController {
     private static final Pattern WEBSITE_PATTERN =
             Pattern.compile("^https?://[^\\s.]+\\.[^\\s]{2,}$");
 
-    private final UserRepository userRepository;
+    private final UserRepository       userRepository;
+    private final VendorRepository     vendorRepository;
     private final KeycloakAdminService keycloakAdminService;
     private final Path uploadDir;
 
     public VendorOnboardingController(
             UserRepository userRepository,
+            VendorRepository vendorRepository,
             KeycloakAdminService keycloakAdminService,
             @Value("${app.vendor-upload-dir:./uploads/vendors}") String uploadPath
     ) {
         this.userRepository = userRepository;
+        this.vendorRepository = vendorRepository;
         this.keycloakAdminService = keycloakAdminService;
         this.uploadDir = Paths.get(uploadPath).toAbsolutePath().normalize();
         try {
@@ -65,37 +68,41 @@ public class VendorOnboardingController {
     @GetMapping("/vendor/onboarding")
     @Transactional
     public String show(@AuthenticationPrincipal OidcUser principal, Model model) {
-        User vendor = requireVendor(principal);
-        hydrateFromKeycloakIfMissing(vendor, principal.getSubject());
+        User owner = requireVendorUser(principal);
+        Vendor vendor = requireVendorCompany(owner);
+        hydrateFromKeycloakIfMissing(owner, vendor, principal.getSubject());
         model.addAttribute("vendor", vendor);
+        model.addAttribute("owner", owner);
         model.addAttribute("name", principal.getFullName());
         model.addAttribute("email", principal.getEmail());
         return "vendor/onboarding";
     }
 
-    private void hydrateFromKeycloakIfMissing(User vendor, String keycloakId) {
-        boolean missingStore   = isBlank(vendor.getStoreName());
-        boolean missingPhone   = isBlank(vendor.getPhone());
+    private void hydrateFromKeycloakIfMissing(User owner, Vendor vendor, String keycloakId) {
+        boolean missingStore   = isBlank(vendor.getName());
+        boolean missingPhone   = isBlank(owner.getPhone());
         boolean missingWebsite = isBlank(vendor.getWebsiteUrl());
         if (!missingStore && !missingPhone && !missingWebsite) return;
 
         Map<String, String> kc = keycloakAdminService.getUserAttributes(keycloakId);
         if (kc.isEmpty()) return;
 
-        boolean touched = false;
+        boolean vendorTouched = false;
+        boolean userTouched   = false;
         if (missingStore) {
             String v = kc.get("companyName");
-            if (!isBlank(v)) { vendor.setStoreName(v); touched = true; }
+            if (!isBlank(v)) { vendor.setName(v); vendorTouched = true; }
         }
         if (missingPhone) {
             String v = kc.get("phoneNumber");
-            if (!isBlank(v)) { vendor.setPhone(v); touched = true; }
+            if (!isBlank(v)) { owner.setPhone(v); userTouched = true; }
         }
         if (missingWebsite) {
             String v = kc.get("websiteUrl");
-            if (!isBlank(v)) { vendor.setWebsiteUrl(v); touched = true; }
+            if (!isBlank(v)) { vendor.setWebsiteUrl(v); vendorTouched = true; }
         }
-        if (touched) userRepository.save(vendor);
+        if (vendorTouched) vendorRepository.save(vendor);
+        if (userTouched)   userRepository.save(owner);
     }
 
     private boolean isBlank(String s) { return s == null || s.isBlank(); }
@@ -110,13 +117,14 @@ public class VendorOnboardingController {
             @RequestParam(value = "companyLogo", required = false) MultipartFile logo,
             RedirectAttributes redirect
     ) {
-        User vendor = requireVendor(principal);
+        User owner = requireVendorUser(principal);
+        Vendor vendor = requireVendorCompany(owner);
 
         String company = trimToNull(companyName);
         String phone   = trimToNull(phoneNumber);
         String website = trimToNull(websiteUrl);
 
-        if (company == null && (vendor.getStoreName() == null || vendor.getStoreName().isBlank())) {
+        if (company == null && (vendor.getName() == null || vendor.getName().isBlank())) {
             return fail(redirect, "Company name is required.");
         }
         if (phone != null && !PHONE_PATTERN.matcher(phone).matches()) {
@@ -150,11 +158,15 @@ public class VendorOnboardingController {
             return fail(redirect, "Please upload a company logo.");
         }
 
-        if (company != null) vendor.setStoreName(company);
-        if (phone   != null) vendor.setPhone(phone);
+        if (company != null) vendor.setName(company);
         if (website != null) vendor.setWebsiteUrl(website);
         vendor.setCompanyLogoUrl(logoUrl);
-        userRepository.save(vendor);
+        vendorRepository.save(vendor);
+
+        if (phone != null) {
+            owner.setPhone(phone);
+            userRepository.save(owner);
+        }
 
         Map<String, String> kcAttrs = new HashMap<>();
         if (company != null) kcAttrs.put("companyName", company);
@@ -170,13 +182,18 @@ public class VendorOnboardingController {
         return "redirect:/vendor/dashboard";
     }
 
-    private User requireVendor(OidcUser principal) {
+    private User requireVendorUser(OidcUser principal) {
         User user = userRepository.findByKeycloakId(principal.getSubject())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor account not found"));
         if (!"VENDOR".equalsIgnoreCase(user.getRole())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only vendors can access onboarding");
         }
         return user;
+    }
+
+    private Vendor requireVendorCompany(User owner) {
+        return vendorRepository.findByOwnerId(owner.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor company not found"));
     }
 
     private String fail(RedirectAttributes redirect, String message) {

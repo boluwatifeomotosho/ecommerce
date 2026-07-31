@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="'Team — ' + ${teamUser?.fullName ?: teamUser?.email} + ' | Vendor'">Team Member</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+    <style>
+        .tab-btn { position: relative; }
+        .tab-btn.active { color: #630ed4; }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: -1px;
+            height: 2px;
+            background: #630ed4;
+            border-radius: 2px;
+        }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+    </style>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/vendor-sidebar :: sidebar('team', ${name})}"></aside>
+
+<div class="ml-0 md:ml-[280px] mt-16 md:mt-0 flex-1 p-8">
+
+    <!-- Breadcrumb + header -->
+    <div class="mb-6">
+        <a th:href="@{/vendor/team}"
+           class="inline-flex items-center gap-1 text-sm text-on-surface-variant hover:text-primary transition-colors mb-3">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            Back to team
+        </a>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-2xl"
+                          th:text="${member.memberRole?.name() == 'VENDOR_ADMIN'} ? 'admin_panel_settings' : 'person'">person</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h1 class="text-2xl font-bold text-on-surface"
+                            th:text="${teamUser?.fullName ?: 'Team member'}">Name</h1>
+                        <span th:if="${member.memberRole?.name() == 'VENDOR_ADMIN'}"
+                              class="text-[10px] font-bold uppercase tracking-wide bg-primary/10 text-primary px-2 py-0.5 rounded-full">Store Manager</span>
+                        <span th:if="${member.memberRole?.name() == 'SUB_VENDOR'}"
+                              class="text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Team Member</span>
+                        <span th:if="${teamUser?.status == 'PENDING_ACTIVATION'}"
+                              class="text-[10px] font-bold uppercase tracking-wide bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Pending</span>
+                    </div>
+                    <p class="text-sm text-on-surface-variant" th:text="${teamUser?.email ?: '—'}">email</p>
+                </div>
+            </div>
+            <form th:if="${member.memberRole?.name() == 'SUB_VENDOR'}"
+                  th:action="@{'/vendor/team/' + ${member.id} + '/revoke'}"
+                  method="post"
+                  data-confirm="Remove this team member? They will lose access immediately."
+                  data-confirm-title="Revoke access"
+                  data-confirm-btn="Revoke access">
+                <button type="submit"
+                        class="inline-flex items-center gap-1.5 text-red-600 hover:bg-red-50 text-xs font-semibold px-3 py-2 rounded-lg transition-all border border-red-200">
+                    <span class="material-symbols-outlined text-base">delete</span>
+                    Revoke access
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="border-b border-outline-variant/40 mb-6">
+        <nav class="flex flex-wrap gap-1 -mb-px">
+            <button data-tab="overview" type="button"
+                    class="tab-btn active px-4 py-3 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors">
+                Overview
+            </button>
+            <button data-tab="orders" type="button"
+                    class="tab-btn px-4 py-3 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors">
+                Orders
+            </button>
+            <button data-tab="products" type="button"
+                    class="tab-btn px-4 py-3 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors">
+                Products
+            </button>
+            <button data-tab="earnings" type="button"
+                    class="tab-btn px-4 py-3 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors">
+                Earnings
+            </button>
+        </nav>
+    </div>
+
+    <!-- ============ OVERVIEW ============ -->
+    <section id="tab-overview" class="tab-panel active">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-gradient-to-br from-primary to-primary-container text-white rounded-2xl p-5 shadow-lg shadow-primary/20 col-span-2 md:col-span-1">
+                <p class="text-xs text-white/80 font-medium mb-1">Revenue Generated</p>
+                <h3 class="text-2xl font-bold">
+                    &#8358;<span th:text="${totalEarned != null ? #numbers.formatDecimal(totalEarned, 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                </h3>
+                <p class="text-[11px] text-white/70 mt-2">From this member's products</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/30 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-xs text-on-surface-variant font-medium">Total Orders</p>
+                    <span class="material-symbols-outlined text-blue-500 bg-blue-50 p-1.5 rounded-lg text-lg">shopping_bag</span>
+                </div>
+                <h3 class="text-2xl font-bold" th:text="${totalOrders ?: 0}">0</h3>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/30 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-xs text-on-surface-variant font-medium">Live Products</p>
+                    <span class="material-symbols-outlined text-green-600 bg-green-50 p-1.5 rounded-lg text-lg">inventory_2</span>
+                </div>
+                <h3 class="text-2xl font-bold" th:text="${publishedProducts ?: 0}">0</h3>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/30 shadow-sm">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="text-xs text-on-surface-variant font-medium">Delivered Orders</p>
+                    <span class="material-symbols-outlined text-purple-600 bg-purple-50 p-1.5 rounded-lg text-lg">local_shipping</span>
+                </div>
+                <h3 class="text-2xl font-bold" th:text="${deliveredOrders ?: 0}">0</h3>
+            </div>
+        </div>
+
+        <!-- Member snapshot -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm p-6">
+            <h3 class="font-bold text-on-surface mb-4">Member Snapshot</h3>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                <div class="flex justify-between border-b border-outline-variant/20 py-2">
+                    <dt class="text-on-surface-variant">Name</dt>
+                    <dd class="font-medium" th:text="${teamUser?.fullName ?: '—'}">—</dd>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/20 py-2">
+                    <dt class="text-on-surface-variant">Email</dt>
+                    <dd class="font-medium" th:text="${teamUser?.email ?: '—'}">—</dd>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/20 py-2">
+                    <dt class="text-on-surface-variant">Role</dt>
+                    <dd class="font-medium"
+                        th:text="${member.memberRole?.name() == 'VENDOR_ADMIN'} ? 'Store Manager' : 'Team Member'">—</dd>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/20 py-2">
+                    <dt class="text-on-surface-variant">Status</dt>
+                    <dd class="font-medium" th:text="${teamUser?.status ?: '—'}">—</dd>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/20 py-2">
+                    <dt class="text-on-surface-variant">Joined</dt>
+                    <dd class="font-medium"
+                        th:text="${member.joinedAt != null ? #temporals.format(member.joinedAt, 'dd MMM yyyy') : '—'}">—</dd>
+                </div>
+                <div class="flex justify-between border-b border-outline-variant/20 py-2">
+                    <dt class="text-on-surface-variant">Invited by</dt>
+                    <dd class="font-medium" th:text="${member.invitedBy?.fullName ?: '—'}">—</dd>
+                </div>
+            </dl>
+        </div>
+    </section>
+
+    <!-- ============ ORDERS ============ -->
+    <section id="tab-orders" class="tab-panel">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+            <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                <p class="text-xs text-blue-700 font-semibold mb-1">Paid</p>
+                <h3 class="text-xl font-bold text-blue-900" th:text="${paidOrders ?: 0}">0</h3>
+            </div>
+            <div class="bg-purple-50 rounded-xl p-4 border border-purple-100">
+                <p class="text-xs text-purple-700 font-semibold mb-1">Processing</p>
+                <h3 class="text-xl font-bold text-purple-900" th:text="${processingOrders ?: 0}">0</h3>
+            </div>
+            <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
+                <p class="text-xs text-indigo-700 font-semibold mb-1">Shipped</p>
+                <h3 class="text-xl font-bold text-indigo-900" th:text="${shippedOrders ?: 0}">0</h3>
+            </div>
+            <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+                <p class="text-xs text-green-700 font-semibold mb-1">Delivered</p>
+                <h3 class="text-xl font-bold text-green-900" th:text="${deliveredOrders ?: 0}">0</h3>
+            </div>
+            <div class="bg-red-50 rounded-xl p-4 border border-red-100">
+                <p class="text-xs text-red-700 font-semibold mb-1">Cancelled</p>
+                <h3 class="text-xl font-bold text-red-900" th:text="${cancelledOrders ?: 0}">0</h3>
+            </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/20 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">receipt_long</span>
+                <h3 class="font-bold text-on-surface">Recent Orders</h3>
+            </div>
+            <div th:if="${recentOrders == null or recentOrders.isEmpty()}"
+                 class="p-10 text-center text-on-surface-variant">
+                <span class="material-symbols-outlined text-4xl text-outline-variant">receipt_long</span>
+                <p class="text-sm mt-2">No orders for this team member's products yet.</p>
+            </div>
+            <table th:if="${recentOrders != null and !recentOrders.isEmpty()}" class="w-full text-sm">
+                <thead class="bg-surface-container-low border-b border-outline-variant/40">
+                <tr>
+                    <th class="text-left px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Order</th>
+                    <th class="text-left px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Customer</th>
+                    <th class="text-left px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Status</th>
+                    <th class="text-right px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Total</th>
+                    <th class="text-right px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Placed</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                <tr th:each="order : ${recentOrders}" class="hover:bg-surface-container-low/40 transition-colors">
+                    <td class="px-6 py-3 font-mono text-xs text-on-surface-variant"
+                        th:text="${#strings.substring(order.id.toString(), 0, 8)}">order-id</td>
+                    <td class="px-6 py-3 font-medium" th:text="${order.shippingName ?: '—'}">Customer</td>
+                    <td class="px-6 py-3">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-surface-container text-on-surface-variant"
+                              th:text="${order.status}">STATUS</span>
+                    </td>
+                    <td class="px-6 py-3 text-right font-bold">
+                        &#8358;<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                    </td>
+                    <td class="px-6 py-3 text-right text-xs text-on-surface-variant"
+                        th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy')}">date</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ============ PRODUCTS ============ -->
+    <section id="tab-products" class="tab-panel">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+            <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+                <p class="text-xs text-green-700 font-semibold mb-1">Published</p>
+                <h3 class="text-xl font-bold text-green-900" th:text="${publishedProducts ?: 0}">0</h3>
+            </div>
+            <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/40">
+                <p class="text-xs text-on-surface-variant font-semibold mb-1">Draft</p>
+                <h3 class="text-xl font-bold" th:text="${draftProducts ?: 0}">0</h3>
+            </div>
+            <div class="bg-amber-50 rounded-xl p-4 border border-amber-100">
+                <p class="text-xs text-amber-700 font-semibold mb-1">Pending Review</p>
+                <h3 class="text-xl font-bold text-amber-900" th:text="${pendingProducts ?: 0}">0</h3>
+            </div>
+            <div class="bg-red-50 rounded-xl p-4 border border-red-100">
+                <p class="text-xs text-red-700 font-semibold mb-1">Rejected</p>
+                <h3 class="text-xl font-bold text-red-900" th:text="${rejectedProducts ?: 0}">0</h3>
+            </div>
+            <div class="bg-surface-container rounded-xl p-4 border border-outline-variant/40">
+                <p class="text-xs text-on-surface-variant font-semibold mb-1">Archived</p>
+                <h3 class="text-xl font-bold" th:text="${archivedProducts ?: 0}">0</h3>
+            </div>
+            <div class="bg-amber-50 rounded-xl p-4 border border-amber-100">
+                <p class="text-xs text-amber-700 font-semibold mb-1">Low Stock (&le;5)</p>
+                <h3 class="text-xl font-bold text-amber-900" th:text="${lowStockProducts ?: 0}">0</h3>
+            </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/20 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">leaderboard</span>
+                <h3 class="font-bold text-on-surface">Top Products by Units Sold</h3>
+            </div>
+            <div th:if="${topProducts == null or topProducts.isEmpty()}"
+                 class="p-10 text-center text-on-surface-variant">
+                <span class="material-symbols-outlined text-4xl text-outline-variant">bar_chart</span>
+                <p class="text-sm mt-2">No sales data yet.</p>
+            </div>
+            <table th:if="${topProducts != null and !topProducts.isEmpty()}" class="w-full text-sm table-fixed">
+                <colgroup>
+                    <col class="w-12"/>
+                    <col/>
+                    <col class="w-24"/>
+                    <col class="w-32"/>
+                </colgroup>
+                <thead class="bg-surface-container-low border-b border-outline-variant/40">
+                <tr>
+                    <th class="text-left px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">#</th>
+                    <th class="text-left px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Product</th>
+                    <th class="text-right px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Units</th>
+                    <th class="text-right px-6 py-3 text-xs uppercase tracking-wider text-on-surface-variant font-bold">Revenue</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                <tr th:each="row, stat : ${topProducts}" class="hover:bg-surface-container-low/30 transition-colors">
+                    <td class="px-6 py-3 text-xs font-bold text-on-surface-variant" th:text="${stat.count}">1</td>
+                    <td class="px-6 py-3 max-w-0">
+                        <p class="font-medium truncate" th:title="${row[0]}" th:text="${row[0]}">Product</p>
+                    </td>
+                    <td class="px-6 py-3 text-right font-bold" th:text="${row[1] ?: 0}">0</td>
+                    <td class="px-6 py-3 text-right font-bold text-primary">
+                        &#8358;<span th:text="${row[2] != null ? #numbers.formatDecimal(row[2], 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ============ EARNINGS ============ -->
+    <section id="tab-earnings" class="tab-panel">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm p-5">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                    <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Revenue Generated</p>
+                </div>
+                <h3 class="text-2xl font-bold">
+                    &#8358;<span th:text="${totalEarned != null ? #numbers.formatDecimal(totalEarned, 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                </h3>
+                <p class="text-xs text-on-surface-variant mt-2">Paid, processing, shipped &amp; delivered orders</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm p-5">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                    <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Settled</p>
+                </div>
+                <h3 class="text-2xl font-bold text-green-700">
+                    &#8358;<span th:text="${settledEarnings != null ? #numbers.formatDecimal(settledEarnings, 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                </h3>
+                <p class="text-xs text-on-surface-variant mt-2">Delivered orders only</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm p-5">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                    <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Pending</p>
+                </div>
+                <h3 class="text-2xl font-bold text-amber-700">
+                    &#8358;<span th:text="${pendingEarnings != null ? #numbers.formatDecimal(pendingEarnings, 0, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span>
+                </h3>
+                <p class="text-xs text-on-surface-variant mt-2">Awaiting delivery / settlement</p>
+            </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm p-6">
+            <p class="text-sm text-on-surface-variant">
+                Revenue is attributed to the team member who created each product. Settlement payouts still land in your company's payout account &mdash; this view is for tracking individual contribution only.
+            </p>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    (function () {
+        var buttons = document.querySelectorAll('.tab-btn');
+        var panels  = document.querySelectorAll('.tab-panel');
+
+        function activate(name) {
+            buttons.forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
+            panels.forEach(function (p) { p.classList.toggle('active', p.id === 'tab-' + name); });
+            try { history.replaceState(null, '', '#' + name); } catch (e) { /* ignore */ }
+        }
+
+        buttons.forEach(function (b) {
+            b.addEventListener('click', function () { activate(b.dataset.tab); });
+        });
+
+        var initial = (window.location.hash || '').replace('#', '');
+        if (initial && document.getElementById('tab-' + initial)) activate(initial);
+    })();
+</script>
+</body>
+</html>

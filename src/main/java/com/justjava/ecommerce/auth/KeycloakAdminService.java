@@ -43,6 +43,10 @@ public class KeycloakAdminService {
         assignRole(keycloakUserId, "VENDOR");
     }
 
+    public void assignSubVendorRole(String keycloakUserId) {
+        assignRole(keycloakUserId, "SUB_VENDOR");
+    }
+
     private void assignRole(String keycloakUserId, String roleName) {
         try {
             String token = getAdminToken();
@@ -142,14 +146,13 @@ public class KeycloakAdminService {
             }
             attributes.forEach((k, v) -> merged.put(k, v == null ? List.of() : List.of(v)));
 
-            Map<String, Object> body = new HashMap<>();
-            body.put("attributes", merged);
+            current.put("attributes", merged);
 
             restClient.put()
                     .uri("/admin/realms/{realm}/users/{userId}", realm, keycloakId)
                     .header("Authorization", "Bearer " + token)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(body)
+                    .body(current)
                     .retrieve()
                     .toBodilessEntity();
             log.info("Updated Keycloak attributes for user {}: {}", keycloakId, attributes.keySet());
@@ -220,5 +223,89 @@ public class KeycloakAdminService {
                 .body(List.of(role))
                 .retrieve()
                 .toBodilessEntity();
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean emailExists(String email) {
+        String token = getAdminToken();
+        List<Map<String, Object>> matches = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/admin/realms/{realm}/users")
+                        .queryParam("email", email)
+                        .queryParam("exact", true)
+                        .build(realm))
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .body(List.class);
+        return matches != null && !matches.isEmpty();
+    }
+
+    public String createInvitedUser(String email, String firstName, String lastName) {
+        String token = getAdminToken();
+
+        Map<String, Object> user = new HashMap<>();
+        user.put("username", email);
+        user.put("email", email);
+        user.put("firstName", firstName);
+        user.put("lastName", lastName);
+        user.put("enabled", true);
+        user.put("emailVerified", true);
+
+        ResponseEntity<Void> response = restClient.post()
+                .uri("/admin/realms/{realm}/users", realm)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(user)
+                .retrieve()
+                .toBodilessEntity();
+
+        String location = response.getHeaders().getFirst("Location");
+        if (location == null) throw new IllegalStateException("Keycloak did not return a Location header after user creation");
+        String userId = location.substring(location.lastIndexOf('/') + 1);
+        log.info("Created invited Keycloak user {} (id={})", email, userId);
+        return userId;
+    }
+
+    /**
+     * Triggers Keycloak's built-in "execute actions email" flow. The user
+     * receives an email; clicking the link takes them through UPDATE_PASSWORD
+     * only, then Keycloak auto-authenticates them and redirects to redirectUri.
+     *
+     * VERIFY_EMAIL is intentionally omitted: the invited user is created with
+     * emailVerified=true (clicking the invitation link IS the email proof), and
+     * including VERIFY_EMAIL here blocks the auto-login handoff at the end of
+     * the required-actions flow.
+     */
+    public void sendInvitationEmail(String keycloakUserId, String clientId, String redirectUri, int lifespanSeconds) {
+        String token = getAdminToken();
+        List<String> actions = List.of("UPDATE_PASSWORD");
+
+        restClient.put()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/admin/realms/{realm}/users/{userId}/execute-actions-email")
+                        .queryParam("client_id", clientId)
+                        .queryParam("redirect_uri", redirectUri)
+                        .queryParam("lifespan", lifespanSeconds)
+                        .build(realm, keycloakUserId))
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(actions)
+                .retrieve()
+                .toBodilessEntity();
+        log.info("Sent invitation email to Keycloak user {}", keycloakUserId);
+    }
+
+    public void deleteUser(String keycloakUserId) {
+        try {
+            String token = getAdminToken();
+            restClient.delete()
+                    .uri("/admin/realms/{realm}/users/{userId}", realm, keycloakUserId)
+                    .header("Authorization", "Bearer " + token)
+                    .retrieve()
+                    .toBodilessEntity();
+            log.info("Deleted Keycloak user {}", keycloakUserId);
+        } catch (Exception e) {
+            log.warn("Could not delete Keycloak user {}: {}", keycloakUserId, e.getMessage());
+        }
     }
 }

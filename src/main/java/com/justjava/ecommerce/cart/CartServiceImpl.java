@@ -99,7 +99,7 @@ public class CartServiceImpl implements CartService {
     private CartDto.CartItemDto toItemDto(CartItem item) {
         Product p = item.getProduct();
         BigDecimal lineTotal = p.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-        String vendorName = p.getVendor() != null ? p.getVendor().getFullName() : "Unknown";
+        String vendorName = p.getVendor() != null ? p.getVendor().getName() : "Unknown";
         return new CartDto.CartItemDto(
                 p.getId(),
                 p.getName(),

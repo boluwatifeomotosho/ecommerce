@@ -140,11 +140,30 @@ public class CheckoutController {
         OrderDto order = orderService.getOrderById(id, customerId);
         model.addAttribute("order", order);
         model.addAttribute("name",  resolveName(auth));
-        if (order.status() == OrderStatus.DELIVERED) {
+        if (order.status() == OrderStatus.CONFIRMED) {
             model.addAttribute("reviewedProductIds",
                     reviewService.getReviewedProductIds(customerId, id));
         }
         return "customer/order-detail";
+    }
+
+    // ── Confirm delivery (customer) ──────────────────────────────────────────
+
+    @PostMapping("/orders/{id}/confirm")
+    public String confirmDelivery(
+            @PathVariable UUID id,
+            Authentication auth,
+            RedirectAttributes flash
+    ) {
+        UUID customerId = resolveId(auth);
+        try {
+            orderService.confirmDelivery(id, customerId);
+            flash.addFlashAttribute("successMessage",
+                    "Delivery confirmed. You can now leave a review for the products.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("paymentError", e.getMessage());
+        }
+        return "redirect:/customer/orders/" + id;
     }
 
     // ── Retry payment for PENDING_PAYMENT or CANCELLED orders ────────────────

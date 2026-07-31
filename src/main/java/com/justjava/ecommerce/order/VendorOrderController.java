@@ -1,6 +1,7 @@
 package com.justjava.ecommerce.order;
 
-import com.justjava.ecommerce.user.UserRepository;
+import com.justjava.ecommerce.vendor.VendorMemberService;
+import com.justjava.ecommerce.vendor.VendorScope;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,12 +17,12 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/vendor/orders")
-@PreAuthorize("hasRole('VENDOR')")
+@PreAuthorize("hasAnyRole('VENDOR', 'SUB_VENDOR')")
 @RequiredArgsConstructor
 public class VendorOrderController {
 
-    private final OrderService    orderService;
-    private final UserRepository  userRepository;
+    private final OrderService        orderService;
+    private final VendorMemberService vendorMemberService;
 
     @GetMapping
     public String list(
@@ -30,13 +31,15 @@ public class VendorOrderController {
             @AuthenticationPrincipal OidcUser principal,
             Model model
     ) {
-        UUID vendorId = resolveVendorId(principal);
+        VendorScope scope = vendorMemberService.currentScope(principal);
         OrderStatus statusFilter = null;
         if (status != null && !status.isBlank()) {
             try { statusFilter = OrderStatus.valueOf(status); } catch (IllegalArgumentException ignored) {}
         }
-        var orders = orderService.getVendorOrders(vendorId, statusFilter,
-                PageRequest.of(page, 20, Sort.by("createdAt").descending()));
+        var pageable = PageRequest.of(page, 20, Sort.by("createdAt").descending());
+        var orders = scope.isCreatorScoped()
+                ? orderService.getVendorOrdersForCreator(scope.vendorId(), scope.creatorUserId(), statusFilter, pageable)
+                : orderService.getVendorOrders(scope.vendorId(), statusFilter, pageable);
         model.addAttribute("orders",       orders);
         model.addAttribute("name",         principal.getFullName() != null ? principal.getFullName() : "Vendor");
         model.addAttribute("activeStatus", status);
@@ -49,8 +52,10 @@ public class VendorOrderController {
             @AuthenticationPrincipal OidcUser principal,
             Model model
     ) {
-        UUID vendorId = resolveVendorId(principal);
-        OrderDto order = orderService.getOrderByIdForVendor(id, vendorId);
+        VendorScope scope = vendorMemberService.currentScope(principal);
+        OrderDto order = scope.isCreatorScoped()
+                ? orderService.getOrderByIdForVendorCreator(id, scope.vendorId(), scope.creatorUserId())
+                : orderService.getOrderByIdForVendor(id, scope.vendorId());
         model.addAttribute("order", order);
         model.addAttribute("name", principal.getFullName() != null ? principal.getFullName() : "Vendor");
         return "vendor/orders/detail";
@@ -63,19 +68,17 @@ public class VendorOrderController {
             @AuthenticationPrincipal OidcUser principal,
             RedirectAttributes flash
     ) {
-        UUID vendorId = resolveVendorId(principal);
+        VendorScope scope = vendorMemberService.currentScope(principal);
         try {
-            orderService.updateOrderStatusByVendor(id, vendorId, status);
+            if (scope.isCreatorScoped()) {
+                orderService.updateOrderStatusByVendorCreator(id, scope.vendorId(), scope.creatorUserId(), status);
+            } else {
+                orderService.updateOrderStatusByVendor(id, scope.vendorId(), status);
+            }
             flash.addFlashAttribute("successMessage", "Order status updated to " + status + ".");
         } catch (Exception e) {
             flash.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/vendor/orders/" + id;
-    }
-
-    private UUID resolveVendorId(OidcUser principal) {
-        return userRepository.findByKeycloakId(principal.getSubject())
-                .orElseThrow(() -> new IllegalStateException("Vendor user not found"))
-                .getId();
     }
 }

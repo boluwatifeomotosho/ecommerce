@@ -269,12 +269,24 @@ public class MobileController {
         UUID customerId = resolveId(auth);
         OrderDto order = orderService.getOrderById(id, customerId);
         model.addAttribute("order", order);
-        if (order.status() == OrderStatus.DELIVERED) {
+        if (order.status() == OrderStatus.CONFIRMED) {
             model.addAttribute("reviewedProductIds",
                     reviewService.getReviewedProductIds(customerId, id));
         }
         addCommon(auth, model, null);
         return "mobile/order-detail";
+    }
+
+    @PostMapping("/orders/{id}/confirm")
+    public String confirmDelivery(@PathVariable UUID id, Authentication auth, RedirectAttributes flash) {
+        try {
+            orderService.confirmDelivery(id, resolveId(auth));
+            flash.addFlashAttribute("successMessage",
+                    "Delivery confirmed. You can now leave a review.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("paymentError", e.getMessage());
+        }
+        return "redirect:/mobile/orders/" + id;
     }
 
     @PostMapping("/orders/{id}/pay")

@@ -38,6 +38,7 @@ public class AdminProductController {
             case "price-asc"  -> Sort.by("price").ascending();
             case "price-desc" -> Sort.by("price").descending();
             case "name"       -> Sort.by("name").ascending();
+            case "vendor"     -> Sort.by("vendor.name").ascending().and(Sort.by("name").ascending());
             default           -> Sort.by("createdAt").descending();
         };
         var products = productQueryService.getPublishedProducts(filter, PageRequest.of(page, 20, sortObj));
@@ -48,51 +49,19 @@ public class AdminProductController {
         return "admin/products/catalog";
     }
 
-    @GetMapping("/pending")
-    public String pendingReview(
-            @RequestParam(defaultValue = "0") int page,
-            Authentication auth,
-            Model model
+    @PostMapping("/{id}/takedown")
+    public String takedown(
+            @PathVariable UUID   id,
+            @RequestParam String reason,
+            RedirectAttributes   flash
     ) {
-        var products = productQueryService.getPendingProducts(
-                PageRequest.of(page, 20, Sort.by("createdAt").ascending()));
-        model.addAttribute("products", products);
-        enrichModel(auth, model);
-        return "admin/products/pending";
-    }
-
-    @GetMapping("/pending/{id}")
-    public String reviewDetail(@PathVariable UUID id, Authentication auth, Model model) {
-        var product = productQueryService.getProductById(id);
-        model.addAttribute("product", product);
-        enrichModel(auth, model);
-        return "admin/products/review";
-    }
-
-    @PostMapping("/{id}/approve")
-    public String approve(@PathVariable UUID id, RedirectAttributes flash) {
         try {
-            productApprovalService.approve(id);
-            flash.addFlashAttribute("success", "Product approved and published.");
+            productApprovalService.takedown(id, reason);
+            flash.addFlashAttribute("success", "Product taken down from the catalog.");
         } catch (Exception e) {
             flash.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/admin/products/pending";
-    }
-
-    @PostMapping("/{id}/reject")
-    public String reject(
-            @PathVariable UUID         id,
-            @RequestParam String       reason,
-            RedirectAttributes         flash
-    ) {
-        try {
-            productApprovalService.reject(id, reason);
-            flash.addFlashAttribute("success", "Product rejected.");
-        } catch (Exception e) {
-            flash.addFlashAttribute("error", e.getMessage());
-        }
-        return "redirect:/admin/products/pending";
+        return "redirect:/admin/products/catalog";
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

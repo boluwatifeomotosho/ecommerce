@@ -28,6 +28,8 @@ public class OrderServiceImpl implements OrderService {
 
     private static final BigDecimal DELIVERY_FEE = new BigDecimal("1500.00");
     private static final Set<OrderStatus> RETRYABLE = EnumSet.of(OrderStatus.PENDING_PAYMENT, OrderStatus.CANCELLED);
+    // DELIVERED → CONFIRMED intentionally omitted: only the customer can confirm,
+    // via OrderService.confirmDelivery() which bypasses this map.
     private static final Map<OrderStatus, Set<OrderStatus>> ALLOWED_TRANSITIONS = Map.of(
             OrderStatus.PAID,       Set.of(OrderStatus.PROCESSING),
             OrderStatus.PROCESSING, Set.of(OrderStatus.SHIPPED),
@@ -76,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> items = cartItems.stream().map(ci -> {
             var p = ci.getProduct();
             BigDecimal lineTotal = p.getPrice().multiply(BigDecimal.valueOf(ci.getQuantity()));
-            String vendorName = p.getVendor() != null ? p.getVendor().getFullName() : null;
+            String vendorName = p.getVendor() != null ? p.getVendor().getName() : null;
             return OrderItem.builder()
                     .order(order)
                     .product(p)
@@ -149,6 +151,19 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalStateException("Only orders awaiting payment can be cancelled");
         }
         order.setStatus(OrderStatus.CANCELLED);
+    }
+
+    @Override
+    public void confirmDelivery(UUID orderId, UUID customerId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        if (!order.getCustomer().getId().equals(customerId)) {
+            throw new IllegalArgumentException("Order does not belong to this customer");
+        }
+        if (order.getStatus() != OrderStatus.DELIVERED) {
+            throw new IllegalStateException("Only delivered orders can be confirmed");
+        }
+        order.setStatus(OrderStatus.CONFIRMED);
     }
 
     @Override
@@ -228,9 +243,26 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<OrderDto> getVendorOrdersForCreator(UUID vendorId, UUID createdByUserId, OrderStatus statusFilter, Pageable pageable) {
+        Page<Order> page = statusFilter != null
+                ? orderRepository.findByVendorIdAndCreatorAndStatus(vendorId, createdByUserId, statusFilter, pageable)
+                : orderRepository.findByVendorIdAndCreator(vendorId, createdByUserId, pageable);
+        return page.map(this::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public OrderDto getOrderByIdForVendor(UUID orderId, UUID vendorId) {
         Order order = orderRepository.findByIdAndVendorId(orderId, vendorId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found or not associated with your products"));
+        return toDto(order);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderDto getOrderByIdForVendorCreator(UUID orderId, UUID vendorId, UUID createdByUserId) {
+        Order order = orderRepository.findByIdAndVendorIdAndCreator(orderId, vendorId, createdByUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found or does not contain any of your products"));
         return toDto(order);
     }
 
@@ -246,6 +278,14 @@ public class OrderServiceImpl implements OrderService {
     public void updateOrderStatusByVendor(UUID orderId, UUID vendorId, OrderStatus newStatus) {
         Order order = orderRepository.findByIdAndVendorId(orderId, vendorId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found or not associated with your products"));
+        validateTransition(order.getStatus(), newStatus);
+        order.setStatus(newStatus);
+    }
+
+    @Override
+    public void updateOrderStatusByVendorCreator(UUID orderId, UUID vendorId, UUID createdByUserId, OrderStatus newStatus) {
+        Order order = orderRepository.findByIdAndVendorIdAndCreator(orderId, vendorId, createdByUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found or does not contain any of your products"));
         validateTransition(order.getStatus(), newStatus);
         order.setStatus(newStatus);
     }

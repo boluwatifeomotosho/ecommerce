@@ -39,8 +39,7 @@ public class ProductMapper {
     }
 
     private String vendorDisplayName(Product p) {
-        String storeName = p.getVendor().getStoreName();
-        return (storeName != null && !storeName.isBlank()) ? storeName : p.getVendor().getFullName();
+        return p.getVendor().getName();
     }
 
     public ProductSummaryDto toSummary(Product p) {

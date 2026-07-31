@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Our Philosophy')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('about')}"></nav>
+
+<section th:replace="~{rslint/fragments :: pagebanner('Our Philosophy', 'Quality. Deals. Engagement. Convenience.', 'Philosophy')}"></section>
+
+<section class="py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
+        <i class="fa-solid fa-lightbulb text-6xl text-gold-500 mb-6"></i>
+        <p class="font-display text-3xl md:text-4xl leading-tight text-gray-900 font-medium">
+            "Meeting the need of anyone who wants to be assured of quality, great deals, and proper engagement with his supplier
+        </p>
+        <p class="font-display text-3xl md:text-4xl leading-tight text-rsl-600 font-bold mt-4">
+            in a convenient and timely manner."
+        </p>
+
+        <div class="mt-16 grid md:grid-cols-2 gap-6">
+            <div class="reveal p-8 rounded-3xl bg-gradient-to-br from-rsl-600 to-rsl-800 text-white card-hover">
+                <div class="text-4xl mb-4"><i class="fa-solid fa-shield-check"></i></div>
+                <h3 class="font-display text-2xl font-bold">Assured Quality</h3>
+                <p class="mt-3 text-white/80">Sealed. Authentic. Sourced from certified manufacturers. Every batch traceable to its origin.</p>
+            </div>
+            <div class="reveal p-8 rounded-3xl bg-gradient-to-br from-gold-500 to-gold-600 text-rsl-900 card-hover">
+                <div class="text-4xl mb-4"><i class="fa-solid fa-tag"></i></div>
+                <h3 class="font-display text-2xl font-bold">Great Deals</h3>
+                <p class="mt-3 text-rsl-900/80">Competitive wholesale pricing that doesn't require you to buy a truckload. One carton minimum. Real.</p>
+            </div>
+            <div class="reveal p-8 rounded-3xl bg-white border-2 border-gray-100 card-hover">
+                <div class="text-4xl mb-4 text-rsl-600"><i class="fa-solid fa-handshake-simple"></i></div>
+                <h3 class="font-display text-2xl font-bold text-gray-900">Proper Engagement</h3>
+                <p class="mt-3 text-gray-600">Real relationships with real people. Named account reps. Fast answers. Zero runaround.</p>
+            </div>
+            <div class="reveal p-8 rounded-3xl bg-gray-900 text-white card-hover">
+                <div class="text-4xl mb-4 text-gold-400"><i class="fa-solid fa-truck-fast"></i></div>
+                <h3 class="font-display text-2xl font-bold">Convenience & Speed</h3>
+                <p class="mt-3 text-white/70">Modern ordering. Same-day dispatch across Lagos. Delivery you can plan your day around.</p>
+            </div>
+        </div>
+
+        <div class="mt-16 p-10 rounded-3xl bg-gray-50 border border-gray-100 reveal">
+            <div class="eyebrow">In practice</div>
+            <h3 class="font-display text-2xl md:text-3xl font-bold text-gray-900 mt-3">The four pillars, working together.</h3>
+            <p class="mt-4 text-gray-600 leading-relaxed">Any distributor can promise one of these things. What makes RSL different is the insistence that <em>all four</em> must be true — every order, every day, for every customer. Quality without convenience is a museum. Convenience without quality is a scam. We refuse to accept either.</p>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

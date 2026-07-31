@@ -2,10 +2,9 @@ package com.justjava.ecommerce.product;
 
 import com.justjava.ecommerce.category.CategoryDto;
 import com.justjava.ecommerce.category.CategoryService;
-import com.justjava.ecommerce.product.ProductCommandService;
-import com.justjava.ecommerce.product.ProductQueryService;
 import com.justjava.ecommerce.product.dto.SaveProductRequest;
-import com.justjava.ecommerce.user.UserRepository;
+import com.justjava.ecommerce.vendor.VendorMemberService;
+import com.justjava.ecommerce.vendor.VendorScope;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,14 +25,14 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/vendor/products")
-@PreAuthorize("hasRole('VENDOR')")
+@PreAuthorize("hasAnyRole('VENDOR', 'SUB_VENDOR')")
 @RequiredArgsConstructor
 public class VendorProductController {
 
     private final ProductQueryService   productQueryService;
     private final ProductCommandService productCommandService;
     private final CategoryService       categoryService;
-    private final UserRepository        userRepository;
+    private final VendorMemberService   vendorMemberService;
 
     @GetMapping
     public String list(
@@ -41,9 +40,11 @@ public class VendorProductController {
             @AuthenticationPrincipal OidcUser principal,
             Model model
     ) {
-        UUID vendorId = resolveVendorId(principal);
-        var products  = productQueryService.getVendorProducts(
-                vendorId, PageRequest.of(page, 20, Sort.by("createdAt").descending()));
+        VendorScope scope = vendorMemberService.currentScope(principal);
+        var pageable = PageRequest.of(page, 20, Sort.by("createdAt").descending());
+        var products = scope.isCreatorScoped()
+                ? productQueryService.getVendorProductsByCreator(scope.vendorId(), scope.creatorUserId(), pageable)
+                : productQueryService.getVendorProducts(scope.vendorId(), pageable);
 
         model.addAttribute("products", products);
         return "vendor/products/list";
@@ -74,8 +75,9 @@ public class VendorProductController {
         }
 
         try {
-            UUID vendorId = resolveVendorId(principal);
-            var  product  = productCommandService.create(vendorId, request);
+            VendorScope scope = vendorMemberService.currentScope(principal);
+            UUID userId = vendorMemberService.currentUserId(principal);
+            var product = productCommandService.create(scope.vendorId(), userId, request);
             flash.addFlashAttribute("success", "Product '" + product.name() + "' saved as draft.");
             return "redirect:/vendor/products";
         } catch (IllegalArgumentException e) {
@@ -93,8 +95,10 @@ public class VendorProductController {
             @AuthenticationPrincipal OidcUser principal,
             Model                            model
     ) {
-        UUID vendorId = resolveVendorId(principal);
-        var  product  = productQueryService.getVendorProductById(id, vendorId);
+        VendorScope scope = vendorMemberService.currentScope(principal);
+        var product = scope.isCreatorScoped()
+                ? productQueryService.getVendorProductByIdForCreator(id, scope.vendorId(), scope.creatorUserId())
+                : productQueryService.getVendorProductById(id, scope.vendorId());
 
         var request = new SaveProductRequest(
                 product.name(),
@@ -133,8 +137,8 @@ public class VendorProductController {
         }
 
         try {
-            UUID vendorId = resolveVendorId(principal);
-            productCommandService.update(id, vendorId, request);
+            VendorScope scope = vendorMemberService.currentScope(principal);
+            productCommandService.update(id, scope.vendorId(), scope.creatorUserId(), request);
             flash.addFlashAttribute("success", "Product updated.");
             return "redirect:/vendor/products";
         } catch (IllegalArgumentException | IllegalStateException e) {
@@ -152,9 +156,9 @@ public class VendorProductController {
             @AuthenticationPrincipal OidcUser principal,
             RedirectAttributes               flash
     ) {
-        UUID vendorId = resolveVendorId(principal);
+        VendorScope scope = vendorMemberService.currentScope(principal);
         try {
-            productCommandService.submitForReview(id, vendorId);
+            productCommandService.submitForReview(id, scope.vendorId(), scope.creatorUserId());
             flash.addFlashAttribute("success", "Product submitted for admin review.");
         } catch (IllegalStateException e) {
             flash.addFlashAttribute("error", e.getMessage());
@@ -168,8 +172,8 @@ public class VendorProductController {
             @AuthenticationPrincipal OidcUser principal,
             RedirectAttributes               flash
     ) {
-        UUID vendorId = resolveVendorId(principal);
-        productCommandService.archive(id, vendorId);
+        VendorScope scope = vendorMemberService.currentScope(principal);
+        productCommandService.archive(id, scope.vendorId(), scope.creatorUserId());
         flash.addFlashAttribute("success", "Product archived.");
         return "redirect:/vendor/products";
     }
@@ -180,9 +184,9 @@ public class VendorProductController {
             @AuthenticationPrincipal OidcUser principal,
             RedirectAttributes               flash
     ) {
-        UUID vendorId = resolveVendorId(principal);
+        VendorScope scope = vendorMemberService.currentScope(principal);
         try {
-            productCommandService.unarchive(id, vendorId);
+            productCommandService.unarchive(id, scope.vendorId(), scope.creatorUserId());
             flash.addFlashAttribute("success", "Product restored to draft. You can now edit and resubmit it.");
         } catch (IllegalStateException e) {
             flash.addFlashAttribute("error", e.getMessage());
@@ -200,11 +204,5 @@ public class VendorProductController {
                 .collect(Collectors.groupingBy(CategoryDto::parentId));
         model.addAttribute("rootCategories", roots);
         model.addAttribute("subCategoryMap", subMap);
-    }
-
-    private UUID resolveVendorId(OidcUser principal) {
-        return userRepository.findByKeycloakId(principal.getSubject())
-                .orElseThrow(() -> new IllegalStateException("Vendor user not found in local DB"))
-                .getId();
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Settings — NaijaMart Admin</title>
+    <title>Settings — Pinepetosan Marketplace Admin</title>
     <th:block th:replace="~{fragments/head :: resources}"/>
 </head>
 <body class="bg-surface-bright text-on-surface overflow-x-hidden">
@@ -38,8 +38,8 @@
                 <div>
                     <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Platform Name</label>
                     <input type="text" name="platform.name"
-                           th:value="${settings != null ? settings['platform.name'] : 'NaijaMart'}"
-                           placeholder="NaijaMart"
+                           th:value="${settings != null ? settings['platform.name'] : 'Pinepetosan Marketplace'}"
+                           placeholder="Pinepetosan Marketplace"
                            class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm transition-all"/>
                     <p class="text-xs text-on-surface-variant mt-1">Displayed across the platform.</p>
                 </div>
@@ -109,12 +109,12 @@
                     </div>
                     <span class="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
                 </a>
-                <a th:href="@{/admin/products/pending}" class="flex items-center justify-between px-6 py-4 hover:bg-surface-container-low/40 transition-colors group">
+                <a th:href="@{/admin/products/catalog}" class="flex items-center justify-between px-6 py-4 hover:bg-surface-container-low/40 transition-colors group">
                     <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">rate_review</span>
+                        <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">inventory_2</span>
                         <div>
-                            <p class="text-sm font-medium text-on-surface">Product Moderation</p>
-                            <p class="text-xs text-on-surface-variant">Review and approve pending products</p>
+                            <p class="text-sm font-medium text-on-surface">Product Catalog</p>
+                            <p class="text-xs text-on-surface-variant">Browse the live catalog and take down listings</p>
                         </div>
                     </div>
                     <span class="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>

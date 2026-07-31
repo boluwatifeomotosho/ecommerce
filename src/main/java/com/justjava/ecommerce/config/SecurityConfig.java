@@ -6,6 +6,7 @@ import com.justjava.ecommerce.auth.KeycloakAdminService;
 import com.justjava.ecommerce.user.User;
 import com.justjava.ecommerce.user.UserRepository;
 import com.justjava.ecommerce.user.UserSyncService;
+import com.justjava.ecommerce.vendor.VendorRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,6 +55,7 @@ public class SecurityConfig {
     private final UserSyncService userSyncService;
     private final KeycloakAdminService keycloakAdminService;
     private final UserRepository userRepository;
+    private final VendorRepository vendorRepository;
     private final ObjectMapper objectMapper;
 
     @Value("${app.base-url}")
@@ -95,10 +97,11 @@ public class SecurityConfig {
                                 "/login/phone", "/login/phone/verify", "/login/phone/resend",
                                 "/mobile/login",
                                 "/uploads/**",
-                                "/static/**", "/css/**", "/js/**", "/webjars/**"
+                                "/static/**", "/css/**", "/js/**", "/webjars/**",
+                                "/rslint", "/rslint/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/vendor/**").hasRole("VENDOR")
+                        .requestMatchers("/vendor/**").hasAnyRole("VENDOR", "SUB_VENDOR")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
                 )
@@ -172,6 +175,9 @@ public class SecurityConfig {
             } else if (hasRole(authorities, "ROLE_VENDOR")) {
                 role        = "VENDOR";
                 redirectUrl = "/vendor/dashboard";
+            } else if (hasRole(authorities, "ROLE_SUB_VENDOR")) {
+                role        = "SUB_VENDOR";
+                redirectUrl = "/vendor/dashboard";
             } else if (sessionSaysVendor || claimSaysVendor || cookieSaysVendor) {
                 keycloakAdminService.assignVendorRole(oidcUser.getSubject());
                 role        = "VENDOR";
@@ -214,8 +220,9 @@ public class SecurityConfig {
 
     private boolean needsVendorOnboarding(String keycloakId) {
         return userRepository.findByKeycloakId(keycloakId)
-                .map(u -> {
-                    String logo = u.getCompanyLogoUrl();
+                .flatMap(u -> vendorRepository.findByOwnerId(u.getId()))
+                .map(v -> {
+                    String logo = v.getCompanyLogoUrl();
                     return logo == null || logo.isBlank();
                 })
                 .orElse(true);

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Trusted FMCG Distributor in Nigeria')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+
+<nav th:replace="~{rslint/fragments :: navbar('home')}"></nav>
+
+<!-- ========================== HERO ========================== -->
+<section class="hero-gradient relative overflow-hidden pt-32 lg:pt-40 pb-20 lg:pb-32 grain">
+    <!-- Decorative blobs -->
+    <div class="absolute -top-24 -left-24 w-[520px] h-[520px] rounded-full bg-rsl-500/10 blur-3xl"></div>
+    <div class="absolute top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gold-500/15 blur-3xl"></div>
+
+    <!-- Vertical brand tag -->
+    <div class="hidden xl:flex absolute left-8 top-1/2 -translate-y-1/2 items-center gap-3 origin-left -rotate-90 text-xs uppercase tracking-[.4em] font-semibold text-rsl-700/60">
+        <span class="w-16 h-px bg-rsl-700/30"></span> RSL &bull; Est. 2012
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-10 items-center">
+        <!-- Left: Headline -->
+        <div class="lg:col-span-7 relative z-10">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-rsl-100 shadow-sm text-xs font-semibold text-rsl-800 anim-fadeIn">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rsl-500 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-rsl-600"></span>
+                </span>
+                Now serving 100+ retailers across Nigeria
+            </div>
+
+            <h1 class="display-hero mt-7">
+                <span class="kinetic"><span>The</span></span>
+                <span class="kinetic"><span style="animation-delay:.1s">brands</span></span>
+                <span class="kinetic"><span style="animation-delay:.2s">Nigeria</span></span>
+                <br/>
+                <span class="kinetic"><span style="animation-delay:.3s">trusts,</span></span>
+                <span class="kinetic"><span style="animation-delay:.4s"><em>delivered</em></span></span>
+                <br/>
+                <span class="kinetic"><span style="animation-delay:.5s">with</span></span>
+                <span class="kinetic"><span style="animation-delay:.6s"><em>care.</em></span></span>
+            </h1>
+
+            <p class="mt-8 text-lg md:text-xl text-gray-600 leading-relaxed max-w-xl anim-fadeUp delay-500">
+                RSL International is Nigeria's specialist FMCG distributor for Nestlé and FrieslandCampina WAMCO —
+                connecting global manufacturers to retailers, distributors, and communities since 2012.
+            </p>
+
+            <div class="mt-10 flex flex-wrap items-center gap-4 anim-fadeUp delay-700">
+                <a href="/rslint/distributors" class="btn-primary" data-magnetic>
+                    Become a Distributor <i class="fa-solid fa-arrow-right text-xs"></i>
+                </a>
+                <a href="/rslint/brands" class="btn-outline-dark">
+                    Explore Our Brands
+                </a>
+            </div>
+
+            <!-- Trust stats -->
+            <div class="mt-14 grid grid-cols-3 gap-6 max-w-lg anim-fadeUp delay-900">
+                <div>
+                    <div class="font-display text-3xl md:text-4xl font-bold text-rsl-800">
+                        <span data-count="14" data-suffix="+">0</span>
+                    </div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500 mt-1">Years trading</div>
+                </div>
+                <div>
+                    <div class="font-display text-3xl md:text-4xl font-bold text-rsl-800">
+                        <span data-count="8">0</span>
+                    </div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500 mt-1">Global brands</div>
+                </div>
+                <div>
+                    <div class="font-display text-3xl md:text-4xl font-bold text-rsl-800">
+                        <span data-count="1" data-suffix="+">0</span>M
+                    </div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500 mt-1">Units moved</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Product hero image -->
+        <div class="lg:col-span-5 relative">
+            <div class="relative w-full aspect-[4/5] max-w-md mx-auto">
+                <!-- Big organic blob -->
+                <div class="absolute inset-0 rounded-[45%_55%_60%_40%/50%_45%_55%_50%] bg-gradient-to-br from-rsl-600 via-rsl-700 to-rsl-900 shadow-2xl overflow-hidden">
+                    <div class="absolute inset-0 mesh-bg opacity-70"></div>
+                    <div class="absolute -top-16 -right-16 w-52 h-52 rounded-full bg-gold-500/40 blur-2xl"></div>
+                    <div class="absolute bottom-10 left-6 w-32 h-32 rounded-full bg-white/10 blur-xl"></div>
+                </div>
+
+                <!-- White product card floating inside blob (masks the photo's white bg cleanly) -->
+                <div class="absolute inset-x-6 top-14 bottom-20 z-10 anim-floaty">
+                    <div class="w-full h-full bg-white rounded-[2rem] shadow-2xl overflow-hidden relative">
+                        <!-- Soft gradient wash inside card for depth -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-white via-white to-emerald-50/60"></div>
+                        <!-- Brand color chip at top -->
+                        <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-green-600 via-green-700 to-emerald-800"></div>
+                        <div class="absolute top-4 left-4 flex items-center gap-2 z-10">
+                            <div class="w-2 h-2 rounded-full bg-green-600"></div>
+                            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Featured Product</span>
+                        </div>
+                        <img src="/rslint/products/milo.png"
+                             alt="Milo — Nestlé"
+                             class="relative w-full h-full object-contain p-6 pt-10" />
+                        <!-- Bottom label -->
+                        <div class="absolute inset-x-0 bottom-0 p-4 border-t border-gray-100 bg-white/95 backdrop-blur-sm flex items-center justify-between">
+                            <div>
+                                <div class="font-display text-lg font-black text-gray-900 leading-none">Milo</div>
+                                <div class="text-[10px] uppercase tracking-widest text-gray-400 font-semibold mt-1">by Nestlé</div>
+                            </div>
+                            <div class="text-[10px] uppercase tracking-widest text-green-700 font-bold flex items-center gap-1">
+                                In stock <i class="fa-solid fa-check text-[8px]"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating chip: Nescafé -->
+                <div class="absolute -left-6 top-6 bg-white rounded-2xl p-3 shadow-2xl anim-floaty-slow flex items-center gap-3 pr-5 z-20" style="animation-delay:.4s;">
+                    <div class="w-11 h-11 rounded-xl bg-red-900 overflow-hidden flex items-center justify-center">
+                        <img src="/rslint/products/nescafe.jpg" alt="" class="w-full h-full object-cover"/>
+                    </div>
+                    <div>
+                        <div class="text-[10px] uppercase tracking-widest text-gray-400 font-semibold">Featured</div>
+                        <div class="text-sm font-bold text-gray-900">Nescafé Gold</div>
+                    </div>
+                </div>
+
+                <!-- Floating chip: Peak -->
+                <div class="absolute -right-4 bottom-24 bg-white rounded-2xl p-3 shadow-2xl anim-floaty flex items-center gap-3 pr-5 z-20" style="animation-delay:.9s;">
+                    <div class="w-11 h-11 rounded-xl bg-white border border-sky-100 overflow-hidden flex items-center justify-center">
+                        <img src="/rslint/products/peak-full-cream.png" alt="" class="w-full h-full object-contain scale-125"/>
+                    </div>
+                    <div>
+                        <div class="text-[10px] uppercase tracking-widest text-gray-400 font-semibold">In stock</div>
+                        <div class="text-sm font-bold text-gray-900">Peak Milk</div>
+                    </div>
+                </div>
+
+                <!-- Circular badge -->
+                <div class="absolute -bottom-6 -left-6 z-20 anim-floaty-slow" style="animation-delay:.2s;">
+                    <div class="relative w-28 h-28 rounded-full bg-gold-500 flex items-center justify-center shadow-xl">
+                        <div class="absolute inset-1.5 rounded-full border border-rsl-900/30"></div>
+                        <div class="text-center leading-tight">
+                            <div class="text-[9px] uppercase tracking-widest text-rsl-900/80 font-bold">Since</div>
+                            <div class="font-display text-2xl font-black text-rsl-900">2012</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll cue -->
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-xs uppercase tracking-widest text-gray-400">
+        <span>Scroll</span>
+        <div class="w-px h-10 bg-gradient-to-b from-gray-400 to-transparent"></div>
+    </div>
+</section>
+
+<!-- ========================== BRAND MARQUEE ========================== -->
+<section class="py-10 bg-white border-y border-gray-100">
+    <div class="marquee-slow">
+        <div class="marquee-track items-center">
+            <!-- Track 1 -->
+            <div class="flex items-center gap-16 pr-16">
+                <span class="font-display italic text-3xl text-gray-300">Milo</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">Nescafé</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">Maggi</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">Peak Milk</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">Nestlé</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">FrieslandCampina</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+            </div>
+            <!-- Track 2 (duplicate for seamless loop) -->
+            <div class="flex items-center gap-16 pr-16">
+                <span class="font-display italic text-3xl text-gray-300">Milo</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">Nescafé</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">Maggi</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">Peak Milk</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">Nestlé</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+                <span class="font-display italic text-3xl text-gray-300">FrieslandCampina</span>
+                <i class="fa-solid fa-diamond text-gold-500 text-xs"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== VALUE PROPS ========================== -->
+<section class="py-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-12 gap-12 items-end mb-16">
+            <div class="lg:col-span-7 reveal">
+                <div class="eyebrow">Why RSL</div>
+                <h2 class="mt-4 font-display text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                    Distribution done <em class="italic text-rsl-700">the right way.</em>
+                </h2>
+            </div>
+            <p class="lg:col-span-5 text-lg text-gray-600 reveal">
+                Fourteen years of building the discipline it takes to move quality FMCG at scale — without cutting corners on service, freshness, or fairness.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="reveal p-8 rounded-3xl bg-white border border-gray-100 hover:border-rsl-200 hover:shadow-xl transition-all" data-tilt data-stagger="0">
+                <div class="w-14 h-14 rounded-2xl bg-rsl-50 text-rsl-700 flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-award text-xl"></i>
+                </div>
+                <div class="text-xs uppercase tracking-widest text-rsl-600 font-bold">01</div>
+                <h3 class="font-display text-2xl font-bold text-gray-900 mt-1">Genuine only</h3>
+                <p class="text-gray-600 mt-3 leading-relaxed text-sm">Direct-from-manufacturer supply. Every carton traceable back to Nestlé or FrieslandCampina.</p>
+            </div>
+            <div class="reveal p-8 rounded-3xl bg-white border border-gray-100 hover:border-rsl-200 hover:shadow-xl transition-all" data-tilt data-stagger="1">
+                <div class="w-14 h-14 rounded-2xl bg-gold-500/15 text-gold-600 flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-truck-fast text-xl"></i>
+                </div>
+                <div class="text-xs uppercase tracking-widest text-rsl-600 font-bold">02</div>
+                <h3 class="font-display text-2xl font-bold text-gray-900 mt-1">Same-day dispatch</h3>
+                <p class="text-gray-600 mt-3 leading-relaxed text-sm">Order by noon in Lagos, we ship the same day. Nationwide via trusted logistics partners.</p>
+            </div>
+            <div class="reveal p-8 rounded-3xl bg-white border border-gray-100 hover:border-rsl-200 hover:shadow-xl transition-all" data-tilt data-stagger="2">
+                <div class="w-14 h-14 rounded-2xl bg-rsl-50 text-rsl-700 flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-box text-xl"></i>
+                </div>
+                <div class="text-xs uppercase tracking-widest text-rsl-600 font-bold">03</div>
+                <h3 class="font-display text-2xl font-bold text-gray-900 mt-1">One-carton minimum</h3>
+                <p class="text-gray-600 mt-3 leading-relaxed text-sm">Buy what you need. No forced truckloads. Built for real retailers, not just mega-chains.</p>
+            </div>
+            <div class="reveal p-8 rounded-3xl bg-white border border-gray-100 hover:border-rsl-200 hover:shadow-xl transition-all" data-tilt data-stagger="3">
+                <div class="w-14 h-14 rounded-2xl bg-gold-500/15 text-gold-600 flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-handshake text-xl"></i>
+                </div>
+                <div class="text-xs uppercase tracking-widest text-rsl-600 font-bold">04</div>
+                <h3 class="font-display text-2xl font-bold text-gray-900 mt-1">Real relationships</h3>
+                <p class="text-gray-600 mt-3 leading-relaxed text-sm">Dedicated account managers. A phone number that a real human picks up. That's the standard.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== FEATURED BRANDS ========================== -->
+<section class="py-28 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+    <div class="absolute top-40 -left-32 w-96 h-96 rounded-full bg-rsl-500/5 blur-3xl"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+            <div class="reveal">
+                <div class="eyebrow">Brands we carry</div>
+                <h2 class="mt-4 font-display text-4xl md:text-5xl font-bold text-gray-900 leading-tight max-w-2xl">
+                    Household names on <em class="italic text-rsl-700">every shelf.</em>
+                </h2>
+            </div>
+            <a href="/rslint/brands" class="btn-outline-dark self-start md:self-end reveal">
+                See all brands <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Milo -->
+            <a href="/rslint/brands" class="group reveal relative rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col" data-stagger="0">
+                <!-- Product on white -->
+                <div class="relative aspect-square bg-gradient-to-br from-white via-white to-emerald-50/60 overflow-hidden">
+                    <div class="absolute top-3 left-3 z-10 text-[9px] uppercase tracking-widest font-bold text-green-700 bg-green-50 px-2 py-1 rounded-full">Beverage</div>
+                    <img src="/rslint/products/milo.png" alt="Milo"
+                         class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700"/>
+                </div>
+                <!-- Brand label panel -->
+                <div class="relative p-5 bg-gradient-to-br from-green-700 via-green-800 to-green-900 text-white overflow-hidden">
+                    <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+                    <div class="relative flex items-center justify-between">
+                        <div>
+                            <div class="font-display text-2xl font-black leading-none">Milo</div>
+                            <div class="text-[10px] text-white/70 mt-1.5 uppercase tracking-widest">by Nestlé</div>
+                        </div>
+                        <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-rsl-900 transition-all">
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Nescafé -->
+            <a href="/rslint/brands" class="group reveal relative rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col" data-stagger="1">
+                <div class="relative aspect-square bg-gradient-to-br from-white via-white to-red-50/60 overflow-hidden">
+                    <div class="absolute top-3 left-3 z-10 text-[9px] uppercase tracking-widest font-bold text-red-800 bg-red-50 px-2 py-1 rounded-full">Beverage</div>
+                    <img src="/rslint/products/nescafe.jpg" alt="Nescafé"
+                         class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700"/>
+                </div>
+                <div class="relative p-5 bg-gradient-to-br from-red-800 via-red-900 to-stone-900 text-white overflow-hidden">
+                    <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+                    <div class="relative flex items-center justify-between">
+                        <div>
+                            <div class="font-display text-2xl font-black leading-none">Nescafé</div>
+                            <div class="text-[10px] text-white/70 mt-1.5 uppercase tracking-widest">by Nestlé</div>
+                        </div>
+                        <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-rsl-900 transition-all">
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Maggi -->
+            <a href="/rslint/brands" class="group reveal relative rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col" data-stagger="2">
+                <div class="relative aspect-square bg-gradient-to-br from-white via-white to-yellow-50/60 overflow-hidden">
+                    <div class="absolute top-3 left-3 z-10 text-[9px] uppercase tracking-widest font-bold text-orange-700 bg-orange-50 px-2 py-1 rounded-full">Culinary</div>
+                    <img src="/rslint/products/maggi.jpg" alt="Maggi"
+                         class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700"/>
+                </div>
+                <div class="relative p-5 bg-gradient-to-br from-yellow-600 via-orange-600 to-red-700 text-white overflow-hidden">
+                    <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+                    <div class="relative flex items-center justify-between">
+                        <div>
+                            <div class="font-display text-2xl font-black leading-none">Maggi</div>
+                            <div class="text-[10px] text-white/80 mt-1.5 uppercase tracking-widest">by Nestlé</div>
+                        </div>
+                        <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-rsl-900 transition-all">
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Peak -->
+            <a href="/rslint/brands" class="group reveal relative rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col" data-stagger="3">
+                <div class="relative aspect-square bg-gradient-to-br from-white via-white to-sky-50/60 overflow-hidden">
+                    <div class="absolute top-3 left-3 z-10 text-[9px] uppercase tracking-widest font-bold text-blue-800 bg-blue-50 px-2 py-1 rounded-full">Dairy</div>
+                    <img src="/rslint/products/peak-full-cream.png" alt="Peak Milk"
+                         class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700"/>
+                </div>
+                <div class="relative p-5 bg-gradient-to-br from-sky-600 via-blue-700 to-blue-900 text-white overflow-hidden">
+                    <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+                    <div class="relative flex items-center justify-between">
+                        <div>
+                            <div class="font-display text-2xl font-black leading-none">Peak Milk</div>
+                            <div class="text-[10px] text-white/70 mt-1.5 uppercase tracking-widest">by FrieslandCampina</div>
+                        </div>
+                        <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-rsl-900 transition-all">
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== ABOUT / STORY SPLIT ========================== -->
+<section class="py-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-14 items-center">
+        <!-- Image side -->
+        <div class="lg:col-span-5 reveal-left">
+            <div class="relative">
+                <div class="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl bg-gray-100">
+                    <img src="/rslint/hero/homepage-banner.jpg"
+                         alt="RSL International headquarters"
+                         class="w-full h-full object-cover anim-kenburns"/>
+                </div>
+                <!-- Corner badge -->
+                <div class="absolute -bottom-6 -right-6 bg-white p-5 rounded-2xl shadow-xl border border-gray-100 max-w-[220px]">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-9 h-9 rounded-full bg-rsl-600 text-white flex items-center justify-center text-xs font-black">HQ</div>
+                        <div class="text-xs uppercase tracking-widest text-gray-400 font-bold">Lagos, Nigeria</div>
+                    </div>
+                    <div class="text-sm text-gray-700 leading-snug">Lekki Phase 1 headquarters, powering nationwide distribution.</div>
+                </div>
+                <!-- Floating stat -->
+                <div class="absolute -top-4 -left-4 bg-rsl-800 text-white p-4 rounded-2xl shadow-xl max-w-[160px]">
+                    <div class="font-display text-3xl font-black text-gold-400"><span data-count="14">0</span></div>
+                    <div class="text-xs text-white/70 uppercase tracking-widest">Years serving Nigeria</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text side -->
+        <div class="lg:col-span-7 reveal-right">
+            <div class="eyebrow">Our Story</div>
+            <h2 class="mt-4 font-display text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                Built by Nigerians, <em class="italic text-rsl-700">for Nigerian trade.</em>
+            </h2>
+            <p class="mt-6 text-gray-600 text-lg leading-relaxed">
+                In 2012, we started RSL International with a simple idea: give Nigerian retailers a distribution partner who actually understands them —
+                one that treats a corner-shop owner buying a single carton with the same care as a national chain buying a truckload.
+            </p>
+            <p class="mt-4 text-gray-600 text-lg leading-relaxed">
+                Fourteen years later, we're proud to be a trusted distribution partner for two of the world's largest FMCG manufacturers — and to have helped hundreds of local businesses grow alongside us.
+            </p>
+
+            <div class="mt-10 grid grid-cols-2 gap-6">
+                <div class="border-l-2 border-rsl-600 pl-5">
+                    <div class="font-display text-2xl font-bold text-gray-900">Quality</div>
+                    <div class="text-sm text-gray-500 mt-1">Direct from source. Always genuine.</div>
+                </div>
+                <div class="border-l-2 border-gold-500 pl-5">
+                    <div class="font-display text-2xl font-bold text-gray-900">Convenience</div>
+                    <div class="text-sm text-gray-500 mt-1">One carton, next-day. On your terms.</div>
+                </div>
+                <div class="border-l-2 border-rsl-600 pl-5">
+                    <div class="font-display text-2xl font-bold text-gray-900">Engagement</div>
+                    <div class="text-sm text-gray-500 mt-1">Real people. Real relationships.</div>
+                </div>
+                <div class="border-l-2 border-gold-500 pl-5">
+                    <div class="font-display text-2xl font-bold text-gray-900">Deals</div>
+                    <div class="text-sm text-gray-500 mt-1">Fair wholesale pricing. No games.</div>
+                </div>
+            </div>
+
+            <a href="/rslint/about" class="mt-10 inline-flex items-center gap-2 text-rsl-700 font-semibold hover:gap-4 transition-all">
+                Read our full story <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== WHO WE SERVE ========================== -->
+<section class="py-28 bg-gradient-to-br from-rsl-900 via-rsl-800 to-gray-900 text-white relative overflow-hidden">
+    <div class="absolute inset-0 mesh-bg opacity-40"></div>
+    <div class="absolute top-20 right-10 w-96 h-96 rounded-full bg-gold-500/10 blur-3xl"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mb-16 reveal">
+            <div class="eyebrow" style="color:#f4d35e;">Who we serve</div>
+            <h2 class="mt-4 font-display text-4xl md:text-5xl font-bold leading-tight">
+                From the smallest kiosk to the <em class="italic text-gold-400">largest supermarket chain.</em>
+            </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="reveal group p-8 rounded-3xl border border-white/10 hover:border-gold-400/40 hover:bg-white/5 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-gold-400 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform">
+                    <i class="fa-solid fa-store text-xl"></i>
+                </div>
+                <h3 class="font-display text-2xl font-bold mb-3">Retail Chains</h3>
+                <p class="text-white/70 leading-relaxed text-sm">Shoprite, Park 'n' Shop, Game — the modern grocery names that keep Nigeria stocked.</p>
+            </div>
+            <div class="reveal group p-8 rounded-3xl border border-white/10 hover:border-gold-400/40 hover:bg-white/5 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-gold-400 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform">
+                    <i class="fa-solid fa-truck text-xl"></i>
+                </div>
+                <h3 class="font-display text-2xl font-bold mb-3">Distributors</h3>
+                <p class="text-white/70 leading-relaxed text-sm">Regional players we train, supply, and grow — building the next generation of Nigerian trade.</p>
+            </div>
+            <div class="reveal group p-8 rounded-3xl border border-white/10 hover:border-gold-400/40 hover:bg-white/5 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-gold-400 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform">
+                    <i class="fa-solid fa-shop text-xl"></i>
+                </div>
+                <h3 class="font-display text-2xl font-bold mb-3">Independent Retailers</h3>
+                <p class="text-white/70 leading-relaxed text-sm">Corner shops, kiosks, neighborhood markets — the backbone of Nigerian retail, served with respect.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== TESTIMONIAL / QUOTE ========================== -->
+<section class="py-28 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+        <i class="fa-solid fa-quote-left text-5xl text-gold-500/30"></i>
+        <blockquote class="mt-6 font-display text-3xl md:text-5xl font-medium text-gray-900 leading-tight">
+            "The way commerce should be — <em class="italic text-rsl-700">quality brands, real service, no friction.</em>"
+        </blockquote>
+        <div class="mt-10 flex items-center justify-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-gradient-to-br from-rsl-600 to-rsl-800 flex items-center justify-center text-white font-black">RSL</div>
+            <div class="text-left">
+                <div class="font-semibold text-gray-900">Our promise to every buyer</div>
+                <div class="text-sm text-gray-500">Since 2012 &bull; Lagos, Nigeria</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== FINAL CTA ========================== -->
+<section class="pb-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-rsl-700 via-rsl-800 to-rsl-900 p-10 md:p-16 shadow-2xl">
+            <div class="absolute inset-0 mesh-bg opacity-40"></div>
+            <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-gold-500/20 blur-3xl"></div>
+            <div class="absolute -bottom-32 -left-24 w-96 h-96 rounded-full bg-rsl-500/20 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+                <div>
+                    <div class="eyebrow" style="color:#f4d35e;">Ready to start?</div>
+                    <h2 class="mt-4 font-display text-4xl md:text-6xl font-bold text-white leading-tight">
+                        Let's put trusted brands <em class="italic text-gold-400">on your shelf.</em>
+                    </h2>
+                    <p class="mt-6 text-white/80 text-lg leading-relaxed max-w-lg">
+                        Whether you're stocking a corner shop or building a distribution empire — we'll get you going in one call.
+                    </p>
+                </div>
+                <div class="flex flex-col gap-4 lg:items-end">
+                    <a href="/rslint/distributors" class="btn-gold" data-magnetic>
+                        Apply as Distributor <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                    <a href="tel:+2348056798559" class="btn-ghost">
+                        <i class="fa-solid fa-phone"></i> +234 805 679 8559
+                    </a>
+                    <a href="/rslint/contact" class="text-white/70 hover:text-gold-400 transition text-sm mt-2">
+                        or send us a message <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Shopping Cart — NaijaMart</title>
+    <title>Shopping Cart — Pinepetosan Marketplace</title>
     <th:block th:replace="~{fragments/head :: resources}"/>
 </head>
 <body class="bg-surface-bright text-on-surface min-h-screen">
@@ -119,10 +119,12 @@
                         <span class="material-symbols-outlined text-lg">arrow_back</span>
                         Continue Shopping
                     </a>
-                    <form th:action="@{/cart/clear}" method="post">
+                    <form th:action="@{/cart/clear}" method="post"
+                          data-confirm="Clear all items from your cart?"
+                          data-confirm-title="Clear cart"
+                          data-confirm-btn="Clear Cart">
                         <button type="submit"
-                                class="text-sm text-on-surface-variant hover:text-error transition-colors"
-                                onclick="return confirm('Clear all items from your cart?')">
+                                class="text-sm text-on-surface-variant hover:text-error transition-colors">
                             Clear Cart
                         </button>
                     </form>

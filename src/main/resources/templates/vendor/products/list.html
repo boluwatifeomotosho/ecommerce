@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Products — NaijaMart Vendor</title>
+    <title>My Products — Pinepetosan Marketplace Vendor</title>
     <th:block th:replace="~{fragments/head :: resources}" />
 </head>
 <body class="bg-surface-bright text-on-surface overflow-x-hidden">
@@ -95,8 +95,11 @@
                                         <span class="material-symbols-outlined text-sm">send</span> Submit
                                     </button>
                                 </form>
-                                <form th:if="${product.status.name() != 'ARCHIVED'}" th:action="@{/vendor/products/{id}/archive(id=${product.id})}" method="post" class="inline">
-                                    <button type="submit" onclick="return confirm('Archive this product?')"
+                                <form th:if="${product.status.name() != 'ARCHIVED'}" th:action="@{/vendor/products/{id}/archive(id=${product.id})}" method="post" class="inline"
+                                      data-confirm="Archive this product? It will no longer appear in the store."
+                                      data-confirm-title="Archive product"
+                                      data-confirm-btn="Archive">
+                                    <button type="submit"
                                             class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-on-surface-variant bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-red-300 hover:text-red-500 transition-colors">
                                         <span class="material-symbols-outlined text-sm">archive</span> Archive
                                     </button>

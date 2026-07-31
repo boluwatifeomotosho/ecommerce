@@ -36,8 +36,8 @@ public class ReviewService {
         if (!order.getCustomer().getId().equals(customerId)) {
             throw new IllegalArgumentException("Order does not belong to this customer");
         }
-        if (order.getStatus() != OrderStatus.DELIVERED) {
-            throw new IllegalStateException("You can only review products from delivered orders");
+        if (order.getStatus() != OrderStatus.CONFIRMED) {
+            throw new IllegalStateException("You can only review products after confirming delivery of the order");
         }
 
         boolean itemInOrder = order.getItems().stream()

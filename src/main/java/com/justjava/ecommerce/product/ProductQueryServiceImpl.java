@@ -46,6 +46,12 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     }
 
     @Override
+    public Page<ProductSummaryDto> getVendorProductsByCreator(UUID vendorId, UUID createdByUserId, Pageable pageable) {
+        return productRepository.findByVendorIdAndCreatedById(vendorId, createdByUserId, pageable)
+                .map(mapper::toSummary);
+    }
+
+    @Override
     public ProductDetailDto getVendorProductById(UUID productId, UUID vendorId) {
         return productRepository.findByIdAndVendorId(productId, vendorId)
                 .map(mapper::toDetail)
@@ -53,9 +59,24 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     }
 
     @Override
+    public ProductDetailDto getVendorProductByIdForCreator(UUID productId, UUID vendorId, UUID createdByUserId) {
+        return productRepository.findByIdAndVendorIdAndCreatedById(productId, vendorId, createdByUserId)
+                .map(mapper::toDetail)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found or not authored by you"));
+    }
+
+    @Override
     public Page<ProductSummaryDto> getPendingProducts(Pageable pageable) {
         return productRepository
                 .findByStatusIn(java.util.List.of(ProductStatus.PENDING_REVIEW, ProductStatus.PENDING_EDIT), pageable)
+                .map(mapper::toSummary);
+    }
+
+    @Override
+    public Page<ProductSummaryDto> getPendingProductsByVendor(UUID vendorId, Pageable pageable) {
+        return productRepository
+                .findByVendorIdAndStatusIn(vendorId,
+                        java.util.List.of(ProductStatus.PENDING_REVIEW, ProductStatus.PENDING_EDIT), pageable)
                 .map(mapper::toSummary);
     }
 

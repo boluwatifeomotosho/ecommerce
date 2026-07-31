@@ -17,12 +17,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class VendorStoreSettingsController {
 
-    private final UserRepository userRepository;
+    private final UserRepository   userRepository;
+    private final VendorRepository vendorRepository;
 
     @GetMapping
     public String settings(@AuthenticationPrincipal OidcUser principal, Model model) {
-        User vendor = resolveVendor(principal);
+        User owner = resolveOwner(principal);
+        Vendor vendor = resolveVendor(owner);
         model.addAttribute("vendor", vendor);
+        model.addAttribute("owner", owner);
         model.addAttribute("name", principal.getFullName() != null ? principal.getFullName() : "Vendor");
         return "vendor/settings";
     }
@@ -35,11 +38,13 @@ public class VendorStoreSettingsController {
             @RequestParam(required = false) String phone,
             RedirectAttributes flash
     ) {
-        User vendor = resolveVendor(principal);
-        vendor.setStoreName(storeName.isBlank() ? null : storeName.trim());
+        User owner = resolveOwner(principal);
+        Vendor vendor = resolveVendor(owner);
+        vendor.setName(storeName.isBlank() ? vendor.getName() : storeName.trim());
         vendor.setStoreBio(storeBio == null || storeBio.isBlank() ? null : storeBio.trim());
-        vendor.setPhone(phone == null || phone.isBlank() ? null : phone.trim());
-        userRepository.save(vendor);
+        vendorRepository.save(vendor);
+        owner.setPhone(phone == null || phone.isBlank() ? null : phone.trim());
+        userRepository.save(owner);
         flash.addFlashAttribute("profileSuccess", "Store profile updated successfully.");
         return "redirect:/vendor/settings";
     }
@@ -52,17 +57,22 @@ public class VendorStoreSettingsController {
             @RequestParam String bankAccountName,
             RedirectAttributes flash
     ) {
-        User vendor = resolveVendor(principal);
+        Vendor vendor = resolveVendor(resolveOwner(principal));
         vendor.setBankName(bankName.trim());
         vendor.setBankAccountNumber(bankAccountNumber.trim());
         vendor.setBankAccountName(bankAccountName.trim());
-        userRepository.save(vendor);
+        vendorRepository.save(vendor);
         flash.addFlashAttribute("bankSuccess", "Bank details updated successfully.");
         return "redirect:/vendor/settings";
     }
 
-    private User resolveVendor(OidcUser principal) {
+    private User resolveOwner(OidcUser principal) {
         return userRepository.findByKeycloakId(principal.getSubject())
-                .orElseThrow(() -> new IllegalStateException("Vendor not found in local DB"));
+                .orElseThrow(() -> new IllegalStateException("Vendor user not found in local DB"));
+    }
+
+    private Vendor resolveVendor(User owner) {
+        return vendorRepository.findByOwnerId(owner.getId())
+                .orElseThrow(() -> new IllegalStateException("Vendor company not found for user " + owner.getId()));
     }
 }

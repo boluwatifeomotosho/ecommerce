@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Customer Dashboard | NaijaMart</title>
+    <title>Customer Dashboard | Pinepetosan Marketplace</title>
     <th:block th:replace="~{fragments/head :: resources}" />
     <style>
         .custom-scrollbar::-webkit-scrollbar { height:4px; }
@@ -131,7 +131,8 @@
                                 <span th:case="'PAID'"            class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">Paid</span>
                                 <span th:case="'PROCESSING'"      class="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">Processing</span>
                                 <span th:case="'SHIPPED'"         class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700">Shipped</span>
-                                <span th:case="'DELIVERED'"       class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">Delivered</span>
+                                <span th:case="'DELIVERED'"       class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">Delivered</span>
+                                <span th:case="'CONFIRMED'"       class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">Confirmed</span>
                                 <span th:case="'CANCELLED'"       class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">Cancelled</span>
                                 <span th:case="*"                 class="px-3 py-1 rounded-full text-xs font-bold bg-surface-container text-on-surface-variant" th:text="${order.status}">Status</span>
                             </span>

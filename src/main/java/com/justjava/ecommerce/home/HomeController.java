@@ -12,6 +12,8 @@ import com.justjava.ecommerce.product.dto.ProductFilter;
 import com.justjava.ecommerce.category.CategoryService;
 import com.justjava.ecommerce.user.User;
 import com.justjava.ecommerce.user.UserRepository;
+import com.justjava.ecommerce.vendor.VendorMemberService;
+import com.justjava.ecommerce.vendor.VendorScope;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -36,6 +38,7 @@ public class HomeController {
     private final UserRepository      userRepository;
     private final CartService         cartService;
     private final WishlistService     wishlistService;
+    private final VendorMemberService vendorMemberService;
 
     @GetMapping("/")
     public String landing(Model model) {
@@ -67,16 +70,40 @@ public class HomeController {
     @GetMapping("/vendor/dashboard")
     public String vendorDashboard(Authentication auth, Model model) {
         enrichModel(auth, model);
-        UUID vendorId = resolveId(auth);
-        if (vendorId != null) {
-            model.addAttribute("totalOrders",   orderRepository.countByVendorId(vendorId));
-            model.addAttribute("pendingOrders", orderRepository.countByVendorIdAndStatus(vendorId, OrderStatus.PENDING_PAYMENT));
-            model.addAttribute("revenue",       orderRepository.sumRevenueByVendorId(vendorId));
-            model.addAttribute("lowStockCount", productRepository.countByVendorIdAndStockQuantityLessThanEqual(vendorId, 5));
-            List<Order> recent = orderRepository.findRecentByVendorId(vendorId, PageRequest.of(0, 5));
-            model.addAttribute("recentOrders", recent);
+        VendorScope scope = resolveVendorScope(auth);
+        if (scope != null) {
+            UUID vendorId = scope.vendorId();
+            if (scope.isCreatorScoped()) {
+                UUID creatorId = scope.creatorUserId();
+                model.addAttribute("totalOrders",   orderRepository.countByVendorIdAndCreator(vendorId, creatorId));
+                model.addAttribute("pendingOrders", orderRepository.countByVendorIdAndCreatorAndStatus(vendorId, creatorId, OrderStatus.PENDING_PAYMENT));
+                model.addAttribute("revenue",       orderRepository.sumRevenueByVendorIdAndCreator(vendorId, creatorId));
+                model.addAttribute("lowStockCount", productRepository.countByVendorIdAndCreatedByIdAndStockQuantityLessThanEqual(vendorId, creatorId, 5));
+                List<Order> recent = orderRepository.findRecentByVendorIdAndCreator(vendorId, creatorId, PageRequest.of(0, 5));
+                model.addAttribute("recentOrders", recent);
+            } else {
+                model.addAttribute("totalOrders",   orderRepository.countByVendorId(vendorId));
+                model.addAttribute("pendingOrders", orderRepository.countByVendorIdAndStatus(vendorId, OrderStatus.PENDING_PAYMENT));
+                model.addAttribute("revenue",       orderRepository.sumRevenueByVendorId(vendorId));
+                model.addAttribute("lowStockCount", productRepository.countByVendorIdAndStockQuantityLessThanEqual(vendorId, 5));
+                List<Order> recent = orderRepository.findRecentByVendorId(vendorId, PageRequest.of(0, 5));
+                model.addAttribute("recentOrders", recent);
+            }
         }
         return "vendor/dashboard";
+    }
+
+    private VendorScope resolveVendorScope(Authentication auth) {
+        if (auth == null) return null;
+        Object principal = auth.getPrincipal();
+        if (principal instanceof OidcUser u) {
+            try {
+                return vendorMemberService.currentScope(u);
+            } catch (IllegalStateException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     @GetMapping("/admin/dashboard")
@@ -86,7 +113,7 @@ public class HomeController {
         model.addAttribute("totalVendors",      userRepository.countByRole("VENDOR"));
         model.addAttribute("totalOrders",       orderRepository.count());
         model.addAttribute("platformRevenue",   orderRepository.sumPlatformRevenue());
-        model.addAttribute("pendingReviews",    productRepository.countByStatus(ProductStatus.PENDING_REVIEW));
+        model.addAttribute("publishedProducts", productRepository.countByStatus(ProductStatus.PUBLISHED));
         List<Order> recent = orderRepository.findRecentOrders(PageRequest.of(0, 5));
         model.addAttribute("recentOrders", recent);
         return "admin/dashboard";

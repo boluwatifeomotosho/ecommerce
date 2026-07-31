@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Our Vision')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('about')}"></nav>
+
+<section th:replace="~{rslint/fragments :: pagebanner('Our Vision', 'The industry standard for consumer product distribution.', 'Vision')}"></section>
+
+<section class="py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal">
+            <i class="fa-solid fa-eye text-6xl text-gold-500 mb-6"></i>
+            <p class="font-display text-3xl md:text-4xl leading-tight text-gray-900 font-medium">
+                "Be the industry standard for the development, marketing, and distribution of consumer products;
+            </p>
+            <p class="font-display text-3xl md:text-4xl leading-tight text-rsl-600 font-bold mt-4">
+                a global brand identified only with the best of people, technology, and returns."
+            </p>
+
+            <div class="mt-16 grid md:grid-cols-3 gap-6">
+                <div class="reveal p-8 rounded-3xl bg-white border border-gray-100 card-hover text-center">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-rsl-500 to-rsl-700 flex items-center justify-center text-white text-2xl mb-4"><i class="fa-solid fa-user-tie"></i></div>
+                    <h3 class="font-display font-bold text-xl text-gray-900">Best People</h3>
+                    <p class="mt-2 text-sm text-gray-600">A team of experts who bring passion, discipline, and integrity to every carton we move.</p>
+                </div>
+                <div class="reveal p-8 rounded-3xl bg-white border border-gray-100 card-hover text-center">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-gold-500 to-gold-600 flex items-center justify-center text-white text-2xl mb-4"><i class="fa-solid fa-microchip"></i></div>
+                    <h3 class="font-display font-bold text-xl text-gray-900">Best Technology</h3>
+                    <p class="mt-2 text-sm text-gray-600">Modern systems for inventory, ordering, and delivery — so retailers never miss a beat.</p>
+                </div>
+                <div class="reveal p-8 rounded-3xl bg-white border border-gray-100 card-hover text-center">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-rsl-500 to-rsl-700 flex items-center justify-center text-white text-2xl mb-4"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3 class="font-display font-bold text-xl text-gray-900">Best Returns</h3>
+                    <p class="mt-2 text-sm text-gray-600">Sustainable growth for our partners, our staff, our stakeholders — and our shareholders.</p>
+                </div>
+            </div>
+
+            <div class="mt-16 relative rounded-3xl bg-gradient-to-br from-gray-900 via-rsl-900 to-gray-900 p-12 text-white overflow-hidden">
+                <div class="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-gold-500/20 blur-3xl"></div>
+                <div class="relative">
+                    <h3 class="font-display text-3xl font-bold">From Nigeria to the World</h3>
+                    <p class="mt-4 text-white/80 leading-relaxed max-w-2xl">Our vision doesn't stop at Nigerian borders. We're building the infrastructure, the brand, and the reputation of a global name in FMCG — one that partners and consumers across continents will one day associate with quality, reliability, and excellence.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

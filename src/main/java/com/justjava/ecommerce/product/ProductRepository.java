@@ -19,11 +19,17 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
     Optional<Product> findByIdAndVendorId(UUID id, UUID vendorId);
 
+    Optional<Product> findByIdAndVendorIdAndCreatedById(UUID id, UUID vendorId, UUID createdById);
+
     Page<Product> findByStatus(ProductStatus status, Pageable pageable);
 
     Page<Product> findByStatusIn(java.util.Collection<ProductStatus> statuses, Pageable pageable);
 
+    Page<Product> findByVendorIdAndStatusIn(UUID vendorId, java.util.Collection<ProductStatus> statuses, Pageable pageable);
+
     Page<Product> findByVendorId(UUID vendorId, Pageable pageable);
+
+    Page<Product> findByVendorIdAndCreatedById(UUID vendorId, UUID createdById, Pageable pageable);
 
     boolean existsBySlug(String slug);
 
@@ -36,6 +42,10 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     long countByVendorIdAndStockQuantityLessThanEqual(UUID vendorId, int threshold);
 
     long countByVendorIdAndStatus(UUID vendorId, ProductStatus status);
+
+    long countByVendorIdAndCreatedByIdAndStockQuantityLessThanEqual(UUID vendorId, UUID createdById, int threshold);
+
+    long countByVendorIdAndCreatedByIdAndStatus(UUID vendorId, UUID createdById, ProductStatus status);
 
     @Query("""
             SELECT p FROM Product p

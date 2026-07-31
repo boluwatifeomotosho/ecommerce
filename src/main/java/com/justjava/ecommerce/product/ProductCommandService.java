@@ -11,13 +11,22 @@ import java.util.UUID;
  */
 public interface ProductCommandService {
 
-    ProductDetailDto create(UUID vendorId, SaveProductRequest request);
+    ProductDetailDto create(UUID vendorId, UUID createdByUserId, SaveProductRequest request);
 
     ProductDetailDto update(UUID productId, UUID vendorId, SaveProductRequest request);
 
+    /** Enforces that the product was created by {@code enforceCreatorUserId} (pass null to skip). */
+    ProductDetailDto update(UUID productId, UUID vendorId, UUID enforceCreatorUserId, SaveProductRequest request);
+
     void submitForReview(UUID productId, UUID vendorId);
+
+    void submitForReview(UUID productId, UUID vendorId, UUID enforceCreatorUserId);
 
     void archive(UUID productId, UUID vendorId);
 
+    void archive(UUID productId, UUID vendorId, UUID enforceCreatorUserId);
+
     void unarchive(UUID productId, UUID vendorId);
+
+    void unarchive(UUID productId, UUID vendorId, UUID enforceCreatorUserId);
 }

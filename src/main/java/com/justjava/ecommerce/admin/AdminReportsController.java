@@ -25,7 +25,7 @@ import java.util.Set;
 public class AdminReportsController {
 
     private static final Set<OrderStatus> REVENUE_STATUSES =
-            EnumSet.of(OrderStatus.PAID, OrderStatus.PROCESSING, OrderStatus.SHIPPED, OrderStatus.DELIVERED);
+            EnumSet.of(OrderStatus.PAID, OrderStatus.PROCESSING, OrderStatus.SHIPPED, OrderStatus.DELIVERED, OrderStatus.CONFIRMED);
 
     private final OrderRepository   orderRepository;
     private final ProductRepository productRepository;
@@ -45,6 +45,7 @@ public class AdminReportsController {
         model.addAttribute("processingOrders",     orderRepository.countByStatus(OrderStatus.PROCESSING));
         model.addAttribute("shippedOrders",        orderRepository.countByStatus(OrderStatus.SHIPPED));
         model.addAttribute("deliveredOrders",      orderRepository.countByStatus(OrderStatus.DELIVERED));
+        model.addAttribute("confirmedOrders",      orderRepository.countByStatus(OrderStatus.CONFIRMED));
         model.addAttribute("cancelledOrders",      orderRepository.countByStatus(OrderStatus.CANCELLED));
 
         // Product stats

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-    <title>Order Detail — NaijaMart</title>
+    <title>Order Detail — Pinepetosan Marketplace</title>
     <th:block th:replace="~{fragments/head :: resources}"/>
 </head>
 <body class="bg-surface-bright text-on-surface overflow-x-hidden page-enter">
@@ -28,11 +28,12 @@
     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4 anim-fade-up anim-d1">
         <div class="flex items-center justify-between mb-3">
             <span class="text-sm font-bold px-3 py-1.5 rounded-full"
-                  th:classappend="${order.status.name() == 'DELIVERED'} ? 'bg-green-100 text-green-700' :
+                  th:classappend="${order.status.name() == 'CONFIRMED'} ? 'bg-green-100 text-green-700' :
+                                  (${order.status.name() == 'DELIVERED'} ? 'bg-amber-100 text-amber-700' :
                                   (${order.status.name() == 'SHIPPED'} ? 'bg-blue-100 text-blue-700' :
                                   (${order.status.name() == 'PAID' or order.status.name() == 'PROCESSING'} ? 'bg-amber-100 text-amber-700' :
                                   (${order.status.name() == 'CANCELLED'} ? 'bg-red-100 text-red-700' :
-                                  'bg-surface-container text-on-surface-variant')))"
+                                  'bg-surface-container text-on-surface-variant'))))"
                   th:text="${order.status.name().replace('_', ' ')}">Status</span>
             <span class="text-xs text-on-surface-variant"
                   th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy, HH:mm')}">Date</span>
@@ -40,11 +41,12 @@
 
         <!-- Progress steps -->
         <div class="flex items-center gap-1 mt-3">
-            <th:block th:with="steps=${ {'PENDING_PAYMENT','PAID','PROCESSING','SHIPPED','DELIVERED'} }">
+            <th:block th:with="steps=${ {'PENDING_PAYMENT','PAID','PROCESSING','SHIPPED','DELIVERED','CONFIRMED'} }">
                 <th:block th:each="step, stat : ${steps}">
                     <div class="flex-1 h-1.5 rounded-full"
                          th:classappend="${order.status.name() == step or
-                                          (order.status.name() == 'DELIVERED' and true) or
+                                          (order.status.name() == 'CONFIRMED' and true) or
+                                          (order.status.name() == 'DELIVERED' and (step == 'PENDING_PAYMENT' or step == 'PAID' or step == 'PROCESSING' or step == 'SHIPPED' or step == 'DELIVERED')) or
                                           (order.status.name() == 'SHIPPED' and (step == 'PENDING_PAYMENT' or step == 'PAID' or step == 'PROCESSING' or step == 'SHIPPED')) or
                                           (order.status.name() == 'PROCESSING' and (step == 'PENDING_PAYMENT' or step == 'PAID' or step == 'PROCESSING')) or
                                           (order.status.name() == 'PAID' and (step == 'PENDING_PAYMENT' or step == 'PAID')) or
@@ -60,7 +62,27 @@
             <span class="text-[9px] text-on-surface-variant">Processing</span>
             <span class="text-[9px] text-on-surface-variant">Shipped</span>
             <span class="text-[9px] text-on-surface-variant">Delivered</span>
+            <span class="text-[9px] text-on-surface-variant">Confirmed</span>
         </div>
+    </div>
+
+    <!-- Confirm Delivery prompt (DELIVERED) -->
+    <div th:if="${order.status.name() == 'DELIVERED'}"
+         class="bg-amber-50 border border-amber-200 rounded-2xl p-4 anim-fade-up anim-d1">
+        <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-amber-600 flex-shrink-0 mt-0.5">package_2</span>
+            <div class="flex-1 min-w-0">
+                <h3 class="font-bold text-amber-900 text-sm">Received your order?</h3>
+                <p class="text-xs text-amber-700 mt-0.5">Confirm delivery to close it out and leave a review.</p>
+            </div>
+        </div>
+        <form th:action="@{/mobile/orders/{id}/confirm(id=${order.id})}" method="post" class="mt-3">
+            <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-bold py-3 rounded-xl active:opacity-80">
+                <span class="material-symbols-outlined">task_alt</span>
+                Confirm Delivery
+            </button>
+        </form>
     </div>
 
     <!-- Items -->
@@ -134,8 +156,8 @@
         </div>
     </div>
 
-    <!-- Review prompts (DELIVERED) -->
-    <div th:if="${order.status.name() == 'DELIVERED' and order.items.size() > 0}"
+    <!-- Review prompts (CONFIRMED) -->
+    <div th:if="${order.status.name() == 'CONFIRMED' and order.items.size() > 0}"
          class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-4 anim-fade-up anim-d5">
         <h3 class="font-bold text-on-surface text-sm mb-3">Rate Your Items</h3>
         <div class="space-y-2">
@@ -167,7 +189,9 @@
         </form>
         <form th:if="${order.status.name() == 'PENDING_PAYMENT'}"
               th:action="@{/mobile/orders/{id}/cancel(id=${order.id})}" method="post"
-              onsubmit="return confirm('Cancel this order?')">
+              data-confirm="Cancel this order? This cannot be undone."
+              data-confirm-title="Cancel order"
+              data-confirm-btn="Cancel Order">
             <button type="submit"
                     class="w-full flex items-center justify-center gap-2 border border-error text-error font-bold py-3.5 rounded-2xl active:bg-error/5">
                 <span class="material-symbols-outlined">cancel</span>

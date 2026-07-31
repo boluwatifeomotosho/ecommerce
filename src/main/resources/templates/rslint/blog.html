@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('News & Blog')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('media')}"></nav>
+
+<section th:replace="~{rslint/fragments :: pagebanner('News &amp; Blog', 'Industry stories, brand news, and recipes from the RSL desk.', 'Blog')}"></section>
+
+<!-- ========================== INTRO ========================== -->
+<section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+        <div class="eyebrow justify-center inline-flex">From the RSL Desk</div>
+        <h2 class="mt-4 font-display text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+            What's happening in <em class="italic text-rsl-700">FMCG Nigeria.</em>
+        </h2>
+        <p class="mt-5 text-gray-600 leading-relaxed">
+            Recognition milestones, brand launches from our manufacturing partners, and the
+            occasional kitchen recipe worth sharing.
+        </p>
+    </div>
+</section>
+
+<!-- ========================== POSTS GRID ========================== -->
+<section class="pb-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 gap-8">
+
+            <!-- Featured (spans full width) -->
+            <a href="/rslint/blog/rsl-recognition-award" class="reveal group md:col-span-2 relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-rsl-800 via-rsl-900 to-black text-white shadow-2xl block">
+                <div class="absolute inset-0 mesh-bg opacity-25"></div>
+                <div class="grid md:grid-cols-2 relative">
+                    <div class="p-10 md:p-14">
+                        <div class="text-xs uppercase tracking-[.25em] text-gold-300 font-bold">Featured &bull; RSL News</div>
+                        <h3 class="mt-4 font-display text-3xl md:text-5xl font-black leading-tight group-hover:text-gold-300 transition">
+                            RSL Receives Int'l Recognition Award
+                        </h3>
+                        <p class="mt-5 text-white/80 leading-relaxed">
+                            RSL International Limited was founded with the purpose to provide customers an
+                            end-to-end service for marketing and distribution of FMCG products. Our performance
+                            has been recognised with multiple accolades…
+                        </p>
+                        <div class="mt-6 flex items-center gap-4 text-sm text-white/60">
+                            <span class="flex items-center gap-2"><i class="fa-regular fa-calendar text-gold-400"></i> November 11, 2015</span>
+                            <span class="text-white/30">•</span>
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-tag text-gold-400"></i> Company</span>
+                        </div>
+                        <div class="mt-8 inline-flex items-center gap-2 text-gold-400 font-semibold group-hover:gap-3 transition-all">
+                            Read the story <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="relative min-h-[280px] md:min-h-full">
+                        <img src="/rslint/gallery/award-wamco.jpg"
+                             alt="RSL Recognition Award"
+                             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+                        <div class="absolute inset-0 bg-gradient-to-r from-rsl-900/80 via-transparent to-transparent md:from-transparent md:to-black/30"></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Post 2 -->
+            <a href="/rslint/blog/nestle-chefs-day" class="reveal group rounded-[2rem] overflow-hidden bg-white border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 block card-hover">
+                <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-red-800 to-stone-900">
+                    <img src="/rslint/media/chefs-day.jpg"
+                         alt="Nestlé Chefs Day"
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+                    <div class="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-red-800">Nestlé News</div>
+                </div>
+                <div class="p-8">
+                    <div class="text-xs text-gray-500 font-semibold flex items-center gap-2">
+                        <i class="fa-regular fa-calendar text-rsl-600"></i> November 11, 2015
+                    </div>
+                    <h3 class="mt-3 font-display text-2xl font-bold text-gray-900 group-hover:text-rsl-700 transition leading-tight">
+                        Nestlé in Central and West Africa promotes healthy kids on International Chefs Day
+                    </h3>
+                    <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+                        Nestlé leads regional activities to mark International Chefs Day as part of a global partnership
+                        with World Chefs to raise awareness on healthier diets and lifestyles.
+                    </p>
+                    <div class="mt-5 inline-flex items-center gap-2 text-rsl-700 font-semibold text-sm group-hover:gap-3 transition-all">
+                        Read more <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Post 3 -->
+            <a href="/rslint/blog/nestle-choose-wellness-campaign" class="reveal group rounded-[2rem] overflow-hidden bg-white border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 block card-hover">
+                <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-rsl-700 to-emerald-900">
+                    <img src="/rslint/media/wellness-campaign.jpg"
+                         alt="Choose Wellness Campaign"
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+                    <div class="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-rsl-700">Campaign</div>
+                </div>
+                <div class="p-8">
+                    <div class="text-xs text-gray-500 font-semibold flex items-center gap-2">
+                        <i class="fa-regular fa-calendar text-rsl-600"></i> November 11, 2015
+                    </div>
+                    <h3 class="mt-3 font-display text-2xl font-bold text-gray-900 group-hover:text-rsl-700 transition leading-tight">
+                        Nestlé campaign launched in Central and West Africa
+                    </h3>
+                    <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+                        Nestlé launches its 'Choose Wellness, Choose Nestlé' campaign — a six-week push
+                        to raise awareness about its nutrition, health and wellness impact across the region.
+                    </p>
+                    <div class="mt-5 inline-flex items-center gap-2 text-rsl-700 font-semibold text-sm group-hover:gap-3 transition-all">
+                        Read more <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Post 4 (recipe — spans 2 cols) -->
+            <a href="/rslint/blog/peak-vegetable-juice-recipe" class="reveal group md:col-span-2 rounded-[2rem] overflow-hidden bg-gradient-to-br from-sky-600 via-blue-700 to-blue-900 text-white shadow-2xl block">
+                <div class="grid md:grid-cols-2 relative">
+                    <div class="relative min-h-[240px] md:min-h-full order-2 md:order-1">
+                        <img src="/rslint/media/peak-vegetable-juice.jpg"
+                             alt="Peak Vegetable Juice"
+                             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+                        <div class="absolute inset-0 bg-gradient-to-l from-blue-900/70 to-transparent"></div>
+                    </div>
+                    <div class="p-10 md:p-14 order-1 md:order-2">
+                        <div class="text-xs uppercase tracking-[.25em] text-sky-200 font-bold">Recipe &bull; Peak Milk</div>
+                        <h3 class="mt-4 font-display text-3xl md:text-4xl font-black leading-tight group-hover:text-gold-300 transition">
+                            Peak Vegetable Juice Recipe Unveiled
+                        </h3>
+                        <p class="mt-4 text-white/85 leading-relaxed">
+                            Carrots, cucumber, fresh tomatoes and Peak sweetened condensed milk — a refreshing,
+                            nutrient-rich juice you can whip up in ten minutes. Full method inside.
+                        </p>
+                        <div class="mt-6 flex items-center gap-4 text-sm text-white/70">
+                            <span class="flex items-center gap-2"><i class="fa-regular fa-calendar text-gold-400"></i> November 11, 2015</span>
+                            <span class="text-white/30">•</span>
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-utensils text-gold-400"></i> Recipe</span>
+                        </div>
+                        <div class="mt-8 inline-flex items-center gap-2 text-gold-400 font-semibold group-hover:gap-3 transition-all">
+                            Read the recipe <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

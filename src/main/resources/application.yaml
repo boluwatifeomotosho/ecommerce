@@ -36,6 +36,7 @@ server:
 app:
   upload-dir: ${UPLOAD_DIR:./uploads/products}
   base-url: ${APP_BASE_URL:http://localhost:8081}
+  invite-link-lifespan-seconds: ${INVITE_LINK_LIFESPAN_SECONDS:86400}
 
 paystack:
   secret-key: ${PAYSTACK_SECRET_KEY:sk_test_100deea18599e2e1f31d5d8397e1f46602fdf1ea}
@@ -53,7 +54,7 @@ keycloak:
 sms:
   termii:
     api-key: ${TERMII_API_KEY:}
-    sender-id: ${TERMII_SENDER_ID:NaijaMart}
+    sender-id: ${TERMII_SENDER_ID:Pinepetosan}
   africastalking:
     api-key: ${AT_API_KEY:}
     username: ${AT_USERNAME:sandbox}

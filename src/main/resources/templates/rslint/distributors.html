@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Join Our Distributor Network')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('distributors')}"></nav>
+
+<section th:replace="~{rslint/fragments :: pagebanner('Join Our Distributor Network', 'Bring trusted brands to your community. Grow with RSL.', 'Distributors')}"></section>
+
+<!-- ============ BENEFITS + FORM ============ -->
+<section class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-5 gap-12">
+        <!-- Left: Benefits -->
+        <div class="lg:col-span-2 reveal">
+            <div class="eyebrow">Why join RSL</div>
+            <h2 class="font-display text-4xl font-bold text-gray-900 mt-4">Partner with a distributor who invests in your growth.</h2>
+            <p class="mt-4 text-gray-600 leading-relaxed">We review new distributor applications regularly. Selected partners get access to our full FMCG portfolio, competitive wholesale pricing, and hands-on account support.</p>
+
+            <ul class="mt-8 space-y-5">
+                <li class="flex gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-rsl-100 text-rsl-700 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-boxes-stacked"></i></div>
+                    <div>
+                        <div class="font-semibold text-gray-900">Full portfolio access</div>
+                        <div class="text-sm text-gray-600">Nestlé and FrieslandCampina WAMCO brands on the same purchase order.</div>
+                    </div>
+                </li>
+                <li class="flex gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-rsl-100 text-rsl-700 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                    <div>
+                        <div class="font-semibold text-gray-900">Competitive pricing</div>
+                        <div class="text-sm text-gray-600">Wholesale rates and volume rebates that grow with your business.</div>
+                    </div>
+                </li>
+                <li class="flex gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-rsl-100 text-rsl-700 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-headset"></i></div>
+                    <div>
+                        <div class="font-semibold text-gray-900">Dedicated account rep</div>
+                        <div class="text-sm text-gray-600">A named contact who knows your business, not a call center.</div>
+                    </div>
+                </li>
+                <li class="flex gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-rsl-100 text-rsl-700 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-truck-fast"></i></div>
+                    <div>
+                        <div class="font-semibold text-gray-900">Fast dispatch</div>
+                        <div class="text-sm text-gray-600">Same-day dispatch across Lagos. Coordinated logistics elsewhere.</div>
+                    </div>
+                </li>
+                <li class="flex gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-rsl-100 text-rsl-700 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <div>
+                        <div class="font-semibold text-gray-900">Growth support</div>
+                        <div class="text-sm text-gray-600">Training, market insights, and marketing collateral to help you sell more.</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="lg:col-span-3 reveal">
+            <div class="rounded-3xl bg-white border border-gray-100 shadow-xl p-8 md:p-10">
+                <div th:if="${submitted}" class="mb-8 p-5 rounded-2xl bg-rsl-50 border border-rsl-200 flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-full bg-rsl-600 text-white flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check"></i></div>
+                    <div>
+                        <div class="font-bold text-rsl-800">Thanks, <span th:text="${submittedName}">friend</span>!</div>
+                        <div class="text-sm text-rsl-700">We've received your application. Our team will review and reach out within 3–5 business days.</div>
+                    </div>
+                </div>
+
+                <h3 class="font-display text-2xl font-bold text-gray-900">Distributor Application</h3>
+                <p class="text-sm text-gray-500 mt-1">Tell us about your business. All fields marked * are required.</p>
+
+                <form method="post" action="/rslint/distributors" class="mt-8 space-y-5">
+                    <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                            <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition" placeholder="Adebayo Okunola"/>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                            <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition" placeholder="you@company.com"/>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Phone *</label>
+                            <input type="tel" name="phone" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition" placeholder="+234 800 000 0000"/>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Company Name *</label>
+                            <input type="text" name="company" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition" placeholder="Your business name"/>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Business Address *</label>
+                        <input type="text" name="address" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition" placeholder="Street, City, State"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Brands you're most interested in</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:border-rsl-500 hover:bg-rsl-50 transition text-sm">
+                                <input type="checkbox" name="brands" value="Milo" class="rounded text-rsl-600 focus:ring-rsl-500"/> Milo
+                            </label>
+                            <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:border-rsl-500 hover:bg-rsl-50 transition text-sm">
+                                <input type="checkbox" name="brands" value="Peak Milk" class="rounded text-rsl-600 focus:ring-rsl-500"/> Peak Milk
+                            </label>
+                            <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:border-rsl-500 hover:bg-rsl-50 transition text-sm">
+                                <input type="checkbox" name="brands" value="Maggi" class="rounded text-rsl-600 focus:ring-rsl-500"/> Maggi
+                            </label>
+                            <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:border-rsl-500 hover:bg-rsl-50 transition text-sm">
+                                <input type="checkbox" name="brands" value="Nescafé" class="rounded text-rsl-600 focus:ring-rsl-500"/> Nescafé
+                            </label>
+                            <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:border-rsl-500 hover:bg-rsl-50 transition text-sm">
+                                <input type="checkbox" name="brands" value="3 Crowns" class="rounded text-rsl-600 focus:ring-rsl-500"/> 3 Crowns
+                            </label>
+                            <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:border-rsl-500 hover:bg-rsl-50 transition text-sm">
+                                <input type="checkbox" name="brands" value="Goldenmorn" class="rounded text-rsl-600 focus:ring-rsl-500"/> Goldenmorn
+                            </label>
+                            <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:border-rsl-500 hover:bg-rsl-50 transition text-sm">
+                                <input type="checkbox" name="brands" value="Nido" class="rounded text-rsl-600 focus:ring-rsl-500"/> Nido
+                            </label>
+                            <label class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:border-rsl-500 hover:bg-rsl-50 transition text-sm">
+                                <input type="checkbox" name="brands" value="All" class="rounded text-rsl-600 focus:ring-rsl-500"/> All brands
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Tell us about your business & interest</label>
+                        <textarea name="interest" rows="5" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition resize-none" placeholder="Where do you operate? Who are your customers? What's your monthly volume goal?"></textarea>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
+                        <p class="text-xs text-gray-500">We review new applications every 2 weeks. You'll hear from us within 3–5 business days.</p>
+                        <button type="submit" class="btn-primary">Submit Application <i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- APPLICATION PROCESS -->
+<section class="py-24 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center reveal">
+            <div class="eyebrow justify-center inline-flex">The Process</div>
+            <h2 class="font-display text-4xl md:text-5xl font-bold text-gray-900 mt-4">Simple. Transparent. Fast.</h2>
+        </div>
+
+        <div class="mt-16 grid md:grid-cols-4 gap-6">
+            <div class="reveal text-center">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-rsl-600 text-white flex items-center justify-center text-2xl font-bold mb-4">1</div>
+                <h3 class="font-bold text-gray-900">Apply</h3>
+                <p class="text-sm text-gray-600 mt-2">Complete the application form. Takes about 5 minutes.</p>
+            </div>
+            <div class="reveal text-center">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-rsl-600 text-white flex items-center justify-center text-2xl font-bold mb-4">2</div>
+                <h3 class="font-bold text-gray-900">Review</h3>
+                <p class="text-sm text-gray-600 mt-2">Our team evaluates your fit within 3–5 business days.</p>
+            </div>
+            <div class="reveal text-center">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-gold-500 text-rsl-900 flex items-center justify-center text-2xl font-bold mb-4">3</div>
+                <h3 class="font-bold text-gray-900">Meet</h3>
+                <p class="text-sm text-gray-600 mt-2">We schedule a call or visit to understand your business.</p>
+            </div>
+            <div class="reveal text-center">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-gold-500 text-rsl-900 flex items-center justify-center text-2xl font-bold mb-4">4</div>
+                <h3 class="font-bold text-gray-900">Onboard</h3>
+                <p class="text-sm text-gray-600 mt-2">Sign, get your account, and place your first order.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

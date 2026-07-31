@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Our Brands')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('brands')}"></nav>
+
+<section th:replace="~{rslint/fragments :: pagebanner('Brands We Carry', 'The household names Nigerian families trust — from Nestlé to FrieslandCampina WAMCO.', 'Brands')}"></section>
+
+<!-- ========================== MANUFACTURERS STRIP ========================== -->
+<section class="py-14 bg-white border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8 reveal">
+            <div class="eyebrow justify-center inline-flex">Direct partnerships</div>
+            <p class="mt-3 text-gray-500 text-sm">Officially sourced from</p>
+        </div>
+        <div class="grid grid-cols-2 gap-8 items-center">
+            <div class="reveal">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition p-6 flex items-center justify-center h-32">
+                    <img src="/rslint/brands/nestle.png" alt="Nestlé" class="max-h-20 w-auto object-contain"/>
+                </div>
+                <div class="text-center mt-4">
+                    <div class="font-display text-lg font-bold text-gray-900">Nestlé</div>
+                    <div class="text-[10px] text-gray-500 uppercase tracking-widest">Global manufacturer</div>
+                </div>
+            </div>
+            <div class="reveal">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition p-6 flex items-center justify-center h-32">
+                    <img src="/rslint/brands/frieslandcampina.png" alt="FrieslandCampina" class="max-h-20 w-auto object-contain"/>
+                </div>
+                <div class="text-center mt-4">
+                    <div class="font-display text-lg font-bold text-gray-900">FrieslandCampina</div>
+                    <div class="text-[10px] text-gray-500 uppercase tracking-widest">WAMCO Nigeria</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== INTRO ========================== -->
+<section class="py-28 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+        <div class="eyebrow justify-center inline-flex">Our Portfolio</div>
+        <h2 class="mt-4 font-display text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
+            The names Nigerians <em class="italic text-rsl-700">actually reach for.</em>
+        </h2>
+        <p class="mt-6 text-lg text-gray-600 leading-relaxed">
+            We don't sell everything — we sell the brands people already trust, and we sell them well.
+        </p>
+    </div>
+</section>
+
+<!-- ========================== BRAND: MILO (feature spotlight) ========================== -->
+<section class="pb-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-green-700 via-green-800 to-emerald-900 p-10 md:p-16 shadow-2xl">
+            <div class="absolute inset-0 mesh-bg opacity-30"></div>
+            <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-gold-500/25 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+                <div class="text-white">
+                    <div class="text-xs uppercase tracking-[.25em] text-gold-300 font-bold">01 / Beverage &bull; by Nestlé</div>
+                    <h3 class="mt-4 font-display text-5xl md:text-7xl font-black">Milo</h3>
+                    <p class="mt-6 text-white/85 text-lg leading-relaxed">
+                        The chocolate malt beverage that fuels Nigerian mornings — and has for generations.
+                        Rich, nutritious, and unmistakably Milo.
+                    </p>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/10 border border-white/20 font-semibold">400g Tin</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/10 border border-white/20 font-semibold">500g Refill Pack</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/10 border border-white/20 font-semibold">18g Sachet (Carton)</span>
+                    </div>
+                    <a href="/rslint/contact" class="mt-10 btn-gold inline-flex" data-magnetic>
+                        Request Wholesale Pricing <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+                <div class="relative">
+                    <div class="absolute -inset-8 rounded-full bg-white/5 blur-2xl"></div>
+                    <!-- White product card -->
+                    <div class="relative max-w-md mx-auto anim-floaty">
+                        <div class="relative bg-white rounded-[2rem] p-8 shadow-2xl overflow-hidden">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-green-600 via-green-700 to-emerald-800"></div>
+                            <div class="absolute top-4 left-5 flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-green-600"></div>
+                                <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Nestlé Beverages</span>
+                            </div>
+                            <div class="absolute top-3 right-4 bg-white rounded-lg px-2 py-1 shadow-sm border border-gray-100">
+                                <img src="/rslint/brands/milo-logo.png" alt="Milo logo" class="h-6 w-auto object-contain"/>
+                            </div>
+                            <img src="/rslint/products/milo.png" alt="Milo"
+                                 class="w-full aspect-square object-contain mt-6"/>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                <div class="font-display text-xl font-black text-gray-900">Milo</div>
+                                <div class="text-[10px] uppercase tracking-widest text-green-700 font-bold">400g &bull; 500g &bull; 18g</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== BRAND: NESCAFÉ ========================== -->
+<section class="pb-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale relative rounded-[2.5rem] overflow-hidden bg-gradient-to-bl from-red-800 via-red-900 to-stone-950 p-10 md:p-16 shadow-2xl">
+            <div class="absolute inset-0 mesh-bg opacity-25"></div>
+            <div class="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-red-500/20 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+                <div class="relative order-2 lg:order-1">
+                    <div class="absolute -inset-8 rounded-full bg-red-500/10 blur-2xl"></div>
+                    <div class="relative max-w-md mx-auto anim-floaty-slow">
+                        <div class="relative bg-white rounded-[2rem] p-8 shadow-2xl overflow-hidden">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-700 via-red-800 to-stone-900"></div>
+                            <div class="absolute top-4 left-5 flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-red-700"></div>
+                                <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Nestlé Beverages</span>
+                            </div>
+                            <div class="absolute top-3 right-4 bg-white rounded-lg px-2 py-1 shadow-sm border border-gray-100">
+                                <img src="/rslint/brands/nescafe-logo.png" alt="Nescafé logo" class="h-5 w-auto object-contain"/>
+                            </div>
+                            <img src="/rslint/products/nescafe.jpg" alt="Nescafé Gold"
+                                 class="w-full aspect-square object-contain mt-6"/>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                <div class="font-display text-xl font-black text-gray-900">Nescafé</div>
+                                <div class="text-[10px] uppercase tracking-widest text-red-800 font-bold">Classic &bull; Gold &bull; 3-in-1</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-white order-1 lg:order-2">
+                    <div class="text-xs uppercase tracking-[.25em] text-gold-300 font-bold">02 / Beverage &bull; by Nestlé</div>
+                    <h3 class="mt-4 font-display text-5xl md:text-7xl font-black">Nescafé</h3>
+                    <p class="mt-6 text-white/85 text-lg leading-relaxed">
+                        Premium instant coffee. Consistent. Convenient. Loved worldwide, and always in demand.
+                    </p>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/10 border border-white/20 font-semibold">Classic</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/10 border border-white/20 font-semibold">Gold</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/10 border border-white/20 font-semibold">3-in-1 Sachets</span>
+                    </div>
+                    <a href="/rslint/contact" class="mt-10 btn-gold inline-flex" data-magnetic>
+                        Request Wholesale Pricing <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== BRAND: MAGGI ========================== -->
+<section class="pb-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-yellow-500 via-orange-600 to-red-700 p-10 md:p-16 shadow-2xl">
+            <div class="absolute inset-0 mesh-bg opacity-25"></div>
+            <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-yellow-300/30 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+                <div class="text-white">
+                    <div class="text-xs uppercase tracking-[.25em] text-yellow-100 font-bold">03 / Culinary &bull; by Nestlé</div>
+                    <h3 class="mt-4 font-display text-5xl md:text-7xl font-black">Maggi</h3>
+                    <p class="mt-6 text-white/90 text-lg leading-relaxed">
+                        The seasoning cube in every Nigerian kitchen. From family dinners to street-food stalls —
+                        Maggi is flavour, packed small.
+                    </p>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Chicken</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Star</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Naija Pot</span>
+                    </div>
+                    <a href="/rslint/contact" class="mt-10 btn-gold inline-flex" data-magnetic>
+                        Request Wholesale Pricing <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+                <div class="relative">
+                    <div class="absolute -inset-8 rounded-full bg-yellow-300/15 blur-2xl"></div>
+                    <div class="relative max-w-md mx-auto anim-floaty">
+                        <div class="relative bg-white rounded-[2rem] p-8 shadow-2xl overflow-hidden">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-600"></div>
+                            <div class="absolute top-4 left-5 flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-orange-600"></div>
+                                <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Nestlé Culinary</span>
+                            </div>
+                            <div class="absolute top-3 right-4 bg-white rounded-lg px-2 py-1 shadow-sm border border-gray-100">
+                                <img src="/rslint/brands/maggi-logo.png" alt="Maggi logo" class="h-6 w-auto object-contain"/>
+                            </div>
+                            <img src="/rslint/products/maggi.jpg" alt="Maggi"
+                                 class="w-full aspect-square object-contain mt-6"/>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                <div class="font-display text-xl font-black text-gray-900">Maggi</div>
+                                <div class="text-[10px] uppercase tracking-widest text-orange-700 font-bold">Chicken &bull; Star &bull; Naija Pot</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== BRAND: PEAK MILK ========================== -->
+<section class="pb-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-sky-500 via-blue-600 to-blue-900 p-10 md:p-16 shadow-2xl">
+            <div class="absolute inset-0 mesh-bg opacity-25"></div>
+            <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-sky-300/25 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+                <div class="relative order-2 lg:order-1">
+                    <div class="absolute -inset-8 rounded-full bg-white/10 blur-2xl"></div>
+                    <div class="relative max-w-md mx-auto anim-floaty-slow">
+                        <div class="relative bg-white rounded-[2rem] p-8 shadow-2xl overflow-hidden">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-sky-500 via-blue-600 to-blue-900"></div>
+                            <div class="absolute top-4 left-5 flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-blue-700"></div>
+                                <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">FrieslandCampina Dairy</span>
+                            </div>
+                            <div class="absolute top-3 right-4 bg-white rounded-lg px-2 py-1 shadow-sm border border-gray-100">
+                                <img src="/rslint/brands/peak-logo.png" alt="Peak logo" class="h-6 w-auto object-contain"/>
+                            </div>
+                            <img src="/rslint/products/peak-full-cream.png" alt="Peak Milk"
+                                 class="w-full aspect-square object-contain mt-6"/>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                <div class="font-display text-xl font-black text-gray-900">Peak Milk</div>
+                                <div class="text-[10px] uppercase tracking-widest text-blue-800 font-bold">Powder &bull; Tin &bull; UHT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-white order-1 lg:order-2">
+                    <div class="text-xs uppercase tracking-[.25em] text-sky-100 font-bold">04 / Dairy &bull; by FrieslandCampina</div>
+                    <h3 class="mt-4 font-display text-5xl md:text-7xl font-black">Peak Milk</h3>
+                    <p class="mt-6 text-white/90 text-lg leading-relaxed">
+                        Nigeria's most trusted dairy brand. Rich. Creamy. On breakfast tables from Kano to Calabar.
+                    </p>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Full Cream Powder</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Evaporated Milk Tin</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">UHT Cartons</span>
+                    </div>
+                    <a href="/rslint/contact" class="mt-10 btn-gold inline-flex" data-magnetic>
+                        Request Wholesale Pricing <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== BRAND: THREE CROWNS ========================== -->
+<section class="pb-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-rose-700 via-red-800 to-rose-950 p-10 md:p-16 shadow-2xl">
+            <div class="absolute inset-0 mesh-bg opacity-25"></div>
+            <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-rose-400/25 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+                <div class="text-white">
+                    <div class="text-xs uppercase tracking-[.25em] text-rose-100 font-bold">05 / Dairy &bull; by FrieslandCampina</div>
+                    <h3 class="mt-4 font-display text-5xl md:text-7xl font-black">Three Crowns</h3>
+                    <p class="mt-6 text-white/90 text-lg leading-relaxed">
+                        The heart-friendly evaporated milk that generations of Nigerian mothers have poured into
+                        morning tea and pap. Smooth, creamy, and unmistakably Three Crowns.
+                    </p>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Evaporated Milk Tin</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Sachet</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Carton Pack</span>
+                    </div>
+                    <a href="/rslint/contact" class="mt-10 btn-gold inline-flex" data-magnetic>
+                        Request Wholesale Pricing <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+                <div class="relative">
+                    <div class="absolute -inset-8 rounded-full bg-rose-400/15 blur-2xl"></div>
+                    <div class="relative max-w-md mx-auto anim-floaty">
+                        <div class="relative bg-white rounded-[2rem] p-8 shadow-2xl overflow-hidden">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-600 via-red-700 to-rose-900"></div>
+                            <div class="absolute top-4 left-5 flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-red-700"></div>
+                                <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">FrieslandCampina Dairy</span>
+                            </div>
+                            <div class="absolute top-3 right-4 bg-white rounded-lg px-2 py-1 shadow-sm border border-gray-100">
+                                <img src="/rslint/brands/threecrowns-logo.png" alt="Three Crowns logo" class="h-6 w-auto object-contain"/>
+                            </div>
+                            <img src="/rslint/brands/threecrowns-tin.png" alt="Three Crowns Evaporated Milk"
+                                 class="w-full aspect-square object-contain mt-6"/>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                <div class="font-display text-xl font-black text-gray-900">Three Crowns</div>
+                                <div class="text-[10px] uppercase tracking-widest text-red-800 font-bold">Tin &bull; Sachet &bull; Carton</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== BRAND: NIDO ========================== -->
+<section class="pb-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale relative rounded-[2.5rem] overflow-hidden bg-gradient-to-bl from-orange-500 via-amber-600 to-orange-900 p-10 md:p-16 shadow-2xl">
+            <div class="absolute inset-0 mesh-bg opacity-25"></div>
+            <div class="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-amber-300/25 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+                <div class="relative order-2 lg:order-1">
+                    <div class="absolute -inset-8 rounded-full bg-amber-300/15 blur-2xl"></div>
+                    <div class="relative max-w-md mx-auto anim-floaty-slow">
+                        <div class="relative bg-white rounded-[2rem] p-8 shadow-2xl overflow-hidden">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-orange-500 via-amber-600 to-orange-900"></div>
+                            <div class="absolute top-4 left-5 flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-orange-600"></div>
+                                <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Nestlé Dairy</span>
+                            </div>
+                            <div class="absolute top-3 right-4 bg-white rounded-lg px-2 py-1 shadow-sm border border-gray-100">
+                                <img src="/rslint/brands/nido-logo.png" alt="Nido logo" class="h-6 w-auto object-contain"/>
+                            </div>
+                            <img src="/rslint/brands/nido-product.jpg" alt="Nido Milk Powder"
+                                 class="w-full aspect-square object-contain mt-6"/>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                <div class="font-display text-xl font-black text-gray-900">Nido</div>
+                                <div class="text-[10px] uppercase tracking-widest text-orange-700 font-bold">Fortified &bull; Full Cream &bull; Growing Up</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-white order-1 lg:order-2">
+                    <div class="text-xs uppercase tracking-[.25em] text-amber-100 font-bold">06 / Dairy &bull; by Nestlé</div>
+                    <h3 class="mt-4 font-display text-5xl md:text-7xl font-black">Nido</h3>
+                    <p class="mt-6 text-white/90 text-lg leading-relaxed">
+                        The fortified milk powder trusted by Nigerian families for growing children and everyday
+                        nutrition. Enriched with vitamins and minerals for strong development.
+                    </p>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Fortified Full Cream</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Growing Up 1+</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Sachet &amp; Tin</span>
+                    </div>
+                    <a href="/rslint/contact" class="mt-10 btn-gold inline-flex" data-magnetic>
+                        Request Wholesale Pricing <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== BRAND: GOLDEN MORN ========================== -->
+<section class="pb-28 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-yellow-500 via-amber-600 to-yellow-800 p-10 md:p-16 shadow-2xl">
+            <div class="absolute inset-0 mesh-bg opacity-25"></div>
+            <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-yellow-300/30 blur-3xl"></div>
+
+            <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+                <div class="text-white">
+                    <div class="text-xs uppercase tracking-[.25em] text-yellow-100 font-bold">07 / Cereal &bull; by Nestlé</div>
+                    <h3 class="mt-4 font-display text-5xl md:text-7xl font-black">Golden Morn</h3>
+                    <p class="mt-6 text-white/90 text-lg leading-relaxed">
+                        Nigeria's most-loved family cereal — born in 1986, made from locally sourced whole grains,
+                        fortified with vitamin A and iron. The taste of a proper Nigerian breakfast.
+                    </p>
+                    <div class="mt-8 flex flex-wrap gap-2">
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Family Pack</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">Sachet</span>
+                        <span class="text-xs px-4 py-2 rounded-full bg-white/15 border border-white/30 font-semibold">3-in-1</span>
+                    </div>
+                    <a href="/rslint/contact" class="mt-10 btn-gold inline-flex" data-magnetic>
+                        Request Wholesale Pricing <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+                <div class="relative">
+                    <div class="absolute -inset-8 rounded-full bg-yellow-300/15 blur-2xl"></div>
+                    <div class="relative max-w-md mx-auto anim-floaty">
+                        <div class="relative bg-white rounded-[2rem] p-8 shadow-2xl overflow-hidden">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-yellow-500 via-amber-600 to-yellow-800"></div>
+                            <div class="absolute top-4 left-5 flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-amber-600"></div>
+                                <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Nestlé Cereal</span>
+                            </div>
+                            <img src="/rslint/brands/goldenmorn-product.jpg" alt="Golden Morn"
+                                 class="w-full aspect-square object-contain mt-6"/>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                <div class="font-display text-xl font-black text-gray-900">Golden Morn</div>
+                                <div class="text-[10px] uppercase tracking-widest text-amber-700 font-bold">Family &bull; Sachet &bull; 3-in-1</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================== ORDERING PANEL ========================== -->
+<section class="pb-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal rounded-[2rem] bg-gradient-to-br from-gray-900 via-rsl-900 to-black text-white p-10 md:p-14 grid md:grid-cols-2 gap-10 items-center relative overflow-hidden">
+            <div class="absolute inset-0 mesh-bg opacity-30"></div>
+            <div class="relative">
+                <div class="eyebrow" style="color:#f4d35e;">Simple Ordering</div>
+                <h3 class="mt-4 font-display text-4xl md:text-5xl font-bold leading-tight">
+                    Order what you <em class="italic text-gold-400">actually need.</em>
+                </h3>
+                <p class="mt-4 text-white/80 leading-relaxed max-w-lg">
+                    One carton minimum. No wholesale gymnastics. No forced volumes.
+                    Just the brands you want, at fair prices, on your schedule.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <a href="/rslint/contact" class="btn-gold" data-magnetic>Request a Quote</a>
+                    <a href="tel:+2348056798559" class="btn-ghost"><i class="fa-solid fa-phone"></i> Call Sales</a>
+                </div>
+            </div>
+            <div class="relative grid grid-cols-2 gap-4">
+                <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-gold-400/50 transition">
+                    <i class="fa-solid fa-box text-gold-400 text-2xl mb-3"></i>
+                    <div class="font-display text-4xl font-black"><span data-count="1">0</span></div>
+                    <div class="text-sm text-white/70 mt-1">Min. carton per order</div>
+                </div>
+                <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-gold-400/50 transition">
+                    <i class="fa-solid fa-truck text-gold-400 text-2xl mb-3"></i>
+                    <div class="font-display text-4xl font-black">Same-day</div>
+                    <div class="text-sm text-white/70 mt-1">Dispatch in Lagos</div>
+                </div>
+                <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-gold-400/50 transition">
+                    <i class="fa-solid fa-shield-halved text-gold-400 text-2xl mb-3"></i>
+                    <div class="font-display text-4xl font-black"><span data-count="100" data-suffix="%">0%</span></div>
+                    <div class="text-sm text-white/70 mt-1">Genuine product</div>
+                </div>
+                <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-gold-400/50 transition">
+                    <i class="fa-solid fa-headset text-gold-400 text-2xl mb-3"></i>
+                    <div class="font-display text-4xl font-black">1-on-1</div>
+                    <div class="text-sm text-white/70 mt-1">Account support</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

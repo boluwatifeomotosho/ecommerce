@@ -21,9 +21,15 @@ public interface ProductQueryService {
 
     Page<ProductSummaryDto> getVendorProducts(UUID vendorId, Pageable pageable);
 
+    Page<ProductSummaryDto> getVendorProductsByCreator(UUID vendorId, UUID createdByUserId, Pageable pageable);
+
     ProductDetailDto getVendorProductById(UUID productId, UUID vendorId);
 
+    ProductDetailDto getVendorProductByIdForCreator(UUID productId, UUID vendorId, UUID createdByUserId);
+
     Page<ProductSummaryDto> getPendingProducts(Pageable pageable);
+
+    Page<ProductSummaryDto> getPendingProductsByVendor(UUID vendorId, Pageable pageable);
 
     /** Admin-only: fetch any product by ID regardless of vendor. */
     ProductDetailDto getProductById(UUID productId);

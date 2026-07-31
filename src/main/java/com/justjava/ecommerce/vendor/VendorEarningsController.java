@@ -2,7 +2,6 @@ package com.justjava.ecommerce.vendor;
 
 import com.justjava.ecommerce.order.OrderRepository;
 import com.justjava.ecommerce.order.OrderStatus;
-import com.justjava.ecommerce.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -17,23 +16,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/vendor/earnings")
-@PreAuthorize("hasRole('VENDOR')")
+@PreAuthorize("hasAnyRole('VENDOR', 'SUB_VENDOR')")
 @RequiredArgsConstructor
 public class VendorEarningsController {
 
     private static final Set<OrderStatus> EARNED_STATUSES =
-            EnumSet.of(OrderStatus.PAID, OrderStatus.PROCESSING, OrderStatus.SHIPPED, OrderStatus.DELIVERED);
+            EnumSet.of(OrderStatus.PAID, OrderStatus.PROCESSING, OrderStatus.SHIPPED, OrderStatus.DELIVERED, OrderStatus.CONFIRMED);
     private static final Set<OrderStatus> SETTLED_STATUSES =
-            EnumSet.of(OrderStatus.DELIVERED);
+            EnumSet.of(OrderStatus.CONFIRMED);
     private static final Set<OrderStatus> PENDING_STATUSES =
-            EnumSet.of(OrderStatus.PAID, OrderStatus.PROCESSING, OrderStatus.SHIPPED);
+            EnumSet.of(OrderStatus.PAID, OrderStatus.PROCESSING, OrderStatus.SHIPPED, OrderStatus.DELIVERED);
 
-    private final OrderRepository orderRepository;
-    private final UserRepository  userRepository;
+    private final OrderRepository     orderRepository;
+    private final VendorMemberService vendorMemberService;
 
     @GetMapping
     public String earnings(
@@ -41,23 +39,25 @@ public class VendorEarningsController {
             @AuthenticationPrincipal OidcUser principal,
             Model model
     ) {
-        UUID vendorId = resolveVendorId(principal);
+        VendorScope scope = vendorMemberService.currentScope(principal);
+        var pageable = PageRequest.of(page, 20, Sort.by("createdAt").descending());
 
-        var orders = orderRepository.findByVendorIdAndStatusIn(
-                vendorId, EARNED_STATUSES,
-                PageRequest.of(page, 20, Sort.by("createdAt").descending()));
-
-        model.addAttribute("orders",          orders);
-        model.addAttribute("totalEarned",     orderRepository.sumRevenueByVendorIdAndStatusIn(vendorId, EARNED_STATUSES));
-        model.addAttribute("settledEarnings", orderRepository.sumRevenueByVendorIdAndStatusIn(vendorId, SETTLED_STATUSES));
-        model.addAttribute("pendingEarnings", orderRepository.sumRevenueByVendorIdAndStatusIn(vendorId, PENDING_STATUSES));
+        if (scope.isCreatorScoped()) {
+            var orders = orderRepository.findByVendorIdAndCreatorAndStatusIn(
+                    scope.vendorId(), scope.creatorUserId(), EARNED_STATUSES, pageable);
+            model.addAttribute("orders",          orders);
+            model.addAttribute("totalEarned",     orderRepository.sumRevenueByVendorIdAndCreatorAndStatusIn(scope.vendorId(), scope.creatorUserId(), EARNED_STATUSES));
+            model.addAttribute("settledEarnings", orderRepository.sumRevenueByVendorIdAndCreatorAndStatusIn(scope.vendorId(), scope.creatorUserId(), SETTLED_STATUSES));
+            model.addAttribute("pendingEarnings", orderRepository.sumRevenueByVendorIdAndCreatorAndStatusIn(scope.vendorId(), scope.creatorUserId(), PENDING_STATUSES));
+        } else {
+            var orders = orderRepository.findByVendorIdAndStatusIn(
+                    scope.vendorId(), EARNED_STATUSES, pageable);
+            model.addAttribute("orders",          orders);
+            model.addAttribute("totalEarned",     orderRepository.sumRevenueByVendorIdAndStatusIn(scope.vendorId(), EARNED_STATUSES));
+            model.addAttribute("settledEarnings", orderRepository.sumRevenueByVendorIdAndStatusIn(scope.vendorId(), SETTLED_STATUSES));
+            model.addAttribute("pendingEarnings", orderRepository.sumRevenueByVendorIdAndStatusIn(scope.vendorId(), PENDING_STATUSES));
+        }
         model.addAttribute("name", principal.getFullName() != null ? principal.getFullName() : "Vendor");
         return "vendor/earnings";
-    }
-
-    private UUID resolveVendorId(OidcUser principal) {
-        return userRepository.findByKeycloakId(principal.getSubject())
-                .orElseThrow(() -> new IllegalStateException("Vendor user not found"))
-                .getId();
     }
 }

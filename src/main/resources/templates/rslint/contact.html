@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Contact Us')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('contact')}"></nav>
+
+<section th:replace="~{rslint/fragments :: pagebanner('Get In Touch', 'Retailer, distributor, or just curious — reach out and a real human will reply within one business day.', 'Contact')}"></section>
+
+<!-- CONTACT GRID -->
+<section class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-3 gap-8">
+        <!-- Info cards -->
+        <div class="space-y-6">
+            <div class="reveal p-8 rounded-3xl bg-gradient-to-br from-rsl-600 to-rsl-800 text-white shadow-xl">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4"><i class="fa-solid fa-location-dot text-xl"></i></div>
+                <h3 class="font-display text-xl font-bold">Head Office</h3>
+                <p class="text-white/85 mt-2 leading-relaxed">Plot 22, Block 91<br/>Akanbi Disu Street, off Providence Street<br/>Lekki Phase 1, Lagos<br/>Nigeria</p>
+            </div>
+
+            <div class="reveal p-8 rounded-3xl bg-white border border-gray-100 card-hover">
+                <div class="w-12 h-12 rounded-2xl bg-gold-500/20 text-gold-600 flex items-center justify-center mb-4"><i class="fa-solid fa-warehouse text-xl"></i></div>
+                <h3 class="font-display text-xl font-bold text-gray-900">Warehouse</h3>
+                <p class="text-gray-600 mt-2 leading-relaxed">22 Providence Street<br/>Lekki Phase 1, Lagos<br/>Nigeria</p>
+                <div class="mt-4 pt-4 border-t border-gray-100 space-y-2 text-sm">
+                    <a href="mailto:warehouse@rslint.com" class="flex items-center gap-2 text-rsl-700 hover:text-rsl-800"><i class="fa-solid fa-envelope"></i> warehouse@rslint.com</a>
+                    <a href="mailto:orders@rslint.com" class="flex items-center gap-2 text-rsl-700 hover:text-rsl-800"><i class="fa-solid fa-envelope"></i> orders@rslint.com</a>
+                </div>
+            </div>
+
+            <div class="reveal p-8 rounded-3xl bg-gray-900 text-white">
+                <div class="w-12 h-12 rounded-2xl bg-gold-500/20 text-gold-400 flex items-center justify-center mb-4"><i class="fa-solid fa-phone text-xl"></i></div>
+                <h3 class="font-display text-xl font-bold">Call Us Directly</h3>
+                <a href="tel:+2348056798559" class="block mt-2 text-2xl font-display font-bold text-gold-400 hover:text-gold-500">+234 805 679 8559</a>
+                <a href="mailto:info@rslint.com" class="block mt-2 text-white/80 hover:text-gold-400"><i class="fa-solid fa-envelope"></i> info@rslint.com</a>
+                <div class="mt-6 flex gap-3">
+                    <a href="https://facebook.com/RSL-International-LTD-270576559757495/" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 hover:text-rsl-900 flex items-center justify-center transition"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/rslintltd/" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 hover:text-rsl-900 flex items-center justify-center transition"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/in/rsl-international-limited-173a8897" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 hover:text-rsl-900 flex items-center justify-center transition"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="lg:col-span-2 reveal">
+            <div class="rounded-3xl bg-white border border-gray-100 shadow-xl p-8 md:p-10">
+                <div th:if="${submitted}" class="mb-8 p-5 rounded-2xl bg-rsl-50 border border-rsl-200 flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-full bg-rsl-600 text-white flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check"></i></div>
+                    <div>
+                        <div class="font-bold text-rsl-800">Message received, <span th:text="${submittedName}">friend</span>.</div>
+                        <div class="text-sm text-rsl-700">Someone from our team will get back to you within 1 business day.</div>
+                    </div>
+                </div>
+
+                <div class="eyebrow">Send us a message</div>
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-gray-900 mt-3">We reply fast.</h2>
+                <p class="mt-2 text-gray-600">Fill in the form and a real human will respond — typically within 1 business day.</p>
+
+                <form method="post" action="/rslint/contact" class="mt-8 space-y-5">
+                    <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Your Name *</label>
+                            <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition"/>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                            <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition"/>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Subject</label>
+                        <select name="subject" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition bg-white">
+                            <option value="General Inquiry">General inquiry</option>
+                            <option value="Wholesale Order">Wholesale order</option>
+                            <option value="Distributor Application">Distributor application</option>
+                            <option value="Partnership">Partnership opportunity</option>
+                            <option value="Support">Support</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Message *</label>
+                        <textarea name="message" rows="6" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rsl-500 focus:ring-2 focus:ring-rsl-500/20 outline-none transition resize-none" placeholder="How can we help?"></textarea>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn-primary">Send Message <i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MAP -->
+<section class="pb-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+            <iframe
+                src="https://www.google.com/maps?q=Lekki+Phase+1,+Lagos,+Nigeria&output=embed"
+                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="pb-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center reveal">
+            <div class="eyebrow justify-center inline-flex">Questions?</div>
+            <h2 class="font-display text-4xl font-bold text-gray-900 mt-4">Answers, up front.</h2>
+        </div>
+
+        <div class="mt-12 space-y-3">
+            <details class="reveal group rounded-2xl border border-gray-100 p-6 hover:border-rsl-300 transition open:bg-rsl-50/30">
+                <summary class="cursor-pointer flex items-center justify-between font-semibold text-gray-900">
+                    <span>What's your minimum order quantity?</span>
+                    <i class="fa-solid fa-chevron-down text-rsl-600 group-open:rotate-180 transition-transform"></i>
+                </summary>
+                <p class="mt-3 text-gray-600">Just one carton. We built the business specifically to serve buyers who don't want to be forced into truckload minimums.</p>
+            </details>
+            <details class="reveal group rounded-2xl border border-gray-100 p-6 hover:border-rsl-300 transition open:bg-rsl-50/30">
+                <summary class="cursor-pointer flex items-center justify-between font-semibold text-gray-900">
+                    <span>Do you deliver outside Lagos?</span>
+                    <i class="fa-solid fa-chevron-down text-rsl-600 group-open:rotate-180 transition-transform"></i>
+                </summary>
+                <p class="mt-3 text-gray-600">Yes. Same-day dispatch is guaranteed within Lagos. Deliveries to other states are coordinated with our logistics partners — reach out for a shipping estimate.</p>
+            </details>
+            <details class="reveal group rounded-2xl border border-gray-100 p-6 hover:border-rsl-300 transition open:bg-rsl-50/30">
+                <summary class="cursor-pointer flex items-center justify-between font-semibold text-gray-900">
+                    <span>How do I become a distributor?</span>
+                    <i class="fa-solid fa-chevron-down text-rsl-600 group-open:rotate-180 transition-transform"></i>
+                </summary>
+                <p class="mt-3 text-gray-600">Fill out the <a href="/rslint/distributors" class="text-rsl-600 font-semibold hover:underline">distributor application form</a>. We review new applications every 2 weeks.</p>
+            </details>
+            <details class="reveal group rounded-2xl border border-gray-100 p-6 hover:border-rsl-300 transition open:bg-rsl-50/30">
+                <summary class="cursor-pointer flex items-center justify-between font-semibold text-gray-900">
+                    <span>Are your products genuine?</span>
+                    <i class="fa-solid fa-chevron-down text-rsl-600 group-open:rotate-180 transition-transform"></i>
+                </summary>
+                <p class="mt-3 text-gray-600">100%. We source directly from Nestlé and FrieslandCampina WAMCO. Every carton is sealed and traceable.</p>
+            </details>
+            <details class="reveal group rounded-2xl border border-gray-100 p-6 hover:border-rsl-300 transition open:bg-rsl-50/30">
+                <summary class="cursor-pointer flex items-center justify-between font-semibold text-gray-900">
+                    <span>What are your business hours?</span>
+                    <i class="fa-solid fa-chevron-down text-rsl-600 group-open:rotate-180 transition-transform"></i>
+                </summary>
+                <p class="mt-3 text-gray-600">Monday–Friday, 8am–6pm. Saturday, 9am–3pm. Closed Sundays. Urgent orders? Call the number above and we'll do our best.</p>
+            </details>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

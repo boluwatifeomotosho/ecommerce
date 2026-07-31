@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Admin Dashboard | NaijaMart</title>
+    <title>Admin Dashboard | Pinepetosan Marketplace</title>
     <th:block th:replace="~{fragments/head :: resources}" />
     <style>
         @keyframes slideInLeft { from { opacity:0; transform:translateX(-40px); } to { opacity:1; transform:translateX(0); } }
@@ -92,22 +92,22 @@
     <!-- Bottom section: pending reviews + recent orders -->
     <div class="content-card grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-        <!-- Pending Product Reviews -->
+        <!-- Product Catalog Oversight -->
         <div class="lg:col-span-2 bg-surface-container-lowest rounded-2xl p-6 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] border border-outline-variant/30">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary bg-primary/5 p-2 rounded-xl">rate_review</span>
-                    <h4 class="font-bold text-on-surface">Pending Reviews</h4>
+                    <span class="material-symbols-outlined text-primary bg-primary/5 p-2 rounded-xl">inventory_2</span>
+                    <h4 class="font-bold text-on-surface">Product Catalog</h4>
                 </div>
-                <span class="bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full"
-                      th:text="${pendingReviews ?: 0}">0</span>
+                <span class="bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-full"
+                      th:text="${publishedProducts ?: 0}">0</span>
             </div>
             <p class="text-sm text-on-surface-variant mb-4"
-               th:text="${(pendingReviews ?: 0) + ' product(s) waiting for review'}">0 products waiting for review</p>
-            <a th:href="@{/admin/products/pending}"
+               th:text="${(publishedProducts ?: 0) + ' product(s) live on the platform'}">0 products live on the platform</p>
+            <a th:href="@{/admin/products/catalog}"
                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-primary text-primary rounded-lg text-sm font-semibold hover:bg-primary/5 transition-colors">
-                <span class="material-symbols-outlined text-sm">visibility</span>
-                Review Products
+                <span class="material-symbols-outlined text-sm">inventory_2</span>
+                Manage Catalog
             </a>
         </div>
 
@@ -148,7 +148,8 @@
                                     <span th:case="'PAID'"            class="bg-blue-100  text-blue-700  px-2 py-0.5 rounded-full text-xs font-bold">Paid</span>
                                     <span th:case="'PROCESSING'"      class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-bold">Processing</span>
                                     <span th:case="'SHIPPED'"         class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-bold">Shipped</span>
-                                    <span th:case="'DELIVERED'"       class="bg-green-100  text-green-700  px-2 py-0.5 rounded-full text-xs font-bold">Delivered</span>
+                                    <span th:case="'DELIVERED'"       class="bg-amber-100  text-amber-700  px-2 py-0.5 rounded-full text-xs font-bold">Delivered</span>
+                                    <span th:case="'CONFIRMED'"       class="bg-green-100  text-green-700  px-2 py-0.5 rounded-full text-xs font-bold">Confirmed</span>
                                     <span th:case="'CANCELLED'"       class="bg-red-100    text-red-700    px-2 py-0.5 rounded-full text-xs font-bold">Cancelled</span>
                                     <span th:case="*"                 class="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full text-xs font-bold" th:text="${order.status}">Status</span>
                                 </span>

@@ -3,6 +3,7 @@ package com.justjava.ecommerce.product;
 import com.justjava.ecommerce.category.Category;
 import com.justjava.ecommerce.common.Auditable;
 import com.justjava.ecommerce.user.User;
+import com.justjava.ecommerce.vendor.Vendor;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,7 +30,13 @@ public class Product extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id", nullable = false)
-    private User vendor;
+    private Vendor vendor;
+
+    // The user who authored/edited the product. Equals the vendor owner for
+    // solo vendors; distinct for sub-vendors employed by the same company.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private User createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)

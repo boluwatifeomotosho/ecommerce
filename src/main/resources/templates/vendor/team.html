@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Team — Pinepetosan Marketplace Vendor</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/vendor-sidebar :: sidebar('team', ${name})}"></aside>
+
+<div class="ml-0 md:ml-[280px] mt-16 md:mt-0 flex-1 flex flex-col min-h-screen">
+    <header class="bg-surface-container-lowest border-b border-outline-variant px-8 py-4 flex items-center gap-3 sticky top-0 z-20">
+        <span class="material-symbols-outlined text-primary">group</span>
+        <div>
+            <h1 class="text-xl font-bold text-on-surface">Team</h1>
+            <p class="text-sm text-on-surface-variant mt-0.5">Invite team members who can manage products on behalf of <span th:text="${vendor.name}">your store</span></p>
+        </div>
+    </header>
+
+    <main class="flex-1 px-8 py-6 max-w-4xl space-y-6">
+
+        <!-- Flash messages -->
+        <div th:if="${inviteSuccess}" class="flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 text-sm font-medium px-4 py-3 rounded-xl">
+            <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+            <span th:text="${inviteSuccess}">Success</span>
+        </div>
+        <div th:if="${inviteError}" class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 text-sm font-medium px-4 py-3 rounded-xl">
+            <span class="material-symbols-outlined text-red-500 text-xl">error</span>
+            <span th:text="${inviteError}">Error</span>
+        </div>
+
+        <!-- Invite form -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-lg">person_add</span>
+                <h2 class="font-bold text-on-surface">Invite a Team Member</h2>
+            </div>
+            <form th:action="@{/vendor/team/invite}" method="post" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-on-surface-variant mb-1.5">First Name <span class="text-error">*</span></label>
+                        <input type="text" name="firstName" required
+                               class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm transition-all"/>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Last Name <span class="text-error">*</span></label>
+                        <input type="text" name="lastName" required
+                               class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm transition-all"/>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Email <span class="text-error">*</span></label>
+                    <input type="email" name="email" required
+                           placeholder="e.g. teammate@company.com"
+                           class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm transition-all"/>
+                    <p class="text-xs text-on-surface-variant mt-1">They will receive an email to set their password and activate their account.</p>
+                </div>
+                <button type="submit"
+                        class="inline-flex items-center gap-2 bg-primary hover:opacity-90 text-on-primary text-sm font-semibold px-5 py-2.5 rounded-xl transition-all shadow-md shadow-primary/20 active:scale-95">
+                    <span class="material-symbols-outlined text-lg">send</span>
+                    Send Invitation
+                </button>
+            </form>
+        </div>
+
+        <!-- Team members -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-lg">groups</span>
+                <h2 class="font-bold text-on-surface">Team Members</h2>
+                <span class="text-xs text-on-surface-variant ml-auto" th:text="${#lists.size(members) + ' total'}">0 total</span>
+            </div>
+
+            <div th:if="${#lists.isEmpty(members)}" class="px-6 py-10 text-center text-on-surface-variant text-sm">
+                No team members yet. Invite someone above to get started.
+            </div>
+
+            <ul th:if="${!#lists.isEmpty(members)}" class="divide-y divide-outline-variant/30">
+                <li th:each="member : ${members}" class="px-6 py-4 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-lg" th:text="${member.memberRole?.name() == 'VENDOR_ADMIN'} ? 'admin_panel_settings' : 'person'">person</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <p class="font-semibold text-on-surface truncate" th:text="${member.user?.fullName}">Name</p>
+                            <span th:if="${member.memberRole?.name() == 'VENDOR_ADMIN'}"
+                                  class="text-[10px] font-bold uppercase tracking-wide bg-primary/10 text-primary px-2 py-0.5 rounded-full">Store Manager</span>
+                            <span th:if="${member.memberRole?.name() == 'SUB_VENDOR'}"
+                                  class="text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Team Member</span>
+                            <span th:if="${member.user?.status == 'PENDING_ACTIVATION'}"
+                                  class="text-[10px] font-bold uppercase tracking-wide bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Pending</span>
+                        </div>
+                        <p class="text-xs text-on-surface-variant truncate" th:text="${member.user?.email}">email@example.com</p>
+                    </div>
+                    <a th:if="${member.memberRole?.name() == 'SUB_VENDOR'}"
+                       th:href="@{'/vendor/team/' + ${member.id}}"
+                       class="inline-flex items-center gap-1.5 text-primary hover:bg-primary/5 text-xs font-semibold px-3 py-2 rounded-lg transition-all">
+                        View activity
+                        <span class="material-symbols-outlined text-base">arrow_forward</span>
+                    </a>
+                    <form th:if="${member.memberRole?.name() == 'SUB_VENDOR'}"
+                          th:action="@{'/vendor/team/' + ${member.id} + '/revoke'}"
+                          method="post"
+                          data-confirm="Remove this team member? They will lose access immediately."
+                          data-confirm-title="Revoke access"
+                          data-confirm-btn="Revoke">
+                        <button type="submit"
+                                class="inline-flex items-center gap-1.5 text-red-600 hover:bg-red-50 text-xs font-semibold px-3 py-2 rounded-lg transition-all">
+                            <span class="material-symbols-outlined text-base">delete</span>
+                            Revoke
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

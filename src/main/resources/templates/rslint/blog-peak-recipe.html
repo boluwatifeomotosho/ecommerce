@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Peak Vegetable Juice Recipe Unveiled')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('media')}"></nav>
+
+<section class="page-banner pt-40 pb-24 text-white relative">
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <nav class="flex justify-center items-center gap-2 text-sm text-white/70 mb-4 anim-fadeIn">
+            <a href="/rslint" class="hover:text-gold-400 transition">Home</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <a href="/rslint/blog" class="hover:text-gold-400 transition">Blog</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-gold-400">Peak Recipe</span>
+        </nav>
+        <div class="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-full bg-white/10 border border-white/20 font-bold uppercase tracking-widest mb-6 anim-fadeIn"><i class="fa-solid fa-utensils text-gold-400"></i> Recipe &bull; Peak Milk</div>
+        <h1 class="font-display text-4xl md:text-6xl font-bold mb-6 anim-fadeUp leading-tight">Peak Vegetable Juice Recipe Unveiled</h1>
+        <div class="flex justify-center items-center gap-4 text-sm text-white/80 anim-fadeUp delay-100">
+            <span class="flex items-center gap-2"><i class="fa-regular fa-calendar text-gold-400"></i> November 11, 2015</span>
+            <span class="text-white/30">•</span>
+            <span class="flex items-center gap-2"><i class="fa-solid fa-clock text-gold-400"></i> 10 minutes</span>
+        </div>
+    </div>
+    <svg class="absolute bottom-0 left-0 w-full text-white" viewBox="0 0 1440 80" fill="currentColor" preserveAspectRatio="none">
+        <path d="M0,32 C240,80 480,80 720,48 C960,16 1200,16 1440,48 L1440,80 L0,80 Z"/>
+    </svg>
+</section>
+
+<article class="py-20 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale rounded-3xl overflow-hidden shadow-2xl mb-12">
+            <img src="/rslint/media/peak-vegetable-juice.jpg" alt="Peak Vegetable Juice" class="w-full h-auto object-cover"/>
+        </div>
+
+        <!-- Ingredients -->
+        <div class="reveal rounded-2xl bg-gradient-to-br from-sky-50 to-blue-50 border border-blue-100 p-8 mb-10">
+            <h2 class="font-display text-2xl font-bold text-blue-900 flex items-center gap-3">
+                <i class="fa-solid fa-basket-shopping text-blue-700"></i> Ingredients
+            </h2>
+            <ul class="mt-5 space-y-3 text-gray-800">
+                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-blue-600 mt-1.5 text-sm"></i><span>2 small <strong>carrots</strong></span></li>
+                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-blue-600 mt-1.5 text-sm"></i><span>1 medium <strong>cucumber</strong></span></li>
+                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-blue-600 mt-1.5 text-sm"></i><span>6 medium fresh <strong>tomatoes</strong></span></li>
+                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-blue-600 mt-1.5 text-sm"></i><span>1 tin or 1 sachet of <strong>Peak Sweetened Condensed Milk</strong></span></li>
+            </ul>
+        </div>
+
+        <!-- Method -->
+        <div class="reveal">
+            <h2 class="font-display text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <i class="fa-solid fa-list-check text-rsl-700"></i> Method of Preparation
+            </h2>
+            <ol class="space-y-4">
+                <li class="flex gap-4 items-start"><span class="shrink-0 w-8 h-8 rounded-full bg-rsl-600 text-white font-bold flex items-center justify-center text-sm shadow">1</span><span class="text-lg text-gray-700 pt-0.5">Wash all vegetables in salted water.</span></li>
+                <li class="flex gap-4 items-start"><span class="shrink-0 w-8 h-8 rounded-full bg-rsl-600 text-white font-bold flex items-center justify-center text-sm shadow">2</span><span class="text-lg text-gray-700 pt-0.5">Peel and slice carrots into round shapes and warm a little.</span></li>
+                <li class="flex gap-4 items-start"><span class="shrink-0 w-8 h-8 rounded-full bg-rsl-600 text-white font-bold flex items-center justify-center text-sm shadow">3</span><span class="text-lg text-gray-700 pt-0.5">Slice the cucumber into shapes.</span></li>
+                <li class="flex gap-4 items-start"><span class="shrink-0 w-8 h-8 rounded-full bg-rsl-600 text-white font-bold flex items-center justify-center text-sm shadow">4</span><span class="text-lg text-gray-700 pt-0.5">Wash the tomatoes and cut into shapes.</span></li>
+                <li class="flex gap-4 items-start"><span class="shrink-0 w-8 h-8 rounded-full bg-rsl-600 text-white font-bold flex items-center justify-center text-sm shadow">5</span><span class="text-lg text-gray-700 pt-0.5">Pour a glass of pre-boiled water into your blender.</span></li>
+                <li class="flex gap-4 items-start"><span class="shrink-0 w-8 h-8 rounded-full bg-rsl-600 text-white font-bold flex items-center justify-center text-sm shadow">6</span><span class="text-lg text-gray-700 pt-0.5">Pour all the vegetables into the blender, add your Peak sweetened condensed milk, and blend until fine and smooth.</span></li>
+                <li class="flex gap-4 items-start"><span class="shrink-0 w-8 h-8 rounded-full bg-rsl-600 text-white font-bold flex items-center justify-center text-sm shadow">7</span><span class="text-lg text-gray-700 pt-0.5">Use a clean sieve to strain the juice.</span></li>
+                <li class="flex gap-4 items-start"><span class="shrink-0 w-8 h-8 rounded-full bg-rsl-600 text-white font-bold flex items-center justify-center text-sm shadow">8</span><span class="text-lg text-gray-700 pt-0.5">Refrigerate immediately. Serve chilled in a wine glass with 2 slices of whole-wheat bread — or as a dessert after a meal.</span></li>
+            </ol>
+        </div>
+
+        <!-- Uses + Health Benefits -->
+        <div class="grid md:grid-cols-2 gap-6 mt-14">
+            <div class="reveal rounded-2xl p-8 bg-gradient-to-br from-gold-500/10 to-gold-600/10 border border-gold-500/20">
+                <h3 class="font-display text-xl font-bold text-rsl-900 flex items-center gap-3">
+                    <i class="fa-solid fa-mug-hot text-gold-600"></i> Uses
+                </h3>
+                <ul class="mt-4 space-y-2 text-gray-700">
+                    <li class="flex items-start gap-2"><i class="fa-solid fa-circle text-[6px] text-gold-600 mt-2.5"></i><span>Can be taken alone as a refreshing drink.</span></li>
+                    <li class="flex items-start gap-2"><i class="fa-solid fa-circle text-[6px] text-gold-600 mt-2.5"></i><span>Can also be taken with bread as breakfast.</span></li>
+                </ul>
+            </div>
+            <div class="reveal rounded-2xl p-8 bg-gradient-to-br from-rsl-50 to-emerald-50 border border-rsl-200" data-stagger="1">
+                <h3 class="font-display text-xl font-bold text-rsl-900 flex items-center gap-3">
+                    <i class="fa-solid fa-heart-pulse text-rsl-700"></i> Health Benefits
+                </h3>
+                <ul class="mt-4 space-y-2 text-gray-700">
+                    <li class="flex items-start gap-2"><i class="fa-solid fa-circle text-[6px] text-rsl-700 mt-2.5"></i><span>Vegetables are high in vitamins and minerals — boosts immunity.</span></li>
+                    <li class="flex items-start gap-2"><i class="fa-solid fa-circle text-[6px] text-rsl-700 mt-2.5"></i><span>Coloured vegetables are high in Vitamin A — good for eye sight.</span></li>
+                    <li class="flex items-start gap-2"><i class="fa-solid fa-circle text-[6px] text-rsl-700 mt-2.5"></i><span>Peak milk is a complete milk — protein, vitamins, mineral salts to protect and repair the body.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="reveal mt-14 p-8 rounded-2xl bg-gradient-to-br from-rsl-800 via-rsl-900 to-black text-white text-center">
+            <div class="font-display text-2xl font-bold text-gold-400">Conclusion</div>
+            <p class="mt-3 text-white/90 leading-relaxed">
+                Peak milk can be used in diversified ways to boost the quality of our diet.
+            </p>
+        </div>
+
+        <div class="mt-14 pt-8 border-t border-gray-100 flex items-center justify-between reveal">
+            <div class="flex items-center gap-3 text-sm text-gray-500">
+                <span class="font-semibold uppercase tracking-widest text-xs">Category:</span>
+                <a href="/rslint/blog" class="px-3 py-1.5 rounded-full bg-rsl-50 text-rsl-700 font-semibold hover:bg-rsl-100 transition">Recipe</a>
+            </div>
+            <a href="/rslint/blog" class="text-sm text-rsl-700 font-semibold hover:text-rsl-900 flex items-center gap-2">Back to blog <i class="fa-solid fa-arrow-right text-xs"></i></a>
+        </div>
+    </div>
+</article>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

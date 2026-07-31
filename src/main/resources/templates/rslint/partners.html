@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Our Partners')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('partners')}"></nav>
+
+<section th:replace="~{rslint/fragments :: pagebanner('Our Partners', 'The manufacturers we source from. The retailers we supply. The distributors we grow with.', 'Partners')}"></section>
+
+<!-- MANUFACTURER PARTNERS -->
+<section class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+            <div class="eyebrow">Manufacturer Partners</div>
+            <h2 class="font-display text-4xl md:text-5xl font-bold text-gray-900 mt-4">The names behind the brands.</h2>
+            <p class="mt-4 text-lg text-gray-600">We work directly with global manufacturers whose commitment to quality mirrors our own.</p>
+        </div>
+
+        <div class="mt-14 grid md:grid-cols-2 gap-8">
+            <div class="reveal group rounded-3xl bg-gradient-to-br from-red-700 to-red-900 text-white p-10 card-hover relative overflow-hidden">
+                <div class="absolute -top-8 -right-8 w-56 h-56 rounded-full bg-white/10 blur-2xl"></div>
+                <div class="relative">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-semibold uppercase tracking-widest mb-6">Since inception</div>
+                    <div class="bg-white rounded-2xl p-6 mb-6 inline-flex items-center justify-center shadow-lg">
+                        <img src="/rslint/brands/nestle.png" alt="Nestlé" class="h-16 w-auto object-contain"/>
+                    </div>
+                    <div class="font-display text-5xl font-bold">Nestlé</div>
+                    <p class="mt-4 text-white/85 leading-relaxed">The world's largest food and beverage company. Our partnership brings Milo, Nescafé, Maggi, Nido, and Goldenmorn to Nigerian shelves at scale.</p>
+                    <div class="mt-6 flex flex-wrap gap-2">
+                        <span class="text-xs px-3 py-1 rounded-full bg-white/15">Milo</span>
+                        <span class="text-xs px-3 py-1 rounded-full bg-white/15">Nescafé</span>
+                        <span class="text-xs px-3 py-1 rounded-full bg-white/15">Maggi</span>
+                        <span class="text-xs px-3 py-1 rounded-full bg-white/15">Nido</span>
+                        <span class="text-xs px-3 py-1 rounded-full bg-white/15">Goldenmorn</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reveal group rounded-3xl bg-gradient-to-br from-blue-700 to-blue-900 text-white p-10 card-hover relative overflow-hidden">
+                <div class="absolute -top-8 -right-8 w-56 h-56 rounded-full bg-white/10 blur-2xl"></div>
+                <div class="relative">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-semibold uppercase tracking-widest mb-6">Strategic partner</div>
+                    <div class="bg-white rounded-2xl p-6 mb-6 inline-flex items-center justify-center shadow-lg">
+                        <img src="/rslint/brands/frieslandcampina.png" alt="FrieslandCampina" class="h-16 w-auto object-contain"/>
+                    </div>
+                    <div class="font-display text-4xl md:text-5xl font-bold">FrieslandCampina WAMCO</div>
+                    <p class="mt-4 text-white/85 leading-relaxed">The dairy leader trusted for generations. Our partnership powers the distribution of Peak Milk, 3 Crowns, and Frisco Gold across Nigeria.</p>
+                    <div class="mt-6 flex flex-wrap gap-2">
+                        <span class="text-xs px-3 py-1 rounded-full bg-white/15">Peak Milk</span>
+                        <span class="text-xs px-3 py-1 rounded-full bg-white/15">3 Crowns</span>
+                        <span class="text-xs px-3 py-1 rounded-full bg-white/15">Frisco Gold</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MAJOR RETAIL CUSTOMERS -->
+<section class="py-24 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+            <div class="eyebrow">Retail Customers</div>
+            <h2 class="font-display text-4xl md:text-5xl font-bold text-gray-900 mt-4">On the shelves of Nigeria's biggest names.</h2>
+            <p class="mt-4 text-lg text-gray-600">If you've bought Milo at a modern supermarket in Nigeria, there's a good chance we put it there.</p>
+        </div>
+
+        <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="reveal p-10 rounded-3xl bg-white border border-gray-100 card-hover text-center">
+                <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white mb-4">
+                    <i class="fa-solid fa-cart-shopping text-3xl"></i>
+                </div>
+                <div class="font-display text-2xl font-bold text-gray-900">Shoprite</div>
+                <div class="text-sm text-gray-500 mt-1">Nationwide supermarket chain</div>
+            </div>
+            <div class="reveal p-10 rounded-3xl bg-white border border-gray-100 card-hover text-center">
+                <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white mb-4">
+                    <i class="fa-solid fa-basket-shopping text-3xl"></i>
+                </div>
+                <div class="font-display text-2xl font-bold text-gray-900">Park 'n' Shop</div>
+                <div class="text-sm text-gray-500 mt-1">Trusted grocery brand</div>
+            </div>
+            <div class="reveal p-10 rounded-3xl bg-white border border-gray-100 card-hover text-center">
+                <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white mb-4">
+                    <i class="fa-solid fa-store text-3xl"></i>
+                </div>
+                <div class="font-display text-2xl font-bold text-gray-900">Game</div>
+                <div class="text-sm text-gray-500 mt-1">Discount retail chain</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GROWING DISTRIBUTORS -->
+<section class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl reveal">
+            <div class="eyebrow">Growing Distributors</div>
+            <h2 class="font-display text-4xl md:text-5xl font-bold text-gray-900 mt-4">Building the next generation of Nigerian traders.</h2>
+            <p class="mt-4 text-lg text-gray-600">We invest in ambitious distributors — training them, supplying them, and helping them scale.</p>
+        </div>
+
+        <div class="mt-14 grid md:grid-cols-3 gap-6">
+            <div class="reveal p-8 rounded-3xl bg-gradient-to-br from-rsl-600 to-rsl-800 text-white card-hover">
+                <div class="text-3xl mb-4"><i class="fa-solid fa-briefcase text-gold-400"></i></div>
+                <div class="font-display text-2xl font-bold">Triple O Enterprise</div>
+                <p class="text-white/80 mt-3">A growing distribution partner expanding presence across Lagos wholesale networks.</p>
+            </div>
+            <div class="reveal p-8 rounded-3xl bg-gradient-to-br from-gold-500 to-gold-600 text-rsl-900 card-hover">
+                <div class="text-3xl mb-4"><i class="fa-solid fa-briefcase"></i></div>
+                <div class="font-display text-2xl font-bold">Olly B Stores</div>
+                <p class="text-rsl-900/80 mt-3">Multi-location retail operator scaling steadily with RSL's brand portfolio.</p>
+            </div>
+            <div class="reveal p-8 rounded-3xl bg-gradient-to-br from-gray-800 to-gray-900 text-white card-hover">
+                <div class="text-3xl mb-4"><i class="fa-solid fa-briefcase text-gold-400"></i></div>
+                <div class="font-display text-2xl font-bold">Toluwani Stores</div>
+                <p class="text-white/80 mt-3">Community-first distributor bringing quality FMCG to underserved neighborhoods.</p>
+            </div>
+        </div>
+
+        <div class="mt-16 reveal rounded-3xl border-2 border-dashed border-rsl-300 p-10 md:p-14 bg-rsl-50/50 text-center">
+            <i class="fa-solid fa-plus-circle text-4xl text-rsl-600 mb-4"></i>
+            <h3 class="font-display text-3xl font-bold text-gray-900">Could your name be next?</h3>
+            <p class="mt-3 text-gray-600 max-w-2xl mx-auto">We're always looking for hungry, principled distribution partners who share our obsession with quality and customer service.</p>
+            <a href="/rslint/distributors" class="btn-primary mt-6">Apply to Join Our Network <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

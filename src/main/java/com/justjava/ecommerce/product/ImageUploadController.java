@@ -21,7 +21,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/vendor/images")
-@PreAuthorize("hasRole('VENDOR')")
+@PreAuthorize("hasAnyRole('VENDOR', 'SUB_VENDOR')")
 public class ImageUploadController {
 
     private static final Set<String> ALLOWED_TYPES = Set.of("image/jpeg", "image/png", "image/webp", "image/gif");

@@ -1,5 +1,10 @@
 package com.justjava.ecommerce.user;
 
+import com.justjava.ecommerce.vendor.Vendor;
+import com.justjava.ecommerce.vendor.VendorMember;
+import com.justjava.ecommerce.vendor.VendorMemberRepository;
+import com.justjava.ecommerce.vendor.VendorMemberRole;
+import com.justjava.ecommerce.vendor.VendorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -11,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserSyncService {
 
-    private final UserRepository userRepository;
+    private final UserRepository         userRepository;
+    private final VendorRepository       vendorRepository;
+    private final VendorMemberRepository vendorMemberRepository;
 
     @Transactional
     public void syncUser(OidcUser oidcUser, String role) {
@@ -31,29 +38,29 @@ public class UserSyncService {
                 existing.setEmail(email);
                 existing.setFullName(fullName);
                 if (phoneNumber != null && !phoneNumber.isBlank()) existing.setPhone(phoneNumber);
-                if (isVendor) {
-                    if (companyName    != null && !companyName.isBlank())    existing.setStoreName(companyName);
-                    if (websiteUrl     != null && !websiteUrl.isBlank())     existing.setWebsiteUrl(websiteUrl);
-                    if (companyLogoUrl != null && !companyLogoUrl.isBlank()) existing.setCompanyLogoUrl(companyLogoUrl);
+                if ("PENDING_ACTIVATION".equals(existing.getStatus())) {
+                    existing.setStatus("ACTIVE");
                 }
                 userRepository.save(existing);
+                if (isVendor) {
+                    updateVendorCompany(existing, companyName, websiteUrl, companyLogoUrl);
+                }
                 log.debug("Updated user {} in local DB", email);
             },
             () -> {
-                User.UserBuilder builder = User.builder()
+                User saved = userRepository.save(User.builder()
                         .keycloakId(keycloakId)
                         .email(email)
                         .fullName(fullName)
                         .phone(phoneNumber)
                         .role(role)
-                        .status("ACTIVE");
-                if (isVendor) {
-                    builder.storeName(companyName)
-                           .websiteUrl(websiteUrl)
-                           .companyLogoUrl(companyLogoUrl);
-                }
-                userRepository.save(builder.build());
+                        .status("ACTIVE")
+                        .build());
                 log.info("Created new local user: {} ({})", email, role);
+
+                if (isVendor) {
+                    createVendorCompany(saved, companyName, websiteUrl, companyLogoUrl);
+                }
             }
         );
     }
@@ -74,6 +81,53 @@ public class UserSyncService {
                 log.info("Created phone-registered user: {} (CUSTOMER)", phone);
             }
         );
+    }
+
+    private void createVendorCompany(User owner, String companyName, String websiteUrl, String companyLogoUrl) {
+        String name = (companyName != null && !companyName.isBlank())
+                ? companyName
+                : (owner.getFullName() != null ? owner.getFullName() : "Vendor");
+        String slug = slugify(name) + "-" + owner.getId().toString().substring(0, 8);
+
+        Vendor vendor = vendorRepository.save(Vendor.builder()
+                .name(name)
+                .slug(slug)
+                .owner(owner)
+                .websiteUrl(websiteUrl)
+                .companyLogoUrl(companyLogoUrl)
+                .build());
+
+        vendorMemberRepository.save(VendorMember.builder()
+                .vendor(vendor)
+                .user(owner)
+                .memberRole(VendorMemberRole.VENDOR_ADMIN)
+                .build());
+
+        log.info("Created vendor company '{}' (slug={}) for user {}", name, slug, owner.getEmail());
+    }
+
+    private void updateVendorCompany(User owner, String companyName, String websiteUrl, String companyLogoUrl) {
+        vendorRepository.findByOwnerId(owner.getId()).ifPresent(vendor -> {
+            boolean changed = false;
+            if (companyName != null && !companyName.isBlank() && !companyName.equals(vendor.getName())) {
+                vendor.setName(companyName);
+                changed = true;
+            }
+            if (websiteUrl != null && !websiteUrl.isBlank() && !websiteUrl.equals(vendor.getWebsiteUrl())) {
+                vendor.setWebsiteUrl(websiteUrl);
+                changed = true;
+            }
+            if (companyLogoUrl != null && !companyLogoUrl.isBlank() && !companyLogoUrl.equals(vendor.getCompanyLogoUrl())) {
+                vendor.setCompanyLogoUrl(companyLogoUrl);
+                changed = true;
+            }
+            if (changed) vendorRepository.save(vendor);
+        });
+    }
+
+    private String slugify(String value) {
+        String s = value.toLowerCase().replaceAll("[^a-z0-9]+", "-");
+        return s.replaceAll("^-|-$", "");
     }
 
     private String claim(OidcUser oidcUser, String name) {

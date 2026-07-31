@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:text="'Vendor — ' + ${vendor.storeName ?: vendor.fullName ?: vendor.email} + ' | Admin'">Vendor Details</title>
+    <title th:text="'Vendor — ' + ${vendor.name ?: owner?.fullName ?: owner?.email} + ' | Admin'">Vendor Details</title>
     <th:block th:replace="~{fragments/head :: resources}"/>
     <style>
         .tab-btn { position: relative; }
@@ -41,8 +41,8 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-bold text-on-surface"
-                        th:text="${vendor.storeName ?: vendor.fullName ?: 'Unnamed vendor'}">Vendor</h1>
-                    <p class="text-sm text-on-surface-variant" th:text="${vendor.email ?: '—'}">email</p>
+                        th:text="${vendor.name ?: owner?.fullName ?: 'Unnamed vendor'}">Vendor</h1>
+                    <p class="text-sm text-on-surface-variant" th:text="${owner?.email ?: '—'}">email</p>
                     <a th:if="${vendor.websiteUrl}" th:href="${vendor.websiteUrl}" target="_blank" rel="noopener"
                        class="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                         <span class="material-symbols-outlined text-sm">language</span>
@@ -51,11 +51,11 @@
                 </div>
             </div>
             <div>
-                <span th:if="${vendor.status == 'ACTIVE'}"
+                <span th:if="${vendor.status?.name() == 'ACTIVE'}"
                       class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Active</span>
-                <span th:if="${vendor.status != 'ACTIVE'}"
+                <span th:if="${vendor.status?.name() != 'ACTIVE'}"
                       class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-surface-container text-on-surface-variant"
-                      th:text="${vendor.status}">Status</span>
+                      th:text="${vendor.status?.name()}">Status</span>
             </div>
         </div>
     </div>
@@ -125,15 +125,15 @@
             <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm">
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Contact name</dt>
-                    <dd class="font-medium" th:text="${vendor.fullName ?: '—'}">—</dd>
+                    <dd class="font-medium" th:text="${owner?.fullName ?: '—'}">—</dd>
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Email</dt>
-                    <dd class="font-medium" th:text="${vendor.email ?: '—'}">—</dd>
+                    <dd class="font-medium" th:text="${owner?.email ?: '—'}">—</dd>
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Phone</dt>
-                    <dd class="font-medium" th:text="${vendor.phone ?: '—'}">—</dd>
+                    <dd class="font-medium" th:text="${owner?.phone ?: '—'}">—</dd>
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Joined</dt>
@@ -141,7 +141,7 @@
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Store name</dt>
-                    <dd class="font-medium" th:text="${vendor.storeName ?: '—'}">—</dd>
+                    <dd class="font-medium" th:text="${vendor.name ?: '—'}">—</dd>
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Bank</dt>
@@ -347,19 +347,19 @@
             <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm">
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Company name</dt>
-                    <dd class="font-medium" th:text="${vendor.storeName ?: vendor.fullName ?: '—'}">—</dd>
+                    <dd class="font-medium" th:text="${vendor.name ?: owner?.fullName ?: '—'}">—</dd>
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Contact email</dt>
-                    <dd class="font-medium" th:text="${vendor.email ?: '—'}">—</dd>
+                    <dd class="font-medium" th:text="${owner?.email ?: '—'}">—</dd>
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Contact phone</dt>
-                    <dd class="font-medium" th:text="${vendor.phone ?: '—'}">—</dd>
+                    <dd class="font-medium" th:text="${owner?.phone ?: '—'}">—</dd>
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Status</dt>
-                    <dd class="font-medium" th:text="${vendor.status}">—</dd>
+                    <dd class="font-medium" th:text="${vendor.status?.name()}">—</dd>
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Joined</dt>

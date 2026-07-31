@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Vendors — Admin | NaijaMart</title>
+    <title>Vendors — Admin | Pinepetosan Marketplace</title>
     <th:block th:replace="~{fragments/head :: resources}" />
 </head>
 <body class="bg-surface-bright text-on-surface overflow-x-hidden">
@@ -41,14 +41,14 @@
                             <span th:unless="${vendor.companyLogoUrl}" class="material-symbols-outlined text-secondary text-lg">storefront</span>
                         </div>
                         <span class="font-medium text-on-surface"
-                              th:text="${vendor.storeName != null and !#strings.isEmpty(vendor.storeName)} ? ${vendor.storeName} : ${vendor.fullName ?: '—'}">Vendor</span>
+                              th:text="${vendor.name != null and !#strings.isEmpty(vendor.name)} ? ${vendor.name} : ${vendor.owner?.fullName ?: '—'}">Vendor</span>
                     </div>
                 </td>
-                <td class="px-6 py-4 text-on-surface-variant" th:text="${vendor.email ?: '—'}"></td>
-                <td class="px-6 py-4 text-on-surface-variant" th:text="${vendor.phone ?: '—'}"></td>
+                <td class="px-6 py-4 text-on-surface-variant" th:text="${vendor.owner?.email ?: '—'}"></td>
+                <td class="px-6 py-4 text-on-surface-variant" th:text="${vendor.owner?.phone ?: '—'}"></td>
                 <td class="px-6 py-4">
-                    <span th:if="${vendor.status == 'ACTIVE'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Active</span>
-                    <span th:if="${vendor.status != 'ACTIVE'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container text-on-surface-variant" th:text="${vendor.status}">Status</span>
+                    <span th:if="${vendor.status?.name() == 'ACTIVE'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Active</span>
+                    <span th:if="${vendor.status?.name() != 'ACTIVE'}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container text-on-surface-variant" th:text="${vendor.status?.name()}">Status</span>
                 </td>
                 <td class="px-6 py-4 text-on-surface-variant" th:text="${#temporals.format(vendor.createdAt, 'dd MMM yyyy')}"></td>
                 <td class="px-6 py-4 text-right">

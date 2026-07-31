@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Gallery')}"/>
+    <style>
+        .gal-tile { break-inside: avoid; }
+        .gal-tile img { transition: transform .7s cubic-bezier(.22,1,.36,1), filter .5s ease; }
+        .gal-tile:hover img { transform: scale(1.06); filter: saturate(1.15); }
+        .gal-cap {
+            position: absolute; inset: auto 0 0 0;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+            color: white; opacity: 0; transition: opacity .35s ease;
+        }
+        .gal-tile:hover .gal-cap { opacity: 1; }
+    </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('media')}"></nav>
+
+<section th:replace="~{rslint/fragments :: pagebanner('Gallery', 'Moments from the field — the awards, the shelves, the partners, and the products that built RSL.', 'Gallery')}"></section>
+
+<!-- ========================== INTRO ========================== -->
+<section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+        <div class="eyebrow justify-center inline-flex">Our Story in Frames</div>
+        <h2 class="mt-4 font-display text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+            A decade of <em class="italic text-rsl-700">quiet execution.</em>
+        </h2>
+        <p class="mt-5 text-gray-600 leading-relaxed">
+            From award ceremonies to warehouse floors, from product spotlights to team moments —
+            a look at what happens behind Nigeria's most trusted FMCG distributor.
+        </p>
+    </div>
+</section>
+
+<!-- ========================== MASONRY GALLERY ========================== -->
+<section class="pb-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100">
+                <img src="/rslint/gallery/award-invincible-general-trade.jpg" alt="Invincible in General Trade award" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">Award</div><div class="font-display text-lg font-bold">Invincible in General Trade</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100" data-stagger="1">
+                <img src="/rslint/gallery/team-field.jpg" alt="Team on the field" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">Field Team</div><div class="font-display text-lg font-bold">On the ground</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100" data-stagger="2">
+                <img src="/rslint/gallery/award-excellent-2014.jpg" alt="Excellent Award 2014" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">Award</div><div class="font-display text-lg font-bold">Excellent Award 2014</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100">
+                <img src="/rslint/gallery/onsite-hq-fleet.jpg" alt="RSL headquarters with fleet on-site" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">On-site</div><div class="font-display text-lg font-bold">HQ &amp; fleet on the move</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100" data-stagger="1">
+                <img src="/rslint/gallery/award-field-marketing.jpg" alt="Field Marketing Award" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">Award</div><div class="font-display text-lg font-bold">Field Marketing Award</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100" data-stagger="2">
+                <img src="/rslint/gallery/team-family.jpg" alt="Team moment" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">Team</div><div class="font-display text-lg font-bold">The RSL family</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100">
+                <img src="/rslint/gallery/award-brand-experience.jpg" alt="Brand Experience Award" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">Award</div><div class="font-display text-lg font-bold">Brand Experience Award</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100" data-stagger="1">
+                <img src="/rslint/gallery/award-wamco.jpg" alt="FrieslandCampina WAMCO award ceremony" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">Award</div><div class="font-display text-lg font-bold">Recognised by WAMCO</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100" data-stagger="2">
+                <img src="/rslint/gallery/onsite-depot-back.jpg" alt="RSL premises rear view" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">On-site</div><div class="font-display text-lg font-bold">Behind the depot</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100">
+                <img src="/rslint/gallery/onsite-at-work.png" alt="RSL team at work" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">On-site</div><div class="font-display text-lg font-bold">RSL at work</div></div>
+            </div>
+
+            <div class="gal-tile reveal relative rounded-2xl overflow-hidden shadow-lg bg-gray-100" data-stagger="1">
+                <img src="/rslint/gallery/field-shelves.jpg" alt="Retail shelves stocked with RSL-distributed brands" class="w-full h-auto object-cover"/>
+                <div class="gal-cap"><div class="text-xs uppercase tracking-widest text-gold-300 font-bold">Field</div><div class="font-display text-lg font-bold">Stocked &amp; ready</div></div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ========================== CTA ========================== -->
+<section class="pb-28">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale rounded-[2rem] bg-gradient-to-br from-rsl-800 via-rsl-900 to-black text-white p-10 md:p-14 shadow-2xl text-center relative overflow-hidden">
+            <div class="absolute inset-0 mesh-bg opacity-30"></div>
+            <div class="relative">
+                <div class="eyebrow justify-center inline-flex" style="color:#f4d35e;">See more</div>
+                <h3 class="mt-4 font-display text-3xl md:text-4xl font-black leading-tight">
+                    Behind every photo, a <em class="italic text-gold-400">working relationship.</em>
+                </h3>
+                <p class="mt-4 text-white/80 max-w-xl mx-auto">
+                    Want to see what RSL can do for your brand or your business? Talk to us.
+                </p>
+                <a href="/rslint/contact" class="mt-8 btn-gold inline-flex" data-magnetic>
+                    Get in touch <i class="fa-solid fa-arrow-right text-xs"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

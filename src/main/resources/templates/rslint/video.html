@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{rslint/fragments :: pagehead('Video')}"/>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<nav th:replace="~{rslint/fragments :: navbar('media')}"></nav>
+
+<section th:replace="~{rslint/fragments :: pagebanner('Video', 'Product spotlights, brand campaigns, and stories from the field — coming soon.', 'Video')}"></section>
+
+<!-- ========================== COMING SOON HERO ========================== -->
+<section class="py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="reveal-scale relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-rsl-800 via-rsl-900 to-black text-white shadow-2xl">
+            <div class="absolute inset-0 mesh-bg opacity-30"></div>
+            <div class="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-gold-500/20 blur-3xl"></div>
+            <div class="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full bg-rsl-500/20 blur-3xl"></div>
+
+            <div class="relative p-10 md:p-20 text-center">
+                <div class="eyebrow justify-center inline-flex" style="color:#f4d35e;">Coming Soon</div>
+                <h2 class="mt-6 font-display text-4xl md:text-6xl font-black leading-tight">
+                    Video stories, <em class="italic text-gold-400">in production.</em>
+                </h2>
+                <p class="mt-6 text-white/80 leading-relaxed text-lg max-w-2xl mx-auto">
+                    We're putting together short films about the brands we carry, the people who move them,
+                    and the corner shops that keep Nigeria fed. Check back soon.
+                </p>
+
+                <!-- Fake player mockup -->
+                <div class="mt-14 max-w-3xl mx-auto anim-floaty">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl bg-black/40 border border-white/10 backdrop-blur">
+                        <div class="aspect-video bg-gradient-to-br from-rsl-900 via-black to-rsl-950 flex items-center justify-center relative">
+                            <div class="absolute inset-0 mesh-bg opacity-40"></div>
+                            <div class="relative flex flex-col items-center">
+                                <div class="relative">
+                                    <div class="absolute inset-0 rounded-full bg-gold-400/40 animate-ping"></div>
+                                    <div class="relative w-24 h-24 rounded-full bg-gold-500 flex items-center justify-center shadow-2xl">
+                                        <i class="fa-solid fa-play text-rsl-900 text-3xl ml-1.5"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-6 text-xs uppercase tracking-[.3em] text-white/60 font-bold">Reel · 00:00 / 00:00</div>
+                            </div>
+                            <!-- Control bar -->
+                            <div class="absolute bottom-0 inset-x-0 h-14 bg-gradient-to-t from-black/80 to-transparent flex items-end px-6 pb-3">
+                                <div class="flex-1 flex items-center gap-3">
+                                    <i class="fa-solid fa-play text-white/60 text-xs"></i>
+                                    <div class="flex-1 h-1 rounded-full bg-white/15 overflow-hidden">
+                                        <div class="h-full w-0 bg-gold-500 rounded-full"></div>
+                                    </div>
+                                    <i class="fa-solid fa-volume-high text-white/60 text-xs"></i>
+                                    <i class="fa-solid fa-expand text-white/60 text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-14 grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-left">
+                    <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+                        <i class="fa-solid fa-video text-gold-400 text-xl mb-3"></i>
+                        <div class="font-display font-bold">Brand Spotlights</div>
+                        <div class="text-xs text-white/60 mt-1">Milo, Peak, Maggi, Nescafé — the products, close up.</div>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+                        <i class="fa-solid fa-truck text-gold-400 text-xl mb-3"></i>
+                        <div class="font-display font-bold">Distribution In Motion</div>
+                        <div class="text-xs text-white/60 mt-1">From our warehouse to your shelf, in a day.</div>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-white/5 border border-white/10">
+                        <i class="fa-solid fa-users text-gold-400 text-xl mb-3"></i>
+                        <div class="font-display font-bold">Partner Stories</div>
+                        <div class="text-xs text-white/60 mt-1">The distributors, retailers, and traders we serve.</div>
+                    </div>
+                </div>
+
+                <div class="mt-12 flex flex-wrap justify-center gap-3">
+                    <a href="/rslint/contact" class="btn-gold" data-magnetic>Notify me when live</a>
+                    <a href="/rslint/gallery" class="btn-ghost">Browse the Gallery <i class="fa-solid fa-arrow-right text-xs"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{rslint/fragments :: pagefooter}"></footer>
+<th:block th:replace="~{rslint/fragments :: scripts}"/>
+</body>
+</html>

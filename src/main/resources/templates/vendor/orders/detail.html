@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Order Detail — NaijaMart Vendor</title>
+    <title>Order Detail — Pinepetosan Marketplace Vendor</title>
     <th:block th:replace="~{fragments/head :: resources}"/>
 </head>
 <body class="bg-surface-bright text-on-surface overflow-x-hidden">
@@ -60,11 +60,18 @@
                     <p class="text-red-700 text-sm">This order was cancelled.</p>
                 </div>
             </div>
-            <div th:case="'DELIVERED'" class="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
-                <span class="material-symbols-outlined text-2xl text-green-600" style="font-variation-settings:'FILL' 1;">local_shipping</span>
+            <div th:case="'DELIVERED'" class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
+                <span class="material-symbols-outlined text-2xl text-amber-600" style="font-variation-settings:'FILL' 1;">local_shipping</span>
                 <div>
-                    <p class="font-bold text-green-800">Delivered</p>
-                    <p class="text-green-700 text-sm">This order has been delivered to the customer.</p>
+                    <p class="font-bold text-amber-800">Delivered — Awaiting Customer Confirmation</p>
+                    <p class="text-amber-700 text-sm">The customer must confirm delivery before this order settles.</p>
+                </div>
+            </div>
+            <div th:case="'CONFIRMED'" class="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
+                <span class="material-symbols-outlined text-2xl text-green-600" style="font-variation-settings:'FILL' 1;">task_alt</span>
+                <div>
+                    <p class="font-bold text-green-800">Confirmed</p>
+                    <p class="text-green-700 text-sm">Customer has confirmed delivery. Earnings are now settled.</p>
                 </div>
             </div>
             <div th:case="*" class="bg-surface-container-low border border-outline-variant/30 rounded-xl p-4 flex items-center gap-3">
@@ -156,7 +163,8 @@
                                     <span th:case="'CANCELLED'"       class="bg-red-100    text-red-700    px-2 py-0.5 rounded-full">Cancelled</span>
                                     <span th:case="'PROCESSING'"      class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">Processing</span>
                                     <span th:case="'SHIPPED'"         class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">Shipped</span>
-                                    <span th:case="'DELIVERED'"       class="bg-green-100  text-green-700  px-2 py-0.5 rounded-full">Delivered</span>
+                                    <span th:case="'DELIVERED'"       class="bg-amber-100  text-amber-700  px-2 py-0.5 rounded-full">Delivered</span>
+                                    <span th:case="'CONFIRMED'"       class="bg-green-100  text-green-700  px-2 py-0.5 rounded-full">Confirmed</span>
                                     <span th:case="*"                 class="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full" th:text="${order.status}">Status</span>
                                 </span>
                             </dd>

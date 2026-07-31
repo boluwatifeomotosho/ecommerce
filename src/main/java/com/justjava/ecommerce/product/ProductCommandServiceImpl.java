@@ -9,6 +9,7 @@ import com.justjava.ecommerce.product.ProductStatus;
 import com.justjava.ecommerce.category.CategoryRepository;
 import com.justjava.ecommerce.product.ProductRepository;
 import com.justjava.ecommerce.user.UserRepository;
+import com.justjava.ecommerce.vendor.VendorRepository;
 import com.justjava.ecommerce.product.ProductCommandService;
 import com.justjava.ecommerce.util.SlugUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,13 +30,16 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     private final ProductRepository  productRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository     userRepository;
+    private final VendorRepository   vendorRepository;
     private final ProductMapper      mapper;
     private final SlugUtils          slugUtils;
 
     @Override
-    public ProductDetailDto create(UUID vendorId, SaveProductRequest request) {
-        var vendor   = userRepository.findById(vendorId)
+    public ProductDetailDto create(UUID vendorId, UUID createdByUserId, SaveProductRequest request) {
+        var vendor   = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new EntityNotFoundException("Vendor not found: " + vendorId));
+        var createdBy = userRepository.findById(createdByUserId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + createdByUserId));
         var category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found: " + request.getCategoryId()));
 
@@ -46,6 +50,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
         Product product = Product.builder()
                 .vendor(vendor)
+                .createdBy(createdBy)
                 .category(category)
                 .name(request.getName())
                 .slug(slug)
@@ -65,8 +70,12 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
     @Override
     public ProductDetailDto update(UUID productId, UUID vendorId, SaveProductRequest request) {
-        Product product = productRepository.findByIdAndVendorId(productId, vendorId)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found or not owned by vendor"));
+        return update(productId, vendorId, null, request);
+    }
+
+    @Override
+    public ProductDetailDto update(UUID productId, UUID vendorId, UUID enforceCreatorUserId, SaveProductRequest request) {
+        Product product = loadProduct(productId, vendorId, enforceCreatorUserId);
 
         ProductStatus originalStatus = product.getStatus();
         if (!originalStatus.isEditable()) {
@@ -108,8 +117,12 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
     @Override
     public void submitForReview(UUID productId, UUID vendorId) {
-        Product product = productRepository.findByIdAndVendorId(productId, vendorId)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found or not owned by vendor"));
+        submitForReview(productId, vendorId, null);
+    }
+
+    @Override
+    public void submitForReview(UUID productId, UUID vendorId, UUID enforceCreatorUserId) {
+        Product product = loadProduct(productId, vendorId, enforceCreatorUserId);
 
         if (!product.getStatus().canSubmitForReview()) {
             throw new IllegalStateException("Cannot submit product with status " + product.getStatus());
@@ -122,17 +135,24 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
     @Override
     public void archive(UUID productId, UUID vendorId) {
-        Product product = productRepository.findByIdAndVendorId(productId, vendorId)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found or not owned by vendor"));
+        archive(productId, vendorId, null);
+    }
 
+    @Override
+    public void archive(UUID productId, UUID vendorId, UUID enforceCreatorUserId) {
+        Product product = loadProduct(productId, vendorId, enforceCreatorUserId);
         product.setStatus(ProductStatus.ARCHIVED);
         productRepository.save(product);
     }
 
     @Override
     public void unarchive(UUID productId, UUID vendorId) {
-        Product product = productRepository.findByIdAndVendorId(productId, vendorId)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found or not owned by vendor"));
+        unarchive(productId, vendorId, null);
+    }
+
+    @Override
+    public void unarchive(UUID productId, UUID vendorId, UUID enforceCreatorUserId) {
+        Product product = loadProduct(productId, vendorId, enforceCreatorUserId);
 
         if (product.getStatus() != ProductStatus.ARCHIVED) {
             throw new IllegalStateException("Only archived products can be unarchived");
@@ -143,6 +163,15 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
+
+    private Product loadProduct(UUID productId, UUID vendorId, UUID enforceCreatorUserId) {
+        if (enforceCreatorUserId == null) {
+            return productRepository.findByIdAndVendorId(productId, vendorId)
+                    .orElseThrow(() -> new EntityNotFoundException("Product not found or not owned by vendor"));
+        }
+        return productRepository.findByIdAndVendorIdAndCreatedById(productId, vendorId, enforceCreatorUserId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found or not authored by you"));
+    }
 
     private List<ProductImage> buildImages(List<String> urls) {
         if (urls == null || urls.isEmpty()) return new ArrayList<>();

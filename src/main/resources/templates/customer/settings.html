@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Settings — NaijaMart</title>
+    <title>Settings — Pinepetosan Marketplace</title>
     <th:block th:replace="~{fragments/head :: resources}"/>
 </head>
 <body class="bg-surface-bright text-on-surface overflow-x-hidden">
@@ -137,7 +137,9 @@
                                 Edit
                             </button>
                             <form th:action="@{/customer/settings/addresses/{id}/delete(id=${addr.id})}" method="post"
-                                  onsubmit="return confirm('Remove this address?')">
+                                  data-confirm="Remove this address?"
+                                  data-confirm-title="Remove address"
+                                  data-confirm-btn="Remove">
                                 <button type="submit"
                                         class="text-xs font-semibold text-error hover:text-error/80 transition-colors">
                                     Remove

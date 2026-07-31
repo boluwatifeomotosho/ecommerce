@@ -7,6 +7,7 @@ import com.justjava.ecommerce.product.ProductApprovalService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,25 +23,50 @@ public class ProductApprovalServiceImpl implements ProductApprovalService {
     private final ProductRepository productRepository;
 
     @Override
-    public void approve(UUID productId) {
+    public void approve(UUID productId, UUID vendorId) {
         Product product = getPendingProduct(productId);
+        verifyOwnership(product, vendorId);
         product.setStatus(ProductStatus.PUBLISHED);
         product.setRejectionReason(null);
         product.setPublishedAt(LocalDateTime.now());
         productRepository.save(product);
-        log.info("Product {} approved and published", productId);
+        log.info("Product {} approved and published by vendor {}", productId, vendorId);
     }
 
     @Override
-    public void reject(UUID productId, String reason) {
+    public void reject(UUID productId, UUID vendorId, String reason) {
         if (reason == null || reason.isBlank()) {
             throw new IllegalArgumentException("Rejection reason must be provided");
         }
         Product product = getPendingProduct(productId);
+        verifyOwnership(product, vendorId);
         product.setStatus(ProductStatus.REJECTED);
         product.setRejectionReason(reason.trim());
         productRepository.save(product);
-        log.info("Product {} rejected: {}", productId, reason);
+        log.info("Product {} rejected by vendor {}: {}", productId, vendorId, reason);
+    }
+
+    private void verifyOwnership(Product product, UUID vendorId) {
+        if (product.getVendor() == null || !product.getVendor().getId().equals(vendorId)) {
+            throw new AccessDeniedException(
+                    "Product " + product.getId() + " does not belong to vendor " + vendorId);
+        }
+    }
+
+    @Override
+    public void takedown(UUID productId, String reason) {
+        if (reason == null || reason.isBlank()) {
+            throw new IllegalArgumentException("A reason must be provided for taking a product down");
+        }
+        Product product = productRepository.findByIdWithDetails(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found: " + productId));
+        if (product.getStatus() == ProductStatus.ARCHIVED) {
+            throw new IllegalStateException("Product is already archived");
+        }
+        product.setStatus(ProductStatus.ARCHIVED);
+        product.setRejectionReason(reason.trim());
+        productRepository.save(product);
+        log.info("Product {} taken down by admin: {}", productId, reason);
     }
 
     private Product getPendingProduct(UUID productId) {

@@ -22,6 +22,9 @@ public interface OrderService {
     /** Cancels a PENDING_PAYMENT order by customer request. */
     void cancelOrder(UUID orderId, UUID customerId);
 
+    /** Customer confirms that a DELIVERED order actually reached them, transitioning it to CONFIRMED. */
+    void confirmDelivery(UUID orderId, UUID customerId);
+
     OrderDto getOrderById(UUID orderId, UUID customerId);
 
     Page<OrderDto> getCustomerOrders(UUID customerId, OrderStatus statusFilter, Pageable pageable);
@@ -32,9 +35,18 @@ public interface OrderService {
 
     Page<OrderDto> getVendorOrders(UUID vendorId, OrderStatus statusFilter, Pageable pageable);
 
+    /** Same as {@link #getVendorOrders} but restricted to orders that contain a product created by {@code createdByUserId}. */
+    Page<OrderDto> getVendorOrdersForCreator(UUID vendorId, UUID createdByUserId, OrderStatus statusFilter, Pageable pageable);
+
     OrderDto getOrderByIdForVendor(UUID orderId, UUID vendorId);
+
+    /** Requires the order to contain at least one product created by {@code createdByUserId}. */
+    OrderDto getOrderByIdForVendorCreator(UUID orderId, UUID vendorId, UUID createdByUserId);
 
     void updateOrderStatusByAdmin(UUID orderId, OrderStatus newStatus);
 
     void updateOrderStatusByVendor(UUID orderId, UUID vendorId, OrderStatus newStatus);
+
+    /** Only permits the update if the order contains a product created by {@code createdByUserId}. */
+    void updateOrderStatusByVendorCreator(UUID orderId, UUID vendorId, UUID createdByUserId, OrderStatus newStatus);
 }

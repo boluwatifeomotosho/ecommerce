@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="'Customer — ' + ${customer.fullName ?: customer.email} + ' | Admin'">Customer Details</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('users', ${name}, ${email})}"></aside>
+
+<div class="ml-0 md:ml-[280px] mt-16 md:mt-0 flex-1 p-8">
+
+    <div class="mb-6">
+        <a th:href="@{/admin/users}"
+           class="inline-flex items-center gap-1 text-sm text-on-surface-variant hover:text-primary transition-colors mb-3">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            Back to customers
+        </a>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-primary text-2xl">person</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-on-surface"
+                        th:text="${customer.fullName ?: 'Unnamed customer'}">Customer</h1>
+                    <p class="text-sm text-on-surface-variant" th:text="${customer.email ?: '—'}">email</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span th:if="${customer.status == 'ACTIVE'}"
+                      class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                    <span class="material-symbols-outlined text-[14px]">check_circle</span>Active
+                </span>
+                <span th:if="${customer.status != 'ACTIVE'}"
+                      class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-surface-container text-on-surface-variant"
+                      th:text="${customer.status}">Status</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile card -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 shadow-[0px_4px_20px_rgba(30,41,59,0.05)]">
+            <h2 class="text-sm font-semibold text-on-surface-variant mb-4 uppercase tracking-wider">Profile</h2>
+            <dl class="space-y-3 text-sm">
+                <div>
+                    <dt class="text-xs text-on-surface-variant">Full Name</dt>
+                    <dd class="font-medium text-on-surface mt-0.5" th:text="${customer.fullName ?: '—'}"></dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-on-surface-variant">Email</dt>
+                    <dd class="font-medium text-on-surface mt-0.5 break-all" th:text="${customer.email ?: '—'}"></dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-on-surface-variant">Phone</dt>
+                    <dd class="font-medium text-on-surface mt-0.5" th:text="${customer.phone ?: '—'}"></dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-on-surface-variant">Role</dt>
+                    <dd class="font-medium text-on-surface mt-0.5" th:text="${customer.role}"></dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-on-surface-variant">Joined</dt>
+                    <dd class="font-medium text-on-surface mt-0.5"
+                        th:text="${#temporals.format(customer.createdAt, 'dd MMM yyyy, HH:mm')}"></dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-on-surface-variant">Customer ID</dt>
+                    <dd class="font-mono text-xs text-on-surface-variant mt-0.5 break-all" th:text="${customer.id}"></dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Activity stats -->
+        <div class="lg:col-span-2 grid grid-cols-2 gap-4">
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-[0px_4px_20px_rgba(30,41,59,0.05)]">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="material-symbols-outlined text-primary bg-primary/5 p-2 rounded-xl">shopping_bag</span>
+                    <p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Total Orders</p>
+                </div>
+                <p class="text-2xl font-bold text-on-surface" th:text="${totalOrders ?: 0}">0</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-[0px_4px_20px_rgba(30,41,59,0.05)]">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="material-symbols-outlined text-green-600 bg-green-50 p-2 rounded-xl">payments</span>
+                    <p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Total Spent</p>
+                </div>
+                <p class="text-2xl font-bold text-on-surface">
+                    &#8358;<span th:text="${#numbers.formatDecimal(totalSpent ?: 0, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                </p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-[0px_4px_20px_rgba(30,41,59,0.05)]">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="material-symbols-outlined text-blue-600 bg-blue-50 p-2 rounded-xl">local_shipping</span>
+                    <p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">In Progress</p>
+                </div>
+                <p class="text-2xl font-bold text-on-surface" th:text="${pendingOrders ?: 0}">0</p>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 shadow-[0px_4px_20px_rgba(30,41,59,0.05)]">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="material-symbols-outlined text-green-700 bg-green-100 p-2 rounded-xl">task_alt</span>
+                    <p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Confirmed</p>
+                </div>
+                <p class="text-2xl font-bold text-on-surface" th:text="${completedOrders ?: 0}">0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent orders -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(30,41,59,0.05)] overflow-hidden">
+        <div class="px-6 py-4 border-b border-outline-variant/20 flex items-center justify-between">
+            <h3 class="font-bold text-on-surface">Recent Orders</h3>
+            <span class="text-xs text-on-surface-variant" th:text="'Showing latest ' + ${recentOrders.size()}"></span>
+        </div>
+
+        <div th:if="${recentOrders.isEmpty()}" class="p-10 text-center">
+            <span class="material-symbols-outlined text-4xl text-outline-variant">receipt_long</span>
+            <p class="text-on-surface-variant text-sm mt-2">This customer has no orders yet.</p>
+        </div>
+
+        <table class="w-full text-sm" th:if="${!recentOrders.isEmpty()}">
+            <thead class="bg-surface-container-low/50 border-b border-outline-variant/20">
+            <tr>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Order #</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Date</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Status</th>
+                <th class="text-right px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Total</th>
+                <th class="text-right px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Action</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/20">
+            <tr th:each="o : ${recentOrders}" class="hover:bg-surface-container-low/40 transition-colors">
+                <td class="px-6 py-3 font-mono text-xs text-on-surface" th:text="${#strings.abbreviate(o.id.toString(), 12)}"></td>
+                <td class="px-6 py-3 text-on-surface-variant" th:text="${#temporals.format(o.createdAt, 'dd MMM yyyy')}"></td>
+                <td class="px-6 py-3">
+                    <span th:switch="${o.status.name()}"
+                          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                        <span th:case="'PAID'"       class="bg-blue-100 text-blue-700">Paid</span>
+                        <span th:case="'PROCESSING'" class="bg-purple-100 text-purple-700">Processing</span>
+                        <span th:case="'SHIPPED'"    class="bg-indigo-100 text-indigo-700">Shipped</span>
+                        <span th:case="'DELIVERED'"  class="bg-amber-100 text-amber-700">Delivered</span>
+                        <span th:case="'CONFIRMED'"  class="bg-green-100 text-green-700">Confirmed</span>
+                        <span th:case="'CANCELLED'"  class="bg-red-100 text-red-700">Cancelled</span>
+                        <span th:case="*"            class="bg-surface-container text-on-surface-variant" th:text="${o.status}"></span>
+                    </span>
+                </td>
+                <td class="px-6 py-3 text-right font-semibold text-on-surface">
+                    &#8358;<span th:text="${#numbers.formatDecimal(o.total, 1, 'COMMA', 2, 'POINT')}"></span>
+                </td>
+                <td class="px-6 py-3 text-right">
+                    <a th:href="@{/admin/orders/{id}(id=${o.id})}"
+                       class="inline-flex items-center gap-1 text-xs text-primary hover:underline font-semibold">
+                        View <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
