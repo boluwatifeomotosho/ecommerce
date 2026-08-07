@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Claude / scratch / uploads / secrets ###
+.claude/
+uploads/
+target/
+.env
+*.env
+application-local.properties
