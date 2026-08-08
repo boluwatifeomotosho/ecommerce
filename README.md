@@ -4,10 +4,9 @@ A multi-vendor e-commerce marketplace built with Spring Boot 3.5 and Java 21. In
 
 Authentication runs through Keycloak over OIDC, with a four-tier role hierarchy and a vendor-side team structure managed through the Keycloak Admin API. Every push to `main` builds a container image and redeploys it.
 
-<!-- Add 2–3 screenshots here. Suggested: customer catalog, vendor dashboard, admin reports.
-     Put the files in docs/screenshots/ and reference them like this:
 ![Customer catalog](docs/screenshots/catalog.png)
--->
+![Vendor dashboard](docs/screenshots/vendor-dashboard.png)
+![Admin reports](docs/screenshots/admin-reports.png)
 
 ---
 
