@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Delivery Detail — Pinepetosan Agent Portal</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/agent-sidebar :: sidebar('deliveries', ${name}, ${email})}"></aside>
+
+<main class="ml-0 md:ml-[280px] mt-16 md:mt-0 min-h-screen p-8 bg-surface-bright">
+
+    <div class="mb-4">
+        <a th:href="@{/agent/deliveries}" class="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
+            Back to deliveries
+        </a>
+    </div>
+
+    <header class="mb-6 flex items-center gap-3 flex-wrap">
+        <span class="material-symbols-outlined text-primary text-3xl">package</span>
+        <div class="flex-1">
+            <h1 class="text-2xl font-bold text-on-surface"
+                th:text="'Order #' + ${#strings.toUpperCase(#strings.substring(order.id.toString(), 0, 8))}">Order</h1>
+            <p class="text-sm text-on-surface-variant mt-0.5"
+               th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy, HH:mm')}">Date</p>
+        </div>
+        <span th:switch="${order.status.name()}" class="text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full">
+            <span th:case="'IN_TRANSIT'" class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">In Transit</span>
+            <span th:case="'DELIVERED'"  class="bg-green-100 text-green-700 px-3 py-1 rounded-full">Delivered — awaiting confirmation</span>
+            <span th:case="'CONFIRMED'"  class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">Confirmed by customer</span>
+            <span th:case="*"            class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full" th:text="${order.status.name()}">Status</span>
+        </span>
+    </header>
+
+    <div th:if="${successMessage}" class="flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 text-sm font-medium px-4 py-3 rounded-xl mb-6">
+        <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+        <span th:text="${successMessage}">Success</span>
+    </div>
+    <div th:if="${errorMessage}" class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 text-sm font-medium px-4 py-3 rounded-xl mb-6">
+        <span class="material-symbols-outlined text-red-500 text-xl">error</span>
+        <span th:text="${errorMessage}">Error</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="lg:col-span-2 space-y-6">
+
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">location_on</span>
+                    <h2 class="font-bold text-on-surface">Delivery Address</h2>
+                </div>
+                <div class="p-6 space-y-2 text-sm">
+                    <p class="font-bold text-on-surface text-base" th:text="${order.shippingName}">Name</p>
+                    <p class="text-on-surface-variant">
+                        <a th:href="'tel:' + ${order.shippingPhone}"
+                           class="inline-flex items-center gap-1 text-primary font-semibold hover:underline">
+                            <span class="material-symbols-outlined text-base">call</span>
+                            <span th:text="${order.shippingPhone}">Phone</span>
+                        </a>
+                    </p>
+                    <p class="text-on-surface-variant leading-relaxed">
+                        <span th:text="${order.shippingAddress}">Address</span><br/>
+                        <span th:text="${order.shippingCity + ', ' + order.shippingState}">City, State</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">inventory_2</span>
+                    <h2 class="font-bold text-on-surface">Items</h2>
+                </div>
+                <ul class="divide-y divide-outline-variant/30">
+                    <li th:each="item : ${order.items}" class="px-6 py-3 flex items-center gap-4">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-on-surface truncate" th:text="${item.productName}">Product</p>
+                            <p class="text-xs text-on-surface-variant" th:text="'Qty ' + ${item.quantity}">Qty</p>
+                        </div>
+                        <p class="text-sm text-on-surface-variant">
+                            &#8358;<span th:text="${#numbers.formatDecimal(item.lineTotal, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </p>
+                    </li>
+                </ul>
+                <div class="px-6 py-3 border-t border-outline-variant/30 flex items-center justify-between">
+                    <span class="text-sm font-bold text-on-surface">Order Total</span>
+                    <span class="text-lg font-bold text-primary">
+                        &#8358;<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1 space-y-6">
+
+            <div th:if="${order.status.name() == 'IN_TRANSIT'}"
+                 class="bg-surface-container-lowest rounded-2xl border border-primary/30 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">task_alt</span>
+                    <h2 class="font-bold text-on-surface">Complete Delivery</h2>
+                </div>
+                <form th:action="@{'/agent/deliveries/' + ${order.id} + '/deliver'}" method="post" class="p-6 space-y-3">
+                    <p class="text-sm text-on-surface-variant">
+                        Confirm that this order has been handed to the customer. The customer will then be prompted to confirm receipt.
+                    </p>
+                    <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-2 bg-primary hover:opacity-90 text-on-primary text-sm font-semibold px-5 py-3 rounded-xl transition-all shadow-md shadow-primary/20 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">check_circle</span>
+                        Mark as Delivered
+                    </button>
+                </form>
+            </div>
+
+            <div th:if="${order.status.name() == 'DELIVERED'}"
+                 class="bg-green-50 border border-green-200 rounded-2xl p-5 text-sm text-green-800">
+                <div class="flex items-center gap-2 font-bold mb-1">
+                    <span class="material-symbols-outlined">hourglass_top</span>
+                    Awaiting customer confirmation
+                </div>
+                <p>You've marked this order as delivered. The customer will confirm receipt to close the loop.</p>
+            </div>
+
+            <div th:if="${order.status.name() == 'CONFIRMED'}"
+                 class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-sm text-emerald-800">
+                <div class="flex items-center gap-2 font-bold mb-1">
+                    <span class="material-symbols-outlined">verified</span>
+                    Delivery confirmed
+                </div>
+                <p>The customer has confirmed they received this order. Great work!</p>
+            </div>
+
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">receipt_long</span>
+                    <h2 class="font-bold text-on-surface">Summary</h2>
+                </div>
+                <div class="p-6 space-y-2 text-sm">
+                    <div class="flex justify-between text-on-surface-variant">
+                        <span>Subtotal</span>
+                        <span>&#8358;<span th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                    </div>
+                    <div class="flex justify-between text-on-surface-variant">
+                        <span>Delivery fee</span>
+                        <span>&#8358;<span th:text="${#numbers.formatDecimal(order.deliveryFee, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                    </div>
+                    <div class="flex justify-between font-bold text-on-surface pt-2 border-t border-outline-variant/30">
+                        <span>Total</span>
+                        <span class="text-primary">&#8358;<span th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

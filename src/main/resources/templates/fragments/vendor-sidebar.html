@@ -60,7 +60,7 @@
                 <span th:if="${isVendorAdmin}"
                       class="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
                     <span class="material-symbols-outlined text-[11px]" style="font-variation-settings:'FILL' 1;">admin_panel_settings</span>
-                    Store Manager
+                    Subsidiary Admin
                 </span>
                 <span th:if="${vendorMemberRole == 'SUB_VENDOR'}"
                       class="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">
@@ -94,6 +94,21 @@
            class="rounded-lg mx-2 px-4 py-2.5 flex items-center gap-3 transition-all">
             <span class="material-symbols-outlined">package</span>
             <span class="font-label-md">Orders</span>
+        </a>
+        <a th:if="${isVendorAdmin}" th:href="@{/vendor/agents}"
+           th:classappend="${activePage == 'agents'} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'"
+           class="rounded-lg mx-2 px-4 py-2.5 flex items-center gap-3 transition-all">
+            <span class="material-symbols-outlined">local_shipping</span>
+            <span class="font-label-md">Agents</span>
+        </a>
+        <a th:href="@{/notifications}"
+           th:classappend="${activePage == 'notifications'} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'"
+           class="rounded-lg mx-2 px-4 py-2.5 flex items-center gap-3 transition-all">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="font-label-md flex-1">Notifications</span>
+            <span th:if="${notificationUnreadCount != null and notificationUnreadCount > 0}"
+                  class="min-w-[20px] h-5 bg-error text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1"
+                  th:text="${notificationUnreadCount > 9 ? '9+' : notificationUnreadCount}">0</span>
         </a>
         <a th:href="@{/vendor/analytics}"
            th:classappend="${activePage == 'analytics'} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'"

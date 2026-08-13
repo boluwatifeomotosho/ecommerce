@@ -84,6 +84,21 @@
             <span class="material-symbols-outlined">shopping_bag</span>
             <span class="font-label-md">Orders</span>
         </a>
+        <a th:href="@{/admin/agents}"
+           th:classappend="${activePage == 'agents'} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'"
+           class="flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2 transition-all">
+            <span class="material-symbols-outlined">local_shipping</span>
+            <span class="font-label-md">Agents</span>
+        </a>
+        <a th:href="@{/notifications}"
+           th:classappend="${activePage == 'notifications'} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'"
+           class="flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2 transition-all">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="font-label-md flex-1">Notifications</span>
+            <span th:if="${notificationUnreadCount != null and notificationUnreadCount > 0}"
+                  class="min-w-[20px] h-5 bg-error text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1"
+                  th:text="${notificationUnreadCount > 9 ? '9+' : notificationUnreadCount}">0</span>
+        </a>
         <a th:href="@{/admin/reports}"
            th:classappend="${activePage == 'reports'} ? 'bg-primary text-on-primary shadow-md shadow-primary/20' : 'text-on-surface-variant hover:bg-primary/10 hover:text-primary'"
            class="flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2 transition-all">

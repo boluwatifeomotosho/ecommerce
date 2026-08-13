@@ -9,6 +9,7 @@ public record ProductSummaryDto(
         UUID          id,
         String        name,
         String        slug,
+        String        description,
         BigDecimal    price,
         BigDecimal    compareAtPrice,
         String        primaryImageUrl,

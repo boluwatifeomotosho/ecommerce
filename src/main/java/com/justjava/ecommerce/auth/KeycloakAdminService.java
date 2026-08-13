@@ -47,6 +47,10 @@ public class KeycloakAdminService {
         assignRole(keycloakUserId, "SUB_VENDOR");
     }
 
+    public void assignAgentRole(String keycloakUserId) {
+        assignRole(keycloakUserId, "AGENT");
+    }
+
     private void assignRole(String keycloakUserId, String roleName) {
         try {
             String token = getAdminToken();

@@ -103,6 +103,8 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/vendor/**").hasAnyRole("VENDOR", "SUB_VENDOR")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers("/agent/**").hasRole("AGENT")
+                        .requestMatchers("/notifications/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
@@ -190,6 +192,9 @@ public class SecurityConfig {
                         new OAuth2AuthenticationToken(
                                 oauthToken.getPrincipal(), updated,
                                 oauthToken.getAuthorizedClientRegistrationId()));
+            } else if (hasRole(authorities, "ROLE_AGENT")) {
+                role        = "AGENT";
+                redirectUrl = "/agent/deliveries";
             } else if (hasRole(authorities, "ROLE_DELIVERY_AGENT")) {
                 role = "DELIVERY_AGENT";
             } else if (hasRole(authorities, "ROLE_WAREHOUSE_OFFICER")) {

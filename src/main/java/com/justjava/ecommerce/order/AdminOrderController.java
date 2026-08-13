@@ -1,5 +1,6 @@
 package com.justjava.ecommerce.order;
 
+import com.justjava.ecommerce.agent.AgentService;
 import com.justjava.ecommerce.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class AdminOrderController {
 
     private final OrderService orderService;
+    private final AgentService agentService;
 
     @GetMapping
     public String list(
@@ -49,8 +51,39 @@ public class AdminOrderController {
     ) {
         OrderDto order = orderService.getOrderByIdForAdmin(id);
         model.addAttribute("order", order);
+        model.addAttribute("agents", agentService.listAllAgents());
         enrichModel(auth, model);
         return "admin/orders/detail";
+    }
+
+    @PostMapping("/{id}/assign-agent")
+    public String assignAgent(
+            @PathVariable UUID id,
+            @RequestParam UUID agentId,
+            RedirectAttributes flash
+    ) {
+        try {
+            orderService.assignAgentAndDispatch(id, agentId);
+            flash.addFlashAttribute("successMessage", "Order dispatched. Agent has been notified.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/orders/" + id;
+    }
+
+    @PostMapping("/{id}/reassign-agent")
+    public String reassignAgent(
+            @PathVariable UUID id,
+            @RequestParam UUID agentId,
+            RedirectAttributes flash
+    ) {
+        try {
+            orderService.reassignAgent(id, agentId);
+            flash.addFlashAttribute("successMessage", "Agent reassigned. New agent has been notified.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/orders/" + id;
     }
 
     @PostMapping("/{id}/status")

@@ -3,6 +3,7 @@ package com.justjava.ecommerce.order;
 import com.justjava.ecommerce.address.CustomerAddressService;
 import com.justjava.ecommerce.cart.CartItemRepository;
 import com.justjava.ecommerce.cart.CartService;
+import com.justjava.ecommerce.notification.OrderNotifier;
 import com.justjava.ecommerce.product.Product;
 import com.justjava.ecommerce.product.ProductRepository;
 import com.justjava.ecommerce.user.User;
@@ -33,7 +34,8 @@ public class OrderServiceImpl implements OrderService {
     private static final Map<OrderStatus, Set<OrderStatus>> ALLOWED_TRANSITIONS = Map.of(
             OrderStatus.PAID,       Set.of(OrderStatus.PROCESSING),
             OrderStatus.PROCESSING, Set.of(OrderStatus.SHIPPED),
-            OrderStatus.SHIPPED,    Set.of(OrderStatus.DELIVERED)
+            OrderStatus.SHIPPED,    Set.of(OrderStatus.IN_TRANSIT),
+            OrderStatus.IN_TRANSIT, Set.of(OrderStatus.DELIVERED)
     );
 
     private final OrderRepository          orderRepository;
@@ -42,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository           userRepository;
     private final ProductRepository        productRepository;
     private final CustomerAddressService   addressService;
+    private final OrderNotifier            orderNotifier;
 
     @Override
     public Order placeOrder(UUID customerId, CheckoutRequest req) {
@@ -127,6 +130,8 @@ public class OrderServiceImpl implements OrderService {
                 order.getShippingState()
         );
 
+        orderNotifier.notifyOrderPaid(order);
+
         return order.getId();
     }
 
@@ -164,6 +169,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalStateException("Only delivered orders can be confirmed");
         }
         order.setStatus(OrderStatus.CONFIRMED);
+        orderNotifier.notifyOrderConfirmed(order);
     }
 
     @Override
@@ -270,8 +276,88 @@ public class OrderServiceImpl implements OrderService {
     public void updateOrderStatusByAdmin(UUID orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        // SHIPPED -> IN_TRANSIT requires an agent — funnel through assignAgentAndDispatch
+        if (order.getStatus() == OrderStatus.SHIPPED && newStatus == OrderStatus.IN_TRANSIT) {
+            throw new IllegalStateException("Assign a warehouse agent to move this order to In Transit.");
+        }
         validateTransition(order.getStatus(), newStatus);
         order.setStatus(newStatus);
+        if (newStatus == OrderStatus.DELIVERED) {
+            orderNotifier.notifyOrderDelivered(order);
+        }
+    }
+
+    @Override
+    public void assignAgentAndDispatch(UUID orderId, UUID agentUserId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        if (order.getStatus() != OrderStatus.SHIPPED) {
+            throw new IllegalStateException("Only shipped orders can be dispatched to an agent (current: " + order.getStatus() + ")");
+        }
+        User agent = requireAgent(agentUserId);
+        order.setAssignedAgent(agent);
+        order.setStatus(OrderStatus.IN_TRANSIT);
+        orderNotifier.notifyAgentAssigned(order);
+    }
+
+    @Override
+    public void reassignAgent(UUID orderId, UUID agentUserId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        if (order.getStatus() != OrderStatus.IN_TRANSIT) {
+            throw new IllegalStateException("Only in-transit orders can be reassigned to a different agent.");
+        }
+        User agent = requireAgent(agentUserId);
+        User previousAgent = order.getAssignedAgent();
+        if (previousAgent != null && previousAgent.getId().equals(agentUserId)) {
+            return;
+        }
+        order.setAssignedAgent(agent);
+        orderNotifier.notifyAgentReassigned(order, previousAgent);
+        orderNotifier.notifyAgentAssigned(order);
+    }
+
+    @Override
+    public void markDeliveredByAgent(UUID orderId, UUID agentUserId) {
+        Order order = orderRepository.findByIdAndAssignedAgentId(orderId, agentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not assigned to you"));
+        if (order.getStatus() != OrderStatus.IN_TRANSIT) {
+            throw new IllegalStateException("Only in-transit orders can be marked delivered.");
+        }
+        order.setStatus(OrderStatus.DELIVERED);
+        orderNotifier.notifyOrderDelivered(order);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderDto> getOrdersForAgent(UUID agentUserId, OrderStatus statusFilter, Pageable pageable) {
+        Page<Order> page = statusFilter != null
+                ? orderRepository.findByAssignedAgentIdAndStatusOrderByCreatedAtDesc(agentUserId, statusFilter, pageable)
+                : orderRepository.findByAssignedAgentIdOrderByCreatedAtDesc(agentUserId, pageable);
+        return page.map(this::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderDto getOrderByIdForAgent(UUID orderId, UUID agentUserId) {
+        Order order = orderRepository.findByIdAndAssignedAgentId(orderId, agentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not assigned to you"));
+        return toDto(order);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countForAgentByStatus(UUID agentUserId, OrderStatus status) {
+        return orderRepository.countByAssignedAgentIdAndStatus(agentUserId, status);
+    }
+
+    private User requireAgent(UUID userId) {
+        User u = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Agent not found"));
+        if (!"AGENT".equalsIgnoreCase(u.getRole())) {
+            throw new IllegalArgumentException("Selected user is not a warehouse agent.");
+        }
+        return u;
     }
 
     @Override
@@ -307,12 +393,18 @@ public class OrderServiceImpl implements OrderService {
                         i.getUnitPrice(), i.getQuantity(), i.getLineTotal()))
                 .toList();
         String customerName = o.getCustomer() != null ? o.getCustomer().getFullName() : null;
+        User agent = o.getAssignedAgent();
         return new OrderDto(
                 o.getId(), o.getStatus(),
                 o.getSubtotal(), o.getDeliveryFee(), o.getTotal(),
                 o.getShippingName(), o.getShippingPhone(),
                 o.getShippingAddress(), o.getShippingCity(), o.getShippingState(),
                 o.getPaymentReference(), o.getPaymentChannel(), o.getPaidAt(),
-                o.getCreatedAt(), customerName, items);
+                o.getCreatedAt(), customerName,
+                agent != null ? agent.getId()       : null,
+                agent != null ? agent.getFullName() : null,
+                agent != null ? agent.getEmail()    : null,
+                agent != null ? agent.getPhone()    : null,
+                items);
     }
 }

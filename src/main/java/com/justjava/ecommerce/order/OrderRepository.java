@@ -72,6 +72,16 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     @Query("SELECT COALESCE(SUM(o.total), 0) FROM Order o WHERE o.status = 'PAID'")
     BigDecimal sumPlatformRevenue();
 
+    // ── Agent (warehouse-agent) queries ───────────────────────────────────────
+
+    Page<Order> findByAssignedAgentIdOrderByCreatedAtDesc(UUID agentId, Pageable pageable);
+
+    Page<Order> findByAssignedAgentIdAndStatusOrderByCreatedAtDesc(UUID agentId, OrderStatus status, Pageable pageable);
+
+    Optional<Order> findByIdAndAssignedAgentId(UUID id, UUID agentId);
+
+    long countByAssignedAgentIdAndStatus(UUID agentId, OrderStatus status);
+
     @Query("SELECT COUNT(DISTINCT o) FROM Order o JOIN o.items i WHERE i.product.vendor.id = :vendorId")
     long countByVendorId(@Param("vendorId") UUID vendorId);
 

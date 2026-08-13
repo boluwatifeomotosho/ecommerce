@@ -44,7 +44,7 @@
                         <h1 class="text-2xl font-bold text-on-surface"
                             th:text="${teamUser?.fullName ?: 'Team member'}">Name</h1>
                         <span th:if="${member.memberRole?.name() == 'VENDOR_ADMIN'}"
-                              class="text-[10px] font-bold uppercase tracking-wide bg-primary/10 text-primary px-2 py-0.5 rounded-full">Store Manager</span>
+                              class="text-[10px] font-bold uppercase tracking-wide bg-primary/10 text-primary px-2 py-0.5 rounded-full">Subsidiary Admin</span>
                         <span th:if="${member.memberRole?.name() == 'SUB_VENDOR'}"
                               class="text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Team Member</span>
                         <span th:if="${teamUser?.status == 'PENDING_ACTIVATION'}"
@@ -138,7 +138,7 @@
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Role</dt>
                     <dd class="font-medium"
-                        th:text="${member.memberRole?.name() == 'VENDOR_ADMIN'} ? 'Store Manager' : 'Team Member'">—</dd>
+                        th:text="${member.memberRole?.name() == 'VENDOR_ADMIN'} ? 'Subsidiary Admin' : 'Team Member'">—</dd>
                 </div>
                 <div class="flex justify-between border-b border-outline-variant/20 py-2">
                     <dt class="text-on-surface-variant">Status</dt>

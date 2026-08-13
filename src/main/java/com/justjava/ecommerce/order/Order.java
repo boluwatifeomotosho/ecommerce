@@ -53,6 +53,10 @@ public class Order {
     @Column(name = "payment_channel",   length = 50)                 private String paymentChannel;
     @Column(name = "paid_at")                                         private LocalDateTime paidAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_agent_id")
+    private User assignedAgent;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();

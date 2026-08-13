@@ -21,6 +21,10 @@ public record OrderDto(
         LocalDateTime paidAt,
         LocalDateTime createdAt,
         String        customerName,
+        UUID          assignedAgentId,
+        String        assignedAgentName,
+        String        assignedAgentEmail,
+        String        assignedAgentPhone,
         List<ItemDto> items
 ) {
     public record ItemDto(

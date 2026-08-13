@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Warehouse Agents — Pinepetosan Marketplace Vendor</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<aside th:replace="~{fragments/vendor-sidebar :: sidebar('agents', ${name})}"></aside>
+
+<div class="ml-0 md:ml-[280px] mt-16 md:mt-0 flex-1 flex flex-col min-h-screen">
+    <header class="bg-surface-container-lowest border-b border-outline-variant px-8 py-4 flex items-center gap-3 sticky top-0 z-20">
+        <span class="material-symbols-outlined text-primary">local_shipping</span>
+        <div>
+            <h1 class="text-xl font-bold text-on-surface">Warehouse Agents</h1>
+            <p class="text-sm text-on-surface-variant mt-0.5">Agents are shared platform-wide. Any subsidiary can dispatch orders to any agent.</p>
+        </div>
+    </header>
+
+    <main class="flex-1 px-8 py-6 max-w-5xl space-y-6">
+
+        <div th:if="${inviteSuccess}" class="flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 text-sm font-medium px-4 py-3 rounded-xl">
+            <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+            <span th:text="${inviteSuccess}">Success</span>
+        </div>
+        <div th:if="${inviteError}" class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 text-sm font-medium px-4 py-3 rounded-xl">
+            <span class="material-symbols-outlined text-red-500 text-xl">error</span>
+            <span th:text="${inviteError}">Error</span>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-lg">person_add</span>
+                <h2 class="font-bold text-on-surface">Invite an Agent</h2>
+            </div>
+            <form th:action="@{/vendor/agents/invite}" method="post" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-on-surface-variant mb-1.5">First Name <span class="text-error">*</span></label>
+                        <input type="text" name="firstName" required
+                               class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm"/>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Last Name <span class="text-error">*</span></label>
+                        <input type="text" name="lastName" required
+                               class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm"/>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Email <span class="text-error">*</span></label>
+                    <input type="email" name="email" required
+                           class="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm"/>
+                    <p class="text-xs text-on-surface-variant mt-1">Once invited, this agent is available to all subsidiaries — not just yours.</p>
+                </div>
+                <button type="submit"
+                        class="inline-flex items-center gap-2 bg-primary hover:opacity-90 text-on-primary text-sm font-semibold px-5 py-2.5 rounded-xl transition-all shadow-md shadow-primary/20 active:scale-95">
+                    <span class="material-symbols-outlined text-lg">send</span> Send Invitation
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-lg">groups</span>
+                <h2 class="font-bold text-on-surface">All Platform Agents</h2>
+                <span class="text-xs text-on-surface-variant ml-auto" th:text="${#lists.size(agents) + ' total'}">0 total</span>
+            </div>
+            <div th:if="${#lists.isEmpty(agents)}" class="px-6 py-10 text-center text-on-surface-variant text-sm">
+                No warehouse agents yet.
+            </div>
+            <ul th:if="${!#lists.isEmpty(agents)}" class="divide-y divide-outline-variant/30">
+                <li th:each="agent : ${agents}" class="px-6 py-4 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-lg">local_shipping</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <p class="font-semibold text-on-surface truncate" th:text="${agent.fullName}">Name</p>
+                            <span th:if="${agent.status == 'PENDING_ACTIVATION'}"
+                                  class="text-[10px] font-bold uppercase tracking-wide bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Pending</span>
+                        </div>
+                        <p class="text-xs text-on-surface-variant truncate" th:text="${agent.email}">email</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </main>
+</div>
+</body>
+</html>

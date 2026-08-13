@@ -86,7 +86,7 @@
                         <div class="flex items-center gap-2">
                             <p class="font-semibold text-on-surface truncate" th:text="${member.user?.fullName}">Name</p>
                             <span th:if="${member.memberRole?.name() == 'VENDOR_ADMIN'}"
-                                  class="text-[10px] font-bold uppercase tracking-wide bg-primary/10 text-primary px-2 py-0.5 rounded-full">Store Manager</span>
+                                  class="text-[10px] font-bold uppercase tracking-wide bg-primary/10 text-primary px-2 py-0.5 rounded-full">Subsidiary Admin</span>
                             <span th:if="${member.memberRole?.name() == 'SUB_VENDOR'}"
                                   class="text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Team Member</span>
                             <span th:if="${member.user?.status == 'PENDING_ACTIVATION'}"

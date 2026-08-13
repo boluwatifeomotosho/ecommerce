@@ -1,5 +1,6 @@
 package com.justjava.ecommerce.order;
 
+import com.justjava.ecommerce.agent.AgentService;
 import com.justjava.ecommerce.vendor.VendorMemberService;
 import com.justjava.ecommerce.vendor.VendorScope;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class VendorOrderController {
 
     private final OrderService        orderService;
     private final VendorMemberService vendorMemberService;
+    private final AgentService        agentService;
 
     @GetMapping
     public String list(
@@ -57,8 +59,30 @@ public class VendorOrderController {
                 ? orderService.getOrderByIdForVendorCreator(id, scope.vendorId(), scope.creatorUserId())
                 : orderService.getOrderByIdForVendor(id, scope.vendorId());
         model.addAttribute("order", order);
+        model.addAttribute("agents", agentService.listAllAgents());
+        model.addAttribute("canDispatch", scope.isVendorAdmin());
         model.addAttribute("name", principal.getFullName() != null ? principal.getFullName() : "Vendor");
         return "vendor/orders/detail";
+    }
+
+    @PostMapping("/{id}/assign-agent")
+    @PreAuthorize("hasRole('VENDOR')")
+    public String assignAgent(
+            @PathVariable UUID id,
+            @RequestParam UUID agentId,
+            @AuthenticationPrincipal OidcUser principal,
+            RedirectAttributes flash
+    ) {
+        VendorScope scope = vendorMemberService.currentScope(principal);
+        try {
+            // Confirm the order is visible to this vendor before dispatching.
+            orderService.getOrderByIdForVendor(id, scope.vendorId());
+            orderService.assignAgentAndDispatch(id, agentId);
+            flash.addFlashAttribute("successMessage", "Order dispatched. Agent has been notified.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/vendor/orders/" + id;
     }
 
     @PostMapping("/{id}/status")

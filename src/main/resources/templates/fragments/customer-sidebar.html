@@ -83,6 +83,15 @@
             <span class="material-symbols-outlined">favorite</span>
             <span class="font-label-md text-label-md">Wishlist</span>
         </a>
+        <a th:href="@{/notifications}"
+           th:classappend="${activePage == 'notifications'} ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-high'"
+           class="flex items-center gap-sm px-md py-3 rounded-lg transition-all">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="font-label-md text-label-md flex-1">Notifications</span>
+            <span th:if="${notificationUnreadCount != null and notificationUnreadCount > 0}"
+                  class="min-w-[20px] h-5 bg-error text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1"
+                  th:text="${notificationUnreadCount > 9 ? '9+' : notificationUnreadCount}">0</span>
+        </a>
         <hr class="my-xs border-outline-variant/50"/>
         <a th:href="@{/customer/settings}"
            th:classappend="${activePage == 'settings'} ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-high'"

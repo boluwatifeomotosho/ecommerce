@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Notifications — Pinepetosan Marketplace</title>
+    <th:block th:replace="~{fragments/head :: resources}"/>
+</head>
+<body class="bg-surface-bright text-on-surface overflow-x-hidden">
+
+<div class="min-h-screen p-4 sm:p-8 max-w-3xl mx-auto">
+
+    <header class="mb-6 flex items-center gap-3">
+        <a href="javascript:history.back()"
+           class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-on-surface">arrow_back</span>
+        </a>
+        <div class="flex-1">
+            <h1 class="text-2xl font-bold text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">notifications</span>
+                Notifications
+            </h1>
+            <p class="text-sm text-on-surface-variant mt-0.5">All alerts and updates for your account.</p>
+        </div>
+        <form th:if="${notificationUnreadCount != null and notificationUnreadCount > 0}"
+              th:action="@{/notifications/mark-all-read}" method="post">
+            <button type="submit"
+                    class="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+                <span class="material-symbols-outlined text-base">done_all</span>
+                Mark all read
+            </button>
+        </form>
+    </header>
+
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+        <div th:if="${notifications.isEmpty()}" class="px-6 py-16 text-center text-on-surface-variant text-sm">
+            <span class="material-symbols-outlined text-4xl text-on-surface-variant/50">notifications_off</span>
+            <p class="mt-2">You don't have any notifications yet.</p>
+        </div>
+        <ul th:unless="${notifications.isEmpty()}" class="divide-y divide-outline-variant/30">
+            <li th:each="n : ${notifications.content}"
+                th:classappend="${n.readAt == null} ? 'bg-primary/5' : ''"
+                class="px-6 py-4 hover:bg-surface-container-low transition-colors">
+                <a th:href="@{'/notifications/' + ${n.id} + '/go'(to=${n.url})}"
+                   class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-lg">notifications</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <p class="font-semibold text-on-surface truncate" th:text="${n.title}">Title</p>
+                            <span th:if="${n.readAt == null}"
+                                  class="w-2 h-2 rounded-full bg-primary flex-shrink-0"></span>
+                        </div>
+                        <p class="text-sm text-on-surface-variant mt-0.5" th:text="${n.body}">Body</p>
+                        <p class="text-[11px] text-on-surface-variant mt-1"
+                           th:text="${#temporals.format(n.createdAt, 'dd MMM yyyy, HH:mm')}">Date</p>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div th:if="${notifications.totalPages > 1}" class="flex justify-center items-center gap-2 mt-6">
+        <a th:if="${notifications.number > 0}"
+           th:href="@{/notifications(page=${notifications.number - 1})}"
+           class="text-xs font-semibold px-3 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant hover:bg-primary/10">Previous</a>
+        <span class="text-xs text-on-surface-variant"
+              th:text="'Page ' + (${notifications.number + 1}) + ' of ' + ${notifications.totalPages}">Page</span>
+        <a th:if="${notifications.number + 1 < notifications.totalPages}"
+           th:href="@{/notifications(page=${notifications.number + 1})}"
+           class="text-xs font-semibold px-3 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant hover:bg-primary/10">Next</a>
+    </div>
+
+</div>
+</body>
+</html>

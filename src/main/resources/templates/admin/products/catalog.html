@@ -91,7 +91,10 @@
             <div class="p-3 flex flex-col flex-1">
                 <p class="text-xs text-primary font-medium mb-1 truncate" th:text="${product.categoryName}">Category</p>
                 <h3 class="text-sm font-semibold text-on-surface leading-snug line-clamp-2 mb-1" th:text="${product.name}">Product</h3>
-                <p class="text-xs text-on-surface-variant mb-2 truncate" th:text="${product.vendorName}">Vendor</p>
+                <p class="text-xs text-on-surface-variant mb-1 truncate" th:text="${product.vendorName}">Vendor</p>
+                <p th:if="${product.description != null and !product.description.isBlank()}"
+                   class="text-xs text-on-surface-variant/80 line-clamp-2 mb-2 leading-snug"
+                   th:text="${product.description}">Description</p>
                 <div class="flex items-baseline gap-2 mb-3">
                     <span class="text-sm font-bold text-on-surface">
                         ₦<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">0.00</span>
@@ -114,6 +117,7 @@
          class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
          onclick="if(event.target===this) closeTakedownModal()">
         <form id="takedown-form" method="post" class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-11 h-11 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
                     <span class="material-symbols-outlined text-red-600">block</span>

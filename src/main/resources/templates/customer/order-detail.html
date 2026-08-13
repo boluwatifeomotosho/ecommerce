@@ -292,7 +292,7 @@
     </div>
 
     <!-- ── Review Modal ── -->
-    <div th:if="${order.status.name() == 'DELIVERED'}"
+    <div th:if="${order.status.name() == 'CONFIRMED'}"
          id="review-modal"
          class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
          onclick="if(event.target===this) closeReviewModal()">
@@ -346,7 +346,7 @@
 
 </main>
 
-<script th:if="${order.status.name() == 'DELIVERED'}">
+<script th:if="${order.status.name() == 'CONFIRMED'}">
 function openReviewModal(productId, productName) {
     document.getElementById('review-product-id').value = productId;
     document.getElementById('review-product-name').textContent = productName;

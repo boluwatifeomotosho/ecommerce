@@ -45,6 +45,21 @@ public interface OrderService {
 
     void updateOrderStatusByAdmin(UUID orderId, OrderStatus newStatus);
 
+    /** Moves a SHIPPED order to IN_TRANSIT while assigning a warehouse agent. */
+    void assignAgentAndDispatch(UUID orderId, UUID agentUserId);
+
+    /** Reassign the agent on an IN_TRANSIT order (admin-only path). */
+    void reassignAgent(UUID orderId, UUID agentUserId);
+
+    /** Called by the agent portal to mark their own assigned order DELIVERED. */
+    void markDeliveredByAgent(UUID orderId, UUID agentUserId);
+
+    Page<OrderDto> getOrdersForAgent(UUID agentUserId, OrderStatus statusFilter, Pageable pageable);
+
+    OrderDto getOrderByIdForAgent(UUID orderId, UUID agentUserId);
+
+    long countForAgentByStatus(UUID agentUserId, OrderStatus status);
+
     void updateOrderStatusByVendor(UUID orderId, UUID vendorId, OrderStatus newStatus);
 
     /** Only permits the update if the order contains a product created by {@code createdByUserId}. */
